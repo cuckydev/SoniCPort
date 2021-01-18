@@ -2,14 +2,10 @@
 
 #include "MegaDrive.h"
 
+#include <Constants.h>
 #include <Util/Macros.h>
 
 //VDP constants
-#define SCREEN_WIDTH  320
-#define SCREEN_HEIGHT 224
-
-#define SCREEN_SCALE 2 //TODO: make screen scale a variable
-
 #define VRAM_SIZE    0x10000
 #define PLANE_SIZE   0x2000
 #define SPRITES      80

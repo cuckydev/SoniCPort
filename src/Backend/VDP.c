@@ -16,7 +16,7 @@ int Input_HandleEvents();
 //#define VDP_PALETTE_DISPLAY //Enable palette display
 
 //VDP internal state
-static uint8_t vdp_vram[VRAM_SIZE];
+static ALIGNED2 uint8_t vdp_vram[VRAM_SIZE];
 static uint16_t vdp_cram[4][16];
 
 static size_t vdp_plane_a_location, vdp_plane_b_location, vdp_sprite_location, vdp_hscroll_location;
@@ -109,6 +109,7 @@ void VDP_FillCRAM(size_t offset, uint16_t data, size_t len)
 
 void VDP_SetPlaneALocation(size_t loc)
 {
+	loc &= ~0x3FF;
 	#ifdef VDP_SANITY
 	if (loc > VRAM_SIZE - PLANE_SIZE)
 	{
@@ -121,6 +122,7 @@ void VDP_SetPlaneALocation(size_t loc)
 
 void VDP_SetPlaneBLocation(size_t loc)
 {
+	loc &= ~0x1FFF;
 	#ifdef VDP_SANITY
 	if (loc > VRAM_SIZE - PLANE_SIZE)
 	{
@@ -133,6 +135,7 @@ void VDP_SetPlaneBLocation(size_t loc)
 
 void VDP_SetSpriteLocation(size_t loc)
 {
+	loc &= ~0x1FF;
 	#ifdef VDP_SANITY
 	if (loc > VRAM_SIZE - SPRITES_SIZE)
 	{
@@ -145,6 +148,7 @@ void VDP_SetSpriteLocation(size_t loc)
 
 void VDP_SetHScrollLocation(size_t loc)
 {
+	loc &= ~0x3FF;
 	#ifdef VDP_SANITY
 	if (loc > VRAM_SIZE - SCREEN_HEIGHT * 4)
 	{

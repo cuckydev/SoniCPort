@@ -1,5 +1,13 @@
 #pragma once
 
+//Screen dimensions
+#define SCREEN_SCALE 2 //TODO: make screen scale a variable
+
+#define SCREEN_WIDTH  320
+#define SCREEN_HEIGHT 224
+
+#define PLANE_WIDEADD (((SCREEN_WIDTH - 320) / 8) & ~1)
+
 //VRAM data
 #define VRAM_FG      0xC000 //foreground namespace
 #define VRAM_BG      0xE000 //background namespace

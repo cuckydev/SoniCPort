@@ -6,6 +6,7 @@
 #include "Palette.h"
 
 #include <Backend/VDP.h>
+#include <Util/Macros.h>
 
 //SEGA art
 #ifdef SCP_REV00
@@ -61,7 +62,7 @@ int PalCycle_Sega()
 		{
 			if (!((a1 - &dry_palette[1][0]) & 0xF))
 				a1++;
-			if (a1 < &dry_palette[4][0])
+			if ((a1 - &dry_palette[0][0]) < 0x40)
 				*a1++ = (*a0++ << 8) | (*a0++ << 0);
 			else
 				a1++;
@@ -137,10 +138,10 @@ int GM_Sega()
 	
 	VDP_WriteVRAM(0, art_sega, sizeof(art_sega));
 	
-	CopyTilemap(&map_sega[0x0000], 0xE510, 23, 7);
-	CopyTilemap(&map_sega[0x0180], 0xC000, 39, 27);
+	CopyTilemap(&map_sega[0x0000], 0xE510 + PLANE_WIDEADD, 23, 7);
+	CopyTilemap(&map_sega[0x0180], 0xC000 + PLANE_WIDEADD, 39, 27);
 	#ifdef SCP_JP
-		CopyTilemap(&map_sega[0x0A40], 0xC53A, 2, 1); //Hide trademark symbol
+		CopyTilemap(&map_sega[0x0A40], 0xC53A + PLANE_WIDEADD, 2, 1); //Hide trademark symbol
 	#endif
 	
 	//Load palette and initialize cycle
