@@ -208,7 +208,7 @@ static struct VDP_SpriteCache
 
 uint32_t VDP_GetColour(size_t index)
 {
-	uint16_t cv = *(&vdp_cram[0][0] + index);
+	uint16_t cv = vdp_cram[index >> 4][index & 0xF];
 	uint8_t r = (cv & 0x00E) >> 0;
 	uint8_t g = (cv & 0x0E0) >> 4;
 	uint8_t b = (cv & 0xE00) >> 8;
@@ -349,8 +349,8 @@ int VDP_Render()
 		VDP_DrawPlaneColumn(to, (uint16_t*)(vdp_vram + vdp_plane_a_location), *hscroll++, vdp_vscroll_a + y);
 		
 		#ifdef VDP_PALETTE_DISPLAY
-			for (size_t i = 0; i < 4*16; i++)
-				to[i] = vdp_screen_pal[0][i];
+			for (size_t i = 0; i < 4 * 16; i++)
+				to[i] = vdp_screen_pal[i >> 4][i & 0xF];
 		#endif
 		
 		//Render next row
