@@ -1,0 +1,6 @@
+# Exclude build directories
+/build/
+/bin/
+
+# Exclude converted resources
+/src/Resource/

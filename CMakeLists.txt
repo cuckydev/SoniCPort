@@ -1,0 +1,260 @@
+cmake_minimum_required(VERSION 3.12)
+
+###########
+# Options #
+###########
+set(BACKEND "SDL2" CACHE STRING "Which backend to use (SDL2)")
+option(REV01 "Compile REV01 ROM" ON)
+option(JAPANESE "Compile Japanese ROM" OFF)
+
+option(SANITIZE "Enable sanitization" OFF)
+option(LTO "Enable link-time optimization" OFF)
+option(PKG_CONFIG_STATIC_LIBS "On platforms with pkg-config, static-link the dependencies (good for Windows builds, so you don't need to bundle DLL files)" OFF)
+option(MSVC_LINK_STATIC_RUNTIME "Link the static MSVC runtime library (Visual Studio only)" OFF)
+
+#########
+# Setup #
+#########
+
+# Define project, source, and includes
+project(SoniCPort LANGUAGES C)
+
+add_executable(SoniCPort WIN32
+	# Game
+	"src/Main.c"
+	"src/Game.c"
+	"src/Game.h"
+	"src/Video.c"
+	"src/Video.h"
+	"src/Palette.c"
+	"src/Palette.h"
+	"src/GM_Sega.c"
+	"src/GM_Sega.h"
+	"src/Object.c"
+	"src/Object.h"
+	
+	# Utility
+	"src/Util/Macros.h"
+	
+	# Backend
+	"src/Backend/MegaDrive.c"
+	"src/Backend/MegaDrive.h"
+	"src/Backend/VDP.c"
+	"src/Backend/VDP.h"
+)
+
+set(RESOURCES
+	"Art/SegaREV00"
+	"Art/SegaREV01"
+	"Tilemap/SegaREV00"
+	"Tilemap/SegaREV01"
+	"Palette/SegaBackground"
+	"Palette/Sega1"
+	"Palette/Sega2"
+	"Palette/Sonic"
+)
+
+target_include_directories(SoniCPort PRIVATE "src")
+
+##################
+# Compiler flags #
+##################
+
+# Revision
+if(REV01)
+	target_compile_definitions(SoniCPort PRIVATE SCP_REV01)
+else()
+	target_compile_definitions(SoniCPort PRIVATE SCP_REV00)
+endif()
+
+# Region
+if(JAPANESE)
+	target_compile_definitions(SoniCPort PRIVATE SCP_JP)
+endif()
+
+# Sanitization
+if(SANITIZE)
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Og -ggdb3 -fsanitize=address")
+endif()
+
+# Strip release builds
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s")
+
+# Statically link other libraries
+if(PKG_CONFIG_STATIC_LIBS)
+	target_link_options(SoniCPort PRIVATE "-static")
+endif()
+
+# Force warnings
+if(MSVC)
+	target_compile_options(SoniCPort PRIVATE /W4)
+else()
+	target_compile_options(SoniCPort PRIVATE -Wall -Wno-sequence-point -Wextra -pedantic)
+endif()
+
+# Use LTO if requested
+if(LTO)
+	include(CheckIPOSupported)
+	check_ipo_supported(RESULT result)
+	if(result)
+		set_target_properties(SoniCPort PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+	endif()
+endif()
+
+##############################
+# Other compile-time defines #
+##############################
+
+# Determine endianness
+INCLUDE(TestBigEndian)
+TEST_BIG_ENDIAN(ENDIAN)
+if(ENDIAN)
+	target_compile_definitions(SoniCPort PRIVATE SCP_BIG_ENDIAN)
+else()
+	target_compile_definitions(SoniCPort PRIVATE SCP_LIL_ENDIAN)
+endif()
+
+########
+# MSVC #
+########
+
+# This is messy as hell, and has been replaced by CMAKE_MSVC_RUNTIME_LIBRARY,
+# but that's a very recent CMake addition, so we're still doing it this way for now
+if(MSVC AND MSVC_LINK_STATIC_RUNTIME)
+	# Statically-link the CRT (vcpkg static libs do this)
+	foreach(flag_var CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
+		if(${flag_var} MATCHES "/MD")
+			string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
+		endif()
+	endforeach()
+endif()
+
+# Do some other MSVC fixes
+if(MSVC)
+	# Disable warnings that normally fire up on MSVC when using "unsafe" functions instead of using MSVC's "safe" _s functions
+	target_compile_definitions(SoniCPort PRIVATE _CRT_SECURE_NO_WARNINGS)
+	
+	# Make it so source files are recognized as UTF-8 by MSVC
+	target_compile_options(SoniCPort PRIVATE "/utf-8")
+	
+	# Use `main` instead of `WinMain`
+	set_target_properties(SoniCPort PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup")
+endif()
+
+##########################
+# Further compiler setup #
+##########################
+
+# Force strict C99
+set_target_properties(SoniCPort PROPERTIES
+	C_STANDARD 99
+	C_STANDARD_REQUIRED ON
+	C_EXTENSIONS OFF
+)
+
+# Set debug executable name
+set_target_properties(SoniCPort PROPERTIES DEBUG_OUTPUT_NAME "SoniCPort_debug")
+
+# Set output directory
+set(BUILD_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
+
+set_target_properties(SoniCPort PROPERTIES
+	RUNTIME_OUTPUT_DIRECTORY ${BUILD_DIRECTORY}
+	RUNTIME_OUTPUT_DIRECTORY_RELEASE ${BUILD_DIRECTORY}
+	RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL ${BUILD_DIRECTORY}
+	RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${BUILD_DIRECTORY}
+	RUNTIME_OUTPUT_DIRECTORY_DEBUG ${BUILD_DIRECTORY}
+)
+
+############
+# Backends #
+############
+
+# Find PkgConfig for dependency linking
+find_package(PkgConfig QUIET)
+
+if(BACKEND MATCHES "SDL2")
+	target_compile_definitions(SoniCPort PRIVATE SCP_BACKEND_SDL2)
+	target_sources(SoniCPort PRIVATE
+		"src/Backend/SDL2/System.c"
+		"src/Backend/SDL2/Render.c"
+		"src/Backend/SDL2/Input.c"
+	)
+	
+	# Find SDL2
+	find_package(SDL2)
+	if(PKG_CONFIG_FOUND)
+		pkg_check_modules(sdl2 QUIET IMPORTED_TARGET sdl2)
+	endif()
+	
+	# Link SDL2
+	if(TARGET PkgConfig::sdl2)
+		if(PKG_CONFIG_STATIC_LIBS)
+			# Pkg-Config static
+			message(STATUS "Using system SDL2 (pkg-config, static)")
+			list(REMOVE_ITEM sdl2_STATIC_CFLAGS "-Dmain=SDL_main")
+			list(REMOVE_ITEM sdl2_STATIC_LDFLAGS "-lSDL2main")
+			target_compile_options(SoniCPort PRIVATE ${sdl2_STATIC_CFLAGS})
+			target_link_libraries(SoniCPort PRIVATE ${sdl2_STATIC_LDFLAGS})
+		else()
+			# Pkg-Config dynamic
+			message(STATUS "Using system SDL2 (pkg-config, dynamic)")
+			list(REMOVE_ITEM sdl2_CFLAGS "-Dmain=SDL_main")
+			list(REMOVE_ITEM sdl2_LDFLAGS "-lSDL2main")
+			target_compile_options(SoniCPort PRIVATE ${sdl2_CFLAGS})
+			target_link_libraries(SoniCPort PRIVATE ${sdl2_LDFLAGS})
+		endif()
+	elseif(TARGET SDL2::SDL2)
+		# CMake-generated config (Arch, vcpkg, Raspbian)
+		message(STATUS "Using system SDL2 (CMake, dynamic)")
+		target_link_libraries(SoniCPort PRIVATE SDL2::SDL2)
+	elseif(TARGET SDL2::SDL2-static)
+		# CMake-generated config (Arch, vcpkg, Raspbian)
+		message(STATUS "Using system SDL2 (CMake, static)")
+		target_link_libraries(SoniCPort PRIVATE SDL2::SDL2-static)
+	elseif(SDL2_FOUND)
+		# Autotools-generated config (MSYS2)
+		message(STATUS "Using system SDL2 (Autotools)")
+		target_include_directories(SoniCPort PRIVATE ${SDL2_INCLUDE_DIRS})
+		target_link_libraries(SoniCPort PRIVATE ${SDL2_LIBRARIES})
+	endif()
+endif()
+
+#######################
+# Resource conversion #
+#######################
+
+# Build bin2h externally, so it isn't cross-compiled when SoniCPort is (Emscripten, cross-GCC, MinGW on Linux, etc.)
+include(ExternalProject)
+
+ExternalProject_Add(bin2h
+	SOURCE_DIR "${CMAKE_SOURCE_DIR}/bin2h"
+	DOWNLOAD_COMMAND ""
+	UPDATE_COMMAND ""
+	BUILD_BYPRODUCTS "<INSTALL_DIR>/bin/bin2h"
+	CMAKE_ARGS
+		-DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+		-DCMAKE_BUILD_TYPE=Release
+	INSTALL_COMMAND
+		${CMAKE_COMMAND} --build . --config Release --target install
+)
+
+ExternalProject_Get_Property(bin2h INSTALL_DIR)
+
+add_executable(bin2h_tool IMPORTED)
+add_dependencies(bin2h_tool bin2h)
+set_target_properties(bin2h_tool PROPERTIES IMPORTED_LOCATION "${INSTALL_DIR}/bin/bin2h")
+
+# Convert resources to header files
+foreach(FILENAME IN LISTS RESOURCES)
+	set(IN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/res")
+	set(OUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/Resource")
+	get_filename_component(DIRECTORY "${FILENAME}" DIRECTORY)
+	add_custom_command(
+		OUTPUT "${OUT_DIR}/${FILENAME}.h"
+		COMMAND ${CMAKE_COMMAND} -E make_directory "${OUT_DIR}/${DIRECTORY}"
+		COMMAND bin2h_tool "${IN_DIR}/${FILENAME}" "${OUT_DIR}/${FILENAME}.h"
+		DEPENDS bin2h_tool "${IN_DIR}/${FILENAME}"
+		)
+	target_sources(SoniCPort PRIVATE "${OUT_DIR}/${FILENAME}.h")
+endforeach()
