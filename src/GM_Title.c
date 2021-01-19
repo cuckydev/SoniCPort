@@ -52,7 +52,7 @@ int GM_Title()
 	//Set VDP state
 	VDP_SetPlaneALocation(VRAM_FG);
 	VDP_SetPlaneBLocation(VRAM_BG);
-	VDP_SetBackgroundColour(0);
+	VDP_SetBackgroundColour(0x20);
 	
 	wtr_state = 0;
 	
