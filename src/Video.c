@@ -8,6 +8,7 @@
 //Video state
 uint8_t vbla_routine;
 
+int16_t scrposy, bgscrposy, scrposx, bgscrposx;
 int16_t scrposy_dup, bgscrposy_dup, scrposx_dup, bgscrposx_dup;
 
 uint8_t wtr_state;
@@ -23,7 +24,7 @@ void VDPSetupGame()
 	VDP_SetPlaneBLocation(VRAM_BG);
 	VDP_SetSpriteLocation(VRAM_SPRITES);
 	VDP_SetHScrollLocation(VRAM_HSCROLL);
-	VDP_SetPlaneSize(64, 32);
+	VDP_SetPlaneSize(PLANE_WIDTH, PLANE_HEIGHT);
 	VDP_SetBackgroundColour(0);
 	
 	//Clear VRAM and CRAM

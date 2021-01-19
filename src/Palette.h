@@ -15,6 +15,8 @@ extern uint16_t pcyc_buffer[0x18];
 typedef enum
 {
 	PalId_SegaBG,
+	PalId_Title,
+	PalId_Sonic,
 } PaletteId;
 
 //Palette interface
@@ -24,5 +26,5 @@ void PalLoad3_Water(PaletteId id);
 void PalLoad4_Water(PaletteId id);
 
 //Palette fading
-void FadeOut_ToBlack();
+int PaletteFadeIn();
 int PaletteFadeOut();

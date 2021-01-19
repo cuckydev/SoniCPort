@@ -5,6 +5,7 @@
 //Video globals
 extern uint8_t vbla_routine;
 
+extern int16_t scrposy, bgscrposy, scrposx, bgscrposx;
 extern int16_t scrposy_dup, bgscrposy_dup, scrposx_dup, bgscrposx_dup;
 
 extern uint8_t wtr_state;

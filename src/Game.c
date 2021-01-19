@@ -4,6 +4,7 @@
 #include "Video.h"
 
 #include "GM_Sega.h"
+#include "GM_Title.h"
 
 //Game
 GameMode gamemode;
@@ -26,6 +27,10 @@ void EntryPoint()
 		{
 			case GameMode_Sega:
 				if (GM_Sega())
+					return;
+				break;
+			case GameMode_Title:
+				if (GM_Title())
 					return;
 				break;
 			default:

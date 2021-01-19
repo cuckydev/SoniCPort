@@ -13,23 +13,23 @@
 	static const uint8_t art_sega[] = {
 		#include <Resource/Art/SegaREV00.h>
 	};
-	static const uint8_t map_sega[] = {
+	static ALIGNED2 const uint8_t map_sega[] = {
 		#include <Resource/Tilemap/SegaREV00.h>
 	};
 #else
 	static const uint8_t art_sega[] = {
 		#include <Resource/Art/SegaREV01.h>
 	};
-	static const uint8_t map_sega[] = {
+	static ALIGNED2 const uint8_t map_sega[] = {
 		#include <Resource/Tilemap/SegaREV01.h>
 	};
 #endif
 
 //SEGA palette cycle
-static const uint8_t pal_sega1[] = {
+static ALIGNED2 const uint8_t pal_sega1[] = {
 	#include <Resource/Palette/Sega1.h>
 };
-static const uint8_t pal_sega2[] = {
+static ALIGNED2 const uint8_t pal_sega2[] = {
 	#include <Resource/Palette/Sega2.h>
 };
 
@@ -133,10 +133,12 @@ int GM_Sega()
 	VDP_SetPlaneBLocation(VRAM_BG);
 	VDP_SetBackgroundColour(0);
 	
+	wtr_state = 0;
+	
 	//Clear screen and load SEGA graphics
 	ClearScreen();
 	
-	VDP_WriteVRAM(0, art_sega, sizeof(art_sega));
+	VDP_WriteVRAM(0x0000, art_sega, sizeof(art_sega));
 	
 	CopyTilemap(&map_sega[0x0000], 0xE510 + PLANE_WIDEADD, 23, 7);
 	CopyTilemap(&map_sega[0x0180], 0xC000 + PLANE_WIDEADD, 39, 27);
@@ -176,6 +178,9 @@ int GM_Sega()
 		if (!demo_length)
 			break;
 	} while (1); //TODO: start button isn't pressed
+	
+	//Start title gamemode
+	gamemode = GameMode_Title;
 	
 	return 0;
 }
