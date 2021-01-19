@@ -36,9 +36,13 @@ extern uint8_t level_layout[8][2][0x40];
 extern Object reserved_objects[RESERVED_OBJECTS];
 extern Object level_objects[LEVEL_OBJECTS];
 
+//Global level resources
+extern const uint8_t art_ghz1[];
+extern const size_t art_ghz1_size;
+
 //Level functions
-void LoadLevelMaps(ZoneId zone);
-void LoadLevelLayout(uint16_t level);
+void LoadLevelMaps();
+void LoadLevelLayout();
 void LoadMap16(ZoneId zone);
 void LoadMap256(ZoneId zone);
 void LevelSizeLoad();

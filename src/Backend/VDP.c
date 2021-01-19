@@ -209,11 +209,11 @@ static struct VDP_SpriteCache
 uint32_t VDP_GetColour(size_t index)
 {
 	uint16_t cv = vdp_cram[index >> 4][index & 0xF];
-	uint8_t r = (cv & 0x00E) >> 0;
-	uint8_t g = (cv & 0x0E0) >> 4;
-	uint8_t b = (cv & 0xE00) >> 8;
+	uint8_t r = (cv & 0x00E) >> 1;
+	uint8_t g = (cv & 0x0E0) >> 5;
+	uint8_t b = (cv & 0xE00) >> 9;
 	
-	static const uint8_t col_level[] = {0, 27, 49, 71, 87, 103, 119, 130, 146, 157, 174, 190, 206, 228, 255};
+	static const uint8_t col_level[] = {0, 52, 87, 116, 144, 172, 206, 255};
 	return (col_level[r] << 24) | (col_level[g] << 16) | (col_level[b] << 8) | 0xFF;
 }
 

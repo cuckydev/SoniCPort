@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "Video.h"
 #include "Palette.h"
+#include "PaletteCycle.h"
 #include "Level.h"
 
 #include <Backend/VDP.h>
@@ -36,10 +37,6 @@ static ALIGNED2 const uint8_t map_title_fg[] = {
 	#include <Resource/Tilemap/TitleFG.h>
 };
 
-static const uint8_t art_ghz1[] = {
-	#include <Resource/Art/GHZ1.h>
-};
-
 //Title gamemode
 int GM_Title()
 {
@@ -70,7 +67,7 @@ int GM_Title()
 	VDP_WriteVRAM(0x0000, art_japanese_credits, sizeof(art_japanese_credits));
 	VDP_WriteVRAM(0x14C0, art_credits_font, sizeof(art_credits_font));
 	
-	CopyTilemap(map_japanese_credits, 0xC000 + PLANE_WIDEADD, 39, 23);
+	CopyTilemap(map_japanese_credits, 0xC000 + PLANE_WIDEADD, 40, 24);
 	
 	//Clear palette
 	memset(dry_palette_dup, 0, sizeof(dry_palette_dup));
@@ -100,18 +97,18 @@ int GM_Title()
 	level_id = LEVEL_ID(ZoneId_GHZ, 0);
 	pcyc_time = 0;
 	
-	LoadLevelMaps(ZoneId_GHZ);
-	LoadLevelLayout(level_id);
+	LoadLevelMaps();
+	LoadLevelLayout();
 	
-	//Draw level
+	//Draw background
 	ClearScreen();
 	DrawChunks(bgscrposx, bgscrposy, level_layout[0][1], VRAM_BG);
 	
 	//Load title mappings
-	CopyTilemap(&map_title_fg[0x0000], 0xC206 + PLANE_WIDEADD, 33, 21);
+	CopyTilemap(&map_title_fg[0x0000], 0xC206 + PLANE_WIDEADD, 34, 22);
 	
 	//Load GHZ art and title palette
-	VDP_WriteVRAM(0x0000, art_ghz1, sizeof(art_ghz1));
+	VDP_WriteVRAM(0x0000, art_ghz1, art_ghz1_size);
 	PalLoad1(PalId_Title);
 	
 	//Clear objects (Clears 0x20 bytes... weird)
@@ -121,12 +118,16 @@ int GM_Title()
 	if ((result = PaletteFadeIn()))
 		return result;
 	
-	//Lock
+	//Loop
 	while (1)
 	{
+		//Render frame
 		vbla_routine = 0x02;
 		if ((result = WaitForVBla()))
 			return result;
+		
+		//Run palette cycle
+		PCycle_Title();
 	}
 	
 	return 0;

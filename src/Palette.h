@@ -8,9 +8,6 @@ extern uint16_t dry_palette_dup[4][16];
 extern uint16_t wet_palette[4][16];
 extern uint16_t wet_palette_dup[4][16];
 
-extern int16_t pcyc_num, pcyc_time;
-extern uint16_t pcyc_buffer[0x18];
-
 //Palette types
 typedef enum
 {

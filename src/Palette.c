@@ -12,9 +12,6 @@ uint16_t dry_palette_dup[4][16];
 uint16_t wet_palette[4][16];
 uint16_t wet_palette_dup[4][16];
 
-int16_t pcyc_num, pcyc_time;
-uint16_t pcyc_buffer[0x18];
-
 static struct
 {
 	uint8_t ind, len;

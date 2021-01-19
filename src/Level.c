@@ -19,9 +19,10 @@ Object reserved_objects[RESERVED_OBJECTS];
 Object level_objects[LEVEL_OBJECTS];
 
 //Level art
-static const uint8_t art_ghz1[] = {
+const uint8_t art_ghz1[] = {
 	#include <Resource/Art/GHZ1.h>
 };
+const size_t art_ghz1_size = sizeof(art_ghz1);
 static const uint8_t art_ghz2[] = {
 	#include <Resource/Art/GHZ2.h>
 };
@@ -103,8 +104,9 @@ static const uint16_t level_size[ZoneId_Num - 1][4][6] = {
 };
 
 //Level loading
-void LoadLevelMaps(ZoneId zone)
+void LoadLevelMaps()
 {
+	ZoneId zone = level_id >> 8;
 	memcpy(level_map256, level_maps[zone].map256, level_maps[zone].map256_size);
 	memcpy(level_map16, level_maps[zone].map16, level_maps[zone].map16_size);
 }
@@ -112,18 +114,18 @@ void LoadLevelMaps(ZoneId zone)
 void LoadLayout(const uint8_t *from, uint8_t *to)
 {
 	uint8_t width  = *from++;
-	uint8_t height = *from++;
+	/* uint8_t height = * */from++;
 	
 	for (size_t i = 0; i <= width; i++)
 		*to++ = *from++;
 	to += 0x80 - width;
 }
 
-void LoadLevelLayout(uint16_t level)
+void LoadLevelLayout()
 {
-	uint16_t level_index = ((level & 0xFF00) >> 6) | (level & 0x0003);
-	LoadLayout(level_layouts[level_index][0], level_layout[0][0]);
-	LoadLayout(level_layouts[level_index][1], level_layout[0][1]);
+	uint16_t index = ((level_id & 0xFF00) >> 6) | (level_id & 0x0003);
+	LoadLayout(level_layouts[index][0], level_layout[0][0]);
+	LoadLayout(level_layouts[index][1], level_layout[0][1]);
 }
 
 void LevelSizeLoad()
@@ -182,7 +184,7 @@ void GetBlockData(const uint8_t **meta, const uint8_t **block, int16_t sx, int16
 #define WRITE_TILE(off, xor) \
 { \
 	uint16_t tile = ((*block++ << 8) | (*block++ << 0)) ^ xor; \
-	VDP_WriteVRAM(offset + (off), &tile, 2); \
+	VDP_WriteVRAM(offset + (off), (const uint8_t*)&tile, 2); \
 }
 
 void DrawBlock(const uint8_t *meta, const uint8_t *block, size_t offset)
@@ -242,8 +244,6 @@ void DrawBlocks_LR(size_t offset, int16_t sx, int16_t sy, int16_t x, int16_t y, 
 
 void DrawChunks(int16_t sx, int16_t sy, uint8_t *layout, size_t offset)
 {
-	sx = 0;
-	sy = 0;
 	int16_t y = -16;
 	for (size_t i = 0; i < (SCREEN_HEIGHT + 16 + 16) / 16; i++)
 	{

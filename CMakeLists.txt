@@ -28,6 +28,8 @@ add_executable(SoniCPort WIN32
 	"src/Video.h"
 	"src/Palette.c"
 	"src/Palette.h"
+	"src/PaletteCycle.c"
+	"src/PaletteCycle.h"
 	"src/GM_Sega.c"
 	"src/GM_Sega.h"
 	"src/GM_Title.c"
@@ -68,8 +70,10 @@ set(RESOURCES
 	"Palette/Sega2"
 	"Palette/Sonic"
 	"Palette/Title"
+	"Palette/TitleCycle"
 	
 	"Mappings/Credits"
+	"Mappings/TitleSonic"
 	
 	"Layout/GHZ1"
 	"Layout/GHZ2"

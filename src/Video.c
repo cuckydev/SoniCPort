@@ -85,21 +85,13 @@ void ClearScreen()
 
 void CopyTilemap(const uint8_t *tilemap, size_t offset, size_t width, size_t height)
 {
-	width++;
-	do
+	while (height-- > 0)
 	{
 		for (size_t x = 0; x < width; x++)
 		{
-			uint8_t v0 = *tilemap++, v1 = *tilemap++;
-			#ifdef SCP_LIL_ENDIAN
-				VDP_WriteVRAM(offset++, &v1, 1);
-				VDP_WriteVRAM(offset++, &v0, 1);
-			#else
-				VDP_WriteVRAM(offset++, &v0, 1);
-				VDP_WriteVRAM(offset++, &v1, 1);
-			#endif
+			uint16_t v = (*tilemap++ << 8) | (*tilemap++ << 0);
+			VDP_WriteVRAM(offset + (x << 1), (const uint8_t*)&v, 2);
 		}
-		offset += 128 - (width << 1);
+		offset += 128;
 	}
-	while (height-- > 0);
 }
