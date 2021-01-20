@@ -6,6 +6,9 @@
 #define SCREEN_WIDTH  320
 #define SCREEN_HEIGHT 224
 
+#define SCREEN_ADD  (SCREEN_WIDTH - 2)
+#define SCREEN_ADD2 (SCREEN_ADD / 2)
+
 #define PLANE_WIDEADD (((SCREEN_WIDTH - 320) / 8 + 1) & ~1)
 
 //VRAM data

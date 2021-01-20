@@ -36,6 +36,10 @@ add_executable(SoniCPort WIN32
 	"src/GM_Title.h"
 	"src/Level.c"
 	"src/Level.h"
+	"src/LevelDraw.c"
+	"src/LevelDraw.h"
+	"src/LevelScroll.c"
+	"src/LevelScroll.h"
 	"src/Object.c"
 	"src/Object.h"
 	

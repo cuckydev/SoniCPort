@@ -5,6 +5,8 @@
 #include "Palette.h"
 #include "PaletteCycle.h"
 #include "Level.h"
+#include "LevelDraw.h"
+#include "LevelScroll.h"
 
 #include <Backend/VDP.h>
 
@@ -60,8 +62,7 @@ int GM_Title()
 	ClearScreen();
 	
 	//Clear object memory
-	memset(reserved_objects, 0, sizeof(reserved_objects));
-	memset(level_objects, 0, sizeof(level_objects));
+	memset(objects, 0, sizeof(objects));
 	
 	//Load Japanese credits
 	VDP_WriteVRAM(0x0000, art_japanese_credits, sizeof(art_japanese_credits));
@@ -74,7 +75,7 @@ int GM_Title()
 	PalLoad1(PalId_Sonic);
 	
 	//Load "SONIC TEAM PRESENTS" object
-	//reserved_objects[2].type = 0;
+	//objects[2].type = 0;
 	
 	//Fade in
 	if ((result = PaletteFadeIn()))
@@ -112,7 +113,7 @@ int GM_Title()
 	PalLoad1(PalId_Title);
 	
 	//Clear objects (Clears 0x20 bytes... weird)
-	memset(&reserved_objects[2], 0, 0x20);
+	memset(&objects[2], 0, 0x20);
 	
 	//Fade in
 	if ((result = PaletteFadeIn()))
@@ -126,8 +127,21 @@ int GM_Title()
 		if ((result = WaitForVBla()))
 			return result;
 		
+		//Handle objects and scrolling
+		//ExecuteObjects();
+		DeformLayers();
+		//BuildSprites();
+		
 		//Run palette cycle
 		PCycle_Title();
+		
+		//Move Sonic object (yep, this is how they scroll the camera)
+		//...and return to the Sega screen after a minute?
+		if ((objects[0].pos.l.x.f.p += 2) >= 0x1C00)
+		{
+			gamemode = GameMode_Sega;
+			return 0;
+		}
 	}
 	
 	return 0;

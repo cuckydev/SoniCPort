@@ -2,14 +2,12 @@
 
 #include "Constants.h"
 #include "Palette.h"
+#include "LevelScroll.h"
 
 #include <string.h>
 
 //Video state
 uint8_t vbla_routine;
-
-int16_t scrposy, bgscrposy, scrposx, bgscrposx;
-int16_t scrposy_dup, bgscrposy_dup, scrposx_dup, bgscrposx_dup;
 
 uint8_t wtr_state;
 

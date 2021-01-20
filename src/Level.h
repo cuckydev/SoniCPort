@@ -33,8 +33,12 @@ extern uint8_t level_map256[0xA400];
 extern uint8_t level_map16[0x1800];
 extern uint8_t level_layout[8][2][0x40];
 
-extern Object reserved_objects[RESERVED_OBJECTS];
-extern Object level_objects[LEVEL_OBJECTS];
+extern int16_t limitleft1, limitright1, limittop1, limitbtm1;
+extern int16_t limitleft2, limitright2, limittop2, limitbtm2;
+extern int16_t limitleft3;
+
+extern Object objects[OBJECTS];
+extern Object *const level_objects;
 
 //Global level resources
 extern const uint8_t art_ghz1[];
@@ -46,4 +50,3 @@ void LoadLevelLayout();
 void LoadMap16(ZoneId zone);
 void LoadMap256(ZoneId zone);
 void LevelSizeLoad();
-void DrawChunks(int16_t sx, int16_t sy, uint8_t *layout, size_t offset);

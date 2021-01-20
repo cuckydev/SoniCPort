@@ -42,5 +42,7 @@ cmake --build build --config Release
 ## Disclaimer
 This project is not endorsed by SEGA or Sonic Team.
 
+The license included ONLY applies to my own code, all of which is stored in `src/Backend/`. Everything else is code ported from the Sonic 1 engine, which belongs to SEGA and Sonic Team.
+
 ## Credits
 Sonic Retro - Sonic 1 Disassembly
