@@ -250,7 +250,7 @@ uint8_t *VDP_GetPatternAddress(size_t pattern)
 	from--;                               \
 }
 
-void VDP_DrawPlaneColumn(uint32_t *to, const uint16_t *plane, uint16_t x, uint16_t y)
+void VDP_DrawPlaneColumn(uint32_t *to, const uint16_t *plane, int16_t x, int16_t y)
 {
 	//Get plane tile to use
 	size_t px = (x >> 3) % vdp_plane_w;
@@ -331,7 +331,7 @@ int VDP_Render()
 	//Render VDP screen
 	uint32_t *to = vdp_screen;
 	
-	const uint16_t *hscroll = (uint16_t*)(vdp_vram + vdp_hscroll_location);
+	const int16_t *hscroll = (int16_t*)(vdp_vram + vdp_hscroll_location);
 	
 	for (size_t y = 0; y < SCREEN_HEIGHT; y++)
 	{
@@ -345,8 +345,9 @@ int VDP_Render()
 			to[i] = vdp_screen_pal[0][vdp_background_colour];
 		
 		//Draw planes
-		VDP_DrawPlaneColumn(to, (uint16_t*)(vdp_vram + vdp_plane_b_location), *hscroll++, vdp_vscroll_b + y);
-		VDP_DrawPlaneColumn(to, (uint16_t*)(vdp_vram + vdp_plane_a_location), *hscroll++, vdp_vscroll_a + y);
+		int16_t ascroll = *hscroll++, bscroll = *hscroll++;
+		VDP_DrawPlaneColumn(to, (uint16_t*)(vdp_vram + vdp_plane_b_location), -bscroll, y + vdp_vscroll_b);
+		VDP_DrawPlaneColumn(to, (uint16_t*)(vdp_vram + vdp_plane_a_location), -ascroll, y + vdp_vscroll_a);
 		
 		#ifdef VDP_PALETTE_DISPLAY
 			for (size_t i = 0; i < 4 * 16; i++)

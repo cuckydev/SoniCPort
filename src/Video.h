@@ -5,13 +5,10 @@
 //Video globals
 extern uint8_t vbla_routine;
 
-extern int16_t scrposy, bgscrposy, scrposx, bgscrposx;
-extern int16_t scrposy_dup, bgscrposy_dup, scrposx_dup, bgscrposx_dup;
-
 extern uint8_t wtr_state;
 
 extern uint64_t sprite_buffer[0x50];
-extern uint16_t hscroll_buffer[SCREEN_HEIGHT][2];
+extern int16_t hscroll_buffer[SCREEN_HEIGHT][2];
 
 //Video interface
 void VDPSetupGame();

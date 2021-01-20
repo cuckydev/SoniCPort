@@ -58,7 +58,7 @@ int GM_Title()
 	
 	wtr_state = 0;
 	
-	//Clear screen and load SEGA graphics
+	//Clear screen
 	ClearScreen();
 	
 	//Clear object memory
@@ -86,12 +86,6 @@ int GM_Title()
 	VDP_WriteVRAM(0x6000, art_title_sonic, sizeof(art_title_sonic));
 	VDP_WriteVRAM(0xA200, art_title_tm, sizeof(art_title_tm));
 	
-	//Fade out
-	if ((result = PaletteFadeOut()))
-		return result;
-	
-	gamemode = GameMode_Sega;
-	
 	//Reset game state
 	
 	//Load GHZ
@@ -100,6 +94,11 @@ int GM_Title()
 	
 	LoadLevelMaps();
 	LoadLevelLayout();
+	DeformLayers();
+	
+	//Fade out
+	if ((result = PaletteFadeOut()))
+		return result;
 	
 	//Draw background
 	ClearScreen();

@@ -1,7 +1,7 @@
 #include "Game.h"
-#include "Video.h"
 
 #include "Video.h"
+#include "LevelScroll.h"
 
 #include "GM_Sega.h"
 #include "GM_Title.h"

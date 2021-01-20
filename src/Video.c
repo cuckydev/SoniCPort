@@ -12,7 +12,7 @@ uint8_t vbla_routine;
 uint8_t wtr_state;
 
 uint64_t sprite_buffer[0x50];
-uint16_t hscroll_buffer[SCREEN_HEIGHT][2];
+int16_t hscroll_buffer[SCREEN_HEIGHT][2];
 
 //Video interface
 void VDPSetupGame()
@@ -72,9 +72,7 @@ void ClearScreen()
 	
 	//Reset screen position duplicates
 	scrposy_dup = 0;
-	bgscrposy_dup = 0;
 	scrposx_dup = 0;
-	bgscrposx_dup = 0;
 	
 	//Clear sprite buffer and hscroll buffer
 	memset(sprite_buffer, 0, sizeof(sprite_buffer));
