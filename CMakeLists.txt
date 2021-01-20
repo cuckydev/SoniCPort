@@ -50,6 +50,8 @@ add_executable(SoniCPort WIN32
 )
 
 set(RESOURCES
+	"Icon"
+	
 	"Art/SegaREV00"
 	"Art/SegaREV01"
 	"Art/JapaneseCredits"

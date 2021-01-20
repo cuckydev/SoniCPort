@@ -1,8 +1,14 @@
-#include "SDL.h"
+#include "SDL_render.h"
+#include "SDL_timer.h"
 
 #include "../VDP.h"
 
 #include <stdio.h>
+
+//Icon
+static uint8_t icon_data[] = {
+	#include <Resource/Icon.h>
+};
 
 //Window and renderer
 static SDL_Window *window = NULL;
@@ -20,6 +26,18 @@ int Render_Init(const MD_Header *header)
 	{
 		printf("Render_Init: %s\n", SDL_GetError());
 		return -1;
+	}
+	
+	//Load icon
+	SDL_Surface *icon_surface;
+	if ((icon_surface = SDL_CreateRGBSurfaceWithFormatFrom((void*)icon_data, 256, 256, 24, 256*3, SDL_PIXELFORMAT_RGB24)) == NULL)
+	{
+		printf("Render_Init: %s\n", SDL_GetError());
+	}
+	else
+	{
+		SDL_SetWindowIcon(window, icon_surface);
+		SDL_FreeSurface(icon_surface);
 	}
 	
 	//Check if VSync should be used
