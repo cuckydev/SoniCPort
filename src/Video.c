@@ -57,8 +57,8 @@ void VDPSetupFrame()
 	#endif
 	
 	//Copy buffers
-	VDP_WriteVRAM(VRAM_SPRITES, (uint8_t*)sprite_buffer, sizeof(sprite_buffer));
-	VDP_WriteVRAM(VRAM_HSCROLL, (uint8_t*)hscroll_buffer, sizeof(hscroll_buffer));
+	VDP_WriteVRAM(VRAM_SPRITES, (const uint8_t*)sprite_buffer, sizeof(sprite_buffer));
+	VDP_WriteVRAM(VRAM_HSCROLL, (const uint8_t*)hscroll_buffer, sizeof(hscroll_buffer));
 }
 
 int WaitForVBla()
@@ -92,6 +92,6 @@ void CopyTilemap(const uint8_t *tilemap, size_t offset, size_t width, size_t hei
 			uint16_t v = (*tilemap++ << 8) | (*tilemap++ << 0);
 			VDP_WriteVRAM(offset + (x << 1), (const uint8_t*)&v, 2);
 		}
-		offset += 128;
+		offset += PLANE_WIDTH * 2;
 	}
 }

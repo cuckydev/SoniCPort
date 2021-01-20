@@ -114,11 +114,14 @@ void LoadLevelMaps()
 void LoadLayout(const uint8_t *from, uint8_t *to)
 {
 	uint8_t width  = *from++;
-	/* uint8_t height = * */from++;
+	uint8_t height = *from++;
 	
-	for (size_t i = 0; i <= width; i++)
-		*to++ = *from++;
-	to += 0x80 - width;
+	do
+	{
+		for (size_t i = 0; i <= width; i++)
+			*to++ = *from++;
+		to += 0x80 - width;
+	} while (height-- > 0);
 }
 
 void LoadLevelLayout()
@@ -134,12 +137,12 @@ void LevelSizeLoad()
 }
 
 //Level drawing
-uint16_t CalcVRAMPos(int16_t sx, int16_t sy, int16_t x, int16_t y)
+size_t CalcVRAMPos(int16_t sx, int16_t sy, int16_t x, int16_t y)
 {
-	//Get coordinates on the plane
-	x = (x + sx) & 0x1F0;
-	y = (y + sy) & 0xF0;
-	return (x >> 2) + (y << 4);
+	//Convert coordinates to plane coordinates
+	uint16_t px = ((x + sx) >> 2) & ~3;
+	uint16_t py = ((y + sy) >> 2) & ~3;
+	return (POSITIVE_MOD(py, PLANE_HEIGHT << 1) * PLANE_WIDTH) + POSITIVE_MOD(px, PLANE_WIDTH << 1);
 }
 
 void GetBlockData(const uint8_t **meta, const uint8_t **block, int16_t sx, int16_t sy, int16_t x, int16_t y, uint8_t *layout)
@@ -160,8 +163,8 @@ void GetBlockData(const uint8_t **meta, const uint8_t **block, int16_t sx, int16
 	}
 	
 	//Get chunk
-	uint8_t chunk = layout[(cy << 7) + cx];
-	if (chunk == 0)
+	uint8_t chunk = layout[(cy << 7) + cx] & 0x7F;
+	if (chunk == 0xFF)
 	{
 		*meta = level_map256;
 		*block = level_map16;
@@ -171,14 +174,14 @@ void GetBlockData(const uint8_t **meta, const uint8_t **block, int16_t sx, int16
 	//Get 256x256 map pointer
 	uint8_t tx = (x >> 4) & 0xF;
 	uint8_t ty = (y >> 4) & 0xF;
-	const uint8_t *metap = level_map256 + (chunk * 256 * 2) + (ty * 16 * 2) + (tx * 2);
+	const uint8_t *metap = (level_map256 - 0x200) + (chunk << 9) + (ty << 5) + (tx << 1);
 	*meta = metap;
 	
 	//Get 16x16 map pointer
-	uint16_t tile = (metap[0] << 8) | (metap[1] << 0);
+	size_t tile = (metap[0] << 8) | (metap[1] << 0);
 	tile = tile & 0x3FF;
 	
-	*block = level_map16 + tile * 8;
+	*block = level_map16 + (tile << 3);
 }
 
 #define WRITE_TILE(off, xor) \
@@ -224,22 +227,23 @@ void DrawBlock(const uint8_t *meta, const uint8_t *block, size_t offset)
 	}
 }
 
-void DrawBlocks_LR_2(size_t offset, int16_t sx, int16_t sy, int16_t x, int16_t y, uint8_t *layout, size_t width)
+void DrawBlocks_LR_2(size_t offset, size_t pos, int16_t sx, int16_t sy, int16_t x, int16_t y, uint8_t *layout, size_t width)
 {
 	const uint8_t *meta;
 	const uint8_t *block;
 	while (width-- > 0)
 	{
 		GetBlockData(&meta, &block, sx, sy, x, y, layout);
-		DrawBlock(meta, block, offset);
-		offset = (offset & ~0xFF) | (((offset & 0xFF) + 4) % (PLANE_WIDTH * 2));
+		DrawBlock(meta, block, offset + pos);
+		pos = ((((pos >> 1) / PLANE_WIDTH) * PLANE_WIDTH) +
+			((((pos >> 1) % PLANE_WIDTH) + 2) % PLANE_WIDTH)) << 1;
 		x += 16;
 	}
 }
 
-void DrawBlocks_LR(size_t offset, int16_t sx, int16_t sy, int16_t x, int16_t y, uint8_t *layout)
+void DrawBlocks_LR(size_t offset, size_t pos, int16_t sx, int16_t sy, int16_t x, int16_t y, uint8_t *layout)
 {
-	DrawBlocks_LR_2(offset, sx, sy, x, y, layout, (SCREEN_WIDTH + 16 + 16) / 16);
+	DrawBlocks_LR_2(offset, pos, sx, sy, x, y, layout, (SCREEN_WIDTH + 16 + 16) / 16);
 }
 
 void DrawChunks(int16_t sx, int16_t sy, uint8_t *layout, size_t offset)
@@ -247,8 +251,7 @@ void DrawChunks(int16_t sx, int16_t sy, uint8_t *layout, size_t offset)
 	int16_t y = -16;
 	for (size_t i = 0; i < (SCREEN_HEIGHT + 16 + 16) / 16; i++)
 	{
-		size_t pos = offset + CalcVRAMPos(sx, sy, 0, y);
-		DrawBlocks_LR_2(pos, sx, sy, 0, y, layout, 512 / 16);
+		DrawBlocks_LR_2(offset, CalcVRAMPos(sx, sy, 0, y), sx, sy, 0, y, layout, 512 / 16);
 		y += 16;
 	}
 }

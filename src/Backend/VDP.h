@@ -12,7 +12,10 @@
 #define SPRITES_SIZE (SPRITES * 8)
 #define COLOURS      (4 * 16)
 
-//VDP macros
+//VDP structures
+#pragma pack(push)
+#pragma pack(1)
+
 //Sprite structure
 #define SPRITE_R_Y(s)        ((uint16_t)((s) >> 48))
 #define SPRITE_R_WIDTH(s)    ((uint8_t)(((s) >> 42) & 0x3))
@@ -31,6 +34,8 @@
 #define PLANE_R_YFLIP(p)     ((uint8_t)(((p) >> 12) & 0x1))
 #define PLANE_R_XFLIP(p)     ((uint8_t)(((p) >> 11) & 0x1))
 #define PLANE_R_PATTERN(p)   ((uint16_t)((p) & 0x7FF))
+
+#pragma pack(pop)
 
 //VDP interface
 int VDP_Init(const MD_Header *header);

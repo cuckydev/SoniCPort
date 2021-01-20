@@ -30,3 +30,5 @@
 	#define LESWAP_16(x) (x)
 #endif
 
+//Helper macros
+#define POSITIVE_MOD(x, y) (((x) % (y) + (y)) % (y))
