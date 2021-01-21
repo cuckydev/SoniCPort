@@ -10,11 +10,11 @@ uint8_t nobgscroll, bgscrollvert;
 
 uint16_t fg_scroll_flags, bg1_scroll_flags, bg2_scroll_flags, bg3_scroll_flags;
 
-int16_t scrposx, scrposy, bgscrposy;
-int16_t scrposx_dup, scrposy_dup, bgscrposy_dup;
+int32_t scrposx, scrposy, bgscrposy;
+int32_t scrposx_dup, scrposy_dup, bgscrposy_dup;
 int32_t bgscrposx, bg2scrposx, bg3scrposx;
-int16_t bgscrposx_dup, bg2scrposx_dup, bg3scrposx_dup;
-int16_t bgscrposy_dup, bg2scrposy_dup, bg3scrposy_dup;
+int32_t bgscrposx_dup, bg2scrposx_dup, bg3scrposx_dup;
+int32_t bgscrposy_dup, bg2scrposy_dup, bg3scrposy_dup;
 
 int16_t scrshiftx, scrshifty;
 
@@ -146,7 +146,7 @@ static void (*deform_routines[])() = {
 void MoveScreenHoriz()
 {
 	//Get player's position relative to camera
-	int16_t tocam_x = objects[0].pos.l.x.f.p - scrposx - (SCREEN_WIDTH / 2 - 16);
+	int16_t tocam_x = objects[0].pos.l.x.f.u - scrposx - (SCREEN_WIDTH / 2 - 16);
 	
 	//Scroll if we're 16 pixels to the left of the middle of the screen
 	if (tocam_x < 0)

@@ -6,6 +6,8 @@
 #include "Palette.h"
 #include "PaletteCycle.h"
 
+#include "LevelScroll.h"
+
 #include <Backend/VDP.h>
 #include <Util/Macros.h>
 

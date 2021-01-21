@@ -72,7 +72,9 @@ void ClearScreen()
 	
 	//Reset screen position duplicates
 	scrposy_dup = 0;
+	bgscrposy_dup = 0;
 	scrposx_dup = 0;
+	bg3scrposy_dup = 0;
 	
 	//Clear sprite buffer and hscroll buffer
 	memset(sprite_buffer, 0, sizeof(sprite_buffer));

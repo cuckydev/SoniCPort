@@ -114,6 +114,11 @@ int GM_Title()
 	//Clear objects (Clears 0x20 bytes... weird)
 	memset(&objects[2], 0, 0x20);
 	
+	//Load title objects
+	
+	//Deform background
+	DeformLayers();
+	
 	//Fade in
 	if ((result = PaletteFadeIn()))
 		return result;
@@ -136,7 +141,7 @@ int GM_Title()
 		
 		//Move Sonic object (yep, this is how they scroll the camera)
 		//...and return to the Sega screen after a minute?
-		if ((objects[0].pos.l.x.f.p += 2) >= 0x1C00)
+		if ((objects[0].pos.l.x.f.u += 2) >= 0x1C00)
 		{
 			gamemode = GameMode_Sega;
 			return 0;

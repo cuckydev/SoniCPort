@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include <Types.h>
+
 //Object types
 #pragma pack(push)
 #pragma pack(1)
@@ -79,20 +81,7 @@ typedef struct
 	{
 		struct
 		{
-			union
-			{
-				struct
-				{
-					#ifdef SCP_BIG_ENDIAN
-						int16_t p;  //Position
-						uint16_t s; //Sub
-					#else
-						uint16_t s; //Sub
-						int16_t p;  //Position
-					#endif
-				} f;
-				int32_t v; //16.16 Position
-			} x, y;
+			dword_s x, y;
 		} l; //Level
 		struct
 		{
