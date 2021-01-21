@@ -2,7 +2,37 @@
 
 #include <stdint.h>
 
-//Multi-size ints
+//Fixed point ints
+typedef union
+{
+	struct
+	{
+		#ifdef SCP_BIG_ENDIAN
+			int8_t u;
+			uint8_t l;
+		#else
+			uint8_t l;
+			int8_t u;
+		#endif
+	} f;
+	int16_t v;
+} word_s;
+
+typedef union
+{
+	struct
+	{
+		#ifdef SCP_BIG_ENDIAN
+			uint8_t u;
+			uint8_t l;
+		#else
+			uint8_t l;
+			uint8_t u;
+		#endif
+	} f;
+	uint16_t v;
+} word_u;
+
 typedef union
 {
 	struct

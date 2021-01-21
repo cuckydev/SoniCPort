@@ -63,6 +63,12 @@ void VBlank()
 			if (demo_length)
 				demo_length--;
 			break;
+		case 0x04:
+			VDPSetupFrame();
+			LoadTilesAsYouMove_BGOnly();
+			if (demo_length)
+				demo_length--;
+			break;
 		case 0x12:
 			VDPSetupFrame();
 			break;

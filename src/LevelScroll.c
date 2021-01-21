@@ -33,11 +33,12 @@ void BGScroll_Block1(int32_t x, uint8_t bit)
 	uint8_t no_scroll = (bgscrposx.f.u & 0x10) ^ bg1_xblock;
 	if (no_scroll)
 		return;
+	bg1_xblock ^= 0x10;
 	
 	if (bgscrposx.v < prev_x)
-		fg_scroll_flags |= (1 << bit);
+		bg1_scroll_flags |= bit;
 	else
-		fg_scroll_flags |= (1 << (bit + 1));
+		bg1_scroll_flags |= (bit << 1);
 }
 
 void BGScroll_Block2(int32_t x, uint8_t bit)
@@ -50,11 +51,12 @@ void BGScroll_Block2(int32_t x, uint8_t bit)
 	uint8_t no_scroll = (bg2scrposx.f.u & 0x10) ^ bg2_xblock;
 	if (no_scroll)
 		return;
+	bg2_xblock ^= 0x10;
 	
 	if (bg2scrposx.v < prev_x)
-		fg_scroll_flags |= (1 << bit);
+		bg2_scroll_flags |= bit;
 	else
-		fg_scroll_flags |= (1 << (bit + 1));
+		bg2_scroll_flags |= (bit << 1);
 }
 
 void BGScroll_Block3(int32_t x, uint8_t bit)
@@ -67,11 +69,12 @@ void BGScroll_Block3(int32_t x, uint8_t bit)
 	uint8_t no_scroll = (bg3scrposx.f.u & 0x10) ^ bg3_xblock;
 	if (no_scroll)
 		return;
+	bg3_xblock ^= 0x10;
 	
 	if (bg3scrposx.v < prev_x)
-		fg_scroll_flags |= (1 << bit);
+		bg3_scroll_flags |= bit;
 	else
-		fg_scroll_flags |= (1 << (bit + 1));
+		bg3_scroll_flags |= (bit << 1);
 }
 
 //Level deformation routines
@@ -83,8 +86,9 @@ void Deform_GHZ()
 	int16_t *bufp = &hscroll_buffer[0][0];
 	
 	//Scroll background layers
-	BGScroll_Block3((scrshiftx << 6) + (scrshiftx << 5), 0); //Upper mountains
-	BGScroll_Block2(scrshiftx << 7, 0); //Hills and waterfalls
+	//These set SCROLL_FLAG_UP, despite scrolling horizontally?
+	BGScroll_Block3((scrshiftx << 6) + (scrshiftx << 5), SCROLL_FLAG_UP); //Upper mountains
+	BGScroll_Block2(scrshiftx << 7, SCROLL_FLAG_UP); //Hills and waterfalls
 	
 	//Get Y position
 	bgscrposy_dup =  0x20 - ((scrposy.f.u & 0x7FF) >> 5);
@@ -267,4 +271,11 @@ void DeformLayers()
 	
 	//Run zone's background deformation routine
 	deform_routines[level_id >> 8]();
+}
+
+void LoadTilesAsYouMove_BGOnly()
+{
+	DrawBGScrollBlock1(bgscrposx.f.u,  bgscrposy.f.u,  &bg1_scroll_flags, level_layout[0][1], VRAM_BG);
+	DrawBGScrollBlock2(bg2scrposx.f.u, bg2scrposy.f.u, &bg2_scroll_flags, level_layout[0][1], VRAM_BG);
+	//No scroll block 3, even in REV01... odd
 }

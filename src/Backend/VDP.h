@@ -6,6 +6,8 @@
 #include <Util/Macros.h>
 
 //VDP constants
+#define VDP_INTERNAL_PAD 32
+
 #define VRAM_SIZE    0x10000
 #define PLANE_SIZE   0x2000
 #define SPRITES      80

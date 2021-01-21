@@ -2,6 +2,7 @@
 
 #include <Constants.h>
 #include "LevelScroll.h"
+#include "LevelDraw.h"
 
 #include <Backend/VDP.h>
 
@@ -175,6 +176,17 @@ static const uint8_t level_loops[ZoneId_Num][2][2] = {
 	{{0x7F, 0x7F}, {0x7F, 0x7F}}, //ZoneId_EndZ
 };
 
+//Level scroll block sizes
+static const int16_t level_scrollsize[ZoneId_Num][4] = {
+	{ 0x70, 0x100, 0x100, 0x100},
+	{0x800, 0x100, 0x100, 0},
+	{0x800, 0x100, 0x100, 0},
+	{0x800, 0x100, 0x100, 0},
+	{0x800, 0x100, 0x100, 0},
+	{0x800, 0x100, 0x100, 0},
+	{ 0x70, 0x100, 0x100, 0x100},
+};
+
 //Level loading
 void LoadLevelMaps()
 {
@@ -273,5 +285,11 @@ void LevelSizeLoad()
 	//Load other level stuff
 	BgScrollSpeed(x, y);
 	memcpy(&loopchunks[0][0], &level_loops[level_id >> 8][0][0], 4);
+	
+	const int16_t *scroll_size = level_scrollsize[level_id >> 8];
+	scroll_block_1_size = *scroll_size++;
+	scroll_block_2_size = *scroll_size++;
+	scroll_block_3_size = *scroll_size++;
+	scroll_block_4_size = *scroll_size++;
 }
 

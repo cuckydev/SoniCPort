@@ -129,7 +129,7 @@ int GM_Title()
 	while (1)
 	{
 		//Render frame
-		vbla_routine = 0x02;
+		vbla_routine = 0x04;
 		if ((result = WaitForVBla()))
 			return result;
 		

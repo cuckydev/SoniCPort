@@ -2,10 +2,17 @@
 
 #include <Constants.h>
 #include "Level.h"
+#include "LevelScroll.h"
 
 #include <Backend/VDP.h>
 
-//Level drawing functions
+//Scroll blocks
+int16_t scroll_block_1_size;
+int16_t scroll_block_2_size;
+int16_t scroll_block_3_size;
+int16_t scroll_block_4_size;
+
+//Block drawing functions
 size_t CalcVRAMPos(int16_t sx, int16_t sy, int16_t x, int16_t y)
 {
 	//Convert coordinates to plane coordinates
@@ -115,6 +122,17 @@ void DrawBlocks_LR(size_t offset, size_t pos, int16_t sx, int16_t sy, int16_t x,
 	DrawBlocks_LR_2(offset, pos, sx, sy, x, y, layout, (SCREEN_WIDTH + 16 + 16) / 16);
 }
 
+void DrawBlocks_TB_2(size_t offset, size_t pos, int16_t sx, int16_t sy, int16_t x, int16_t y, uint8_t *layout, size_t height)
+{
+	puts("DrawBlocks_TB_2");
+}
+
+void DrawBlocks_TB(size_t offset, size_t pos, int16_t sx, int16_t sy, int16_t x, int16_t y, uint8_t *layout)
+{
+	DrawBlocks_TB_2(offset, pos, sx, sy, x, y, layout, (SCREEN_HEIGHT + 16 + 16) / 16);
+}
+
+//Level drawing functions
 void DrawChunks(int16_t sx, int16_t sy, uint8_t *layout, size_t offset)
 {
 	int16_t y = -16;
@@ -123,4 +141,34 @@ void DrawChunks(int16_t sx, int16_t sy, uint8_t *layout, size_t offset)
 		DrawBlocks_LR_2(offset, CalcVRAMPos(sx, sy, 0, y), sx, sy, 0, y, layout, 512 / 16);
 		y += 16;
 	}
+}
+
+void DrawBGScrollBlock1(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout, size_t offset)
+{
+	//Check if any flags have been set
+	if (*flag == 0)
+		return;
+	
+	//Handle flags
+	if (*flag != (*flag &= ~SCROLL_FLAG_UP))
+		DrawBlocks_LR_2(offset, CalcVRAMPos(sx, sy, -16, -16), sx, sy, -16, -16, layout, 512 / 16);
+	if (*flag != (*flag &= ~SCROLL_FLAG_DOWN))
+		DrawBlocks_LR_2(offset, CalcVRAMPos(sx, sy, -16, SCREEN_HEIGHT), sx, sy, -16, SCREEN_HEIGHT, layout, 512 / 16);
+	if (*flag != (*flag &= ~SCROLL_FLAG_LEFT))
+		DrawBlocks_TB(offset, CalcVRAMPos(sx, sy, -16, -16), sx, sy, -16, -16, layout);
+	if (*flag != (*flag &= ~SCROLL_FLAG_RIGHT))
+		DrawBlocks_TB(offset, CalcVRAMPos(sx, sy, SCREEN_WIDTH, -16), sx, sy, SCREEN_WIDTH, -16, layout);
+	if (*flag != (*flag &= ~SCROLL_FLAG_UP2))
+		;//DrawBlocks_LB_3(offset, CalcVRAMPos_2(sx, sy, 0, -16), sx, sy, 0, -16, layout);
+	if (*flag != (*flag &= ~SCROLL_FLAG_DOWN2))
+		;//DrawBlocks_LB_3(offset, CalcVRAMPos_2(sx, sy, 0, SCREEN_HEIGHT), sx, sy, 0, SCREEN_HEIGHT, layout);
+}
+
+void DrawBGScrollBlock2(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout, size_t offset)
+{
+}
+
+void DrawBGScrollBlock3(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout, size_t offset)
+{
+	
 }

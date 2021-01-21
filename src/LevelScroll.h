@@ -3,8 +3,12 @@
 #include <Types.h>
 
 //Scroll flags
+#define SCROLL_FLAG_UP    (1 << 0)
+#define SCROLL_FLAG_DOWN  (1 << 1)
 #define SCROLL_FLAG_LEFT  (1 << 2)
 #define SCROLL_FLAG_RIGHT (1 << 3)
+#define SCROLL_FLAG_UP2   (1 << 4)
+#define SCROLL_FLAG_DOWN2 (1 << 5)
 
 //Level deformation globals
 extern uint8_t nobgscroll, bgscrollvert;
@@ -24,3 +28,4 @@ extern int16_t lookshift;
 //Level scroll functions
 void BgScrollSpeed(int16_t x, int16_t y);
 void DeformLayers();
+void LoadTilesAsYouMove_BGOnly();

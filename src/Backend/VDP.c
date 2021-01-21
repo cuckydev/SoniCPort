@@ -191,11 +191,11 @@ void VDP_SetVScroll(int16_t scroll_a, int16_t scroll_b)
 }
 
 //VDP rendering
-#define SCREEN_PITCH SCREEN_WIDTH + 16
+#define SCREEN_PITCH SCREEN_WIDTH + (VDP_INTERNAL_PAD * 2)
 
 #define SCANLINE_SPRITES 20
 
-static uint32_t vdp_screen_internal[SCREEN_HEIGHT + 16][SCREEN_PITCH];
+static uint32_t vdp_screen_internal[SCREEN_HEIGHT + (VDP_INTERNAL_PAD * 2)][SCREEN_PITCH];
 static uint32_t *vdp_screen;
 
 static uint32_t vdp_screen_pal[4][16];
@@ -302,7 +302,7 @@ int VDP_Render()
 		return result;
 	
 	//Get VDP screen pointer
-	vdp_screen = &vdp_screen_internal[8][8];
+	vdp_screen = &vdp_screen_internal[VDP_INTERNAL_PAD][VDP_INTERNAL_PAD];
 	
 	//Calculate sprite cache
 	struct VDP_SpriteCache *scache = vdp_sprite_cache;
