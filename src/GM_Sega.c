@@ -1,6 +1,6 @@
 #include "GM_Sega.h"
 
-#include "Constants.h"
+#include <Constants.h>
 #include "Game.h"
 #include "Video.h"
 #include "Palette.h"

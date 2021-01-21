@@ -1,6 +1,6 @@
 #include "Video.h"
 
-#include "Constants.h"
+#include <Constants.h>
 #include "Palette.h"
 #include "LevelScroll.h"
 

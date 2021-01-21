@@ -1,6 +1,6 @@
 #include "LevelDraw.h"
 
-#include "Constants.h"
+#include <Constants.h>
 #include "Level.h"
 
 #include <Backend/VDP.h>

@@ -92,9 +92,11 @@ int GM_Title()
 	level_id = LEVEL_ID(ZoneId_GHZ, 0);
 	pcyc_time = 0;
 	
+	LevelSizeLoad();
+	DeformLayers();
 	LoadLevelMaps();
 	LoadLevelLayout();
-	DeformLayers();
+	player->pos.l.x.f.u += SCREEN_WIDEADD2; //For widescreen so the title starts scrolling at the correct time
 	
 	//Fade out
 	if ((result = PaletteFadeOut()))
@@ -102,7 +104,7 @@ int GM_Title()
 	
 	//Draw background
 	ClearScreen();
-	DrawChunks(bgscrposx, bgscrposy, level_layout[0][1], VRAM_BG);
+	DrawChunks(bgscrposx.f.u, bgscrposy.f.u, level_layout[0][1], VRAM_BG);
 	
 	//Load title mappings
 	CopyTilemap(&map_title_fg[0x0000], 0xC206 + PLANE_WIDEADD, 34, 22);
@@ -141,7 +143,7 @@ int GM_Title()
 		
 		//Move Sonic object (yep, this is how they scroll the camera)
 		//...and return to the Sega screen after a minute?
-		if ((objects[0].pos.l.x.f.u += 2) >= 0x1C00)
+		if ((player->pos.l.x.f.u += 2) >= 0x1C00)
 		{
 			gamemode = GameMode_Sega;
 			return 0;

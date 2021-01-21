@@ -29,15 +29,21 @@ typedef enum
 //Level globals
 extern uint16_t level_id;
 
-extern uint8_t level_map256[0xA400];
-extern uint8_t level_map16[0x1800];
-extern uint8_t level_layout[8][2][0x40];
-
 extern int16_t limitleft1, limitright1, limittop1, limitbtm1;
 extern int16_t limitleft2, limitright2, limittop2, limitbtm2;
 extern int16_t limitleft3;
 
+extern uint8_t lastlamp;
+
+extern int16_t demo;
+extern uint16_t creditsnum;
+
+extern uint8_t level_map256[0xA400];
+extern uint8_t level_map16[0x1800];
+extern uint8_t level_layout[8][2][0x40];
+
 extern Object objects[OBJECTS];
+extern Object *const player;
 extern Object *const level_objects;
 
 //Global level resources
