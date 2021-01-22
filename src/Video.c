@@ -11,7 +11,8 @@ uint8_t vbla_routine;
 
 uint8_t wtr_state;
 
-uint64_t sprite_buffer[0x50];
+VDP_Sprite sprite_buffer[0x50]; //Apparently the last 16 entries of this intrude other memory in the original
+                                //... now how would I emulate that?
 int16_t hscroll_buffer[SCREEN_HEIGHT][2];
 
 //Video interface
@@ -88,7 +89,8 @@ void CopyTilemap(const uint8_t *tilemap, size_t offset, size_t width, size_t hei
 		for (size_t x = 0; x < width; x++)
 		{
 			uint16_t v = (*tilemap++ << 8) | (*tilemap++ << 0);
-			VDP_WriteVRAM(offset + (x << 1), (const uint8_t*)&v, 2);
+			VDP_Tile tile = TILE_TO_STRUCT(v);
+			VDP_WriteVRAM(offset + (x << 1), (const uint8_t*)&tile, 2);
 		}
 		offset += PLANE_WIDTH * 2;
 	}

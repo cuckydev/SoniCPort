@@ -3,7 +3,7 @@
 #include "MegaDrive.h"
 
 #include <Constants.h>
-#include <Util/Macros.h>
+#include <Macros.h>
 
 //VDP constants
 #define VDP_INTERNAL_PAD 32
@@ -19,23 +19,50 @@
 #pragma pack(1)
 
 //Sprite structure
-#define SPRITE_R_Y(s)        ((uint16_t)((s) >> 48))
-#define SPRITE_R_WIDTH(s)    ((uint8_t)(((s) >> 42) & 0x3))
-#define SPRITE_R_HEIGHT(s)   ((uint8_t)(((s) >> 40) & 0x3))
-#define SPRITE_R_LINK(s)     ((uint8_t)(((s) >> 32) & 0x7F))
-#define SPRITE_R_PRIORITY(s) ((uint8_t)(((s) >> 31) & 0x1))
-#define SPRITE_R_PALETTE(s)  ((uint8_t)(((s) >> 29) & 0x3))
-#define SPRITE_R_YFLIP(s)    ((uint8_t)(((s) >> 28) & 0x1))
-#define SPRITE_R_XFLIP(s)    ((uint8_t)(((s) >> 28) & 0x1))
-#define SPRITE_R_PATTERN(s)  ((uint16_t)(((s) >> 16) & 0x7FF))
-#define SPRITE_R_X(s)        ((uint16_t)(s))
+typedef union
+{
+	struct
+	{
+		uint8_t priority : 1;
+		uint8_t palette : 2;
+		uint8_t y_flip : 1;
+		uint8_t x_flip : 1;
+		uint16_t pattern : 11;
+	} s;
+	uint16_t w;
+} VDP_Tile;
 
-//Plane structure
-#define PLANE_R_PRIORITY(p)  ((uint8_t)(((p) >> 15) & 0x1))
-#define PLANE_R_PALETTE(p)   ((uint8_t)(((p) >> 13) & 0x3))
-#define PLANE_R_YFLIP(p)     ((uint8_t)(((p) >> 12) & 0x1))
-#define PLANE_R_XFLIP(p)     ((uint8_t)(((p) >> 11) & 0x1))
-#define PLANE_R_PATTERN(p)   ((uint16_t)((p) & 0x7FF))
+#define TILE_TO_STRUCT(v)    \
+{                            \
+	.s = {                   \
+		.priority = v >> 15, \
+		.palette = v >> 13,  \
+		.y_flip = v >> 12,   \
+		.x_flip = v >> 11,   \
+		.pattern = v,        \
+	}                        \
+}
+
+typedef union
+{
+	struct
+	{
+		uint8_t pad1 : 4;
+		uint8_t width : 2;
+		uint8_t height : 2;
+		uint8_t link;
+	} s;
+	uint16_t w;
+} VDP_SpriteInfo;
+
+typedef struct
+{
+	//Y coordinate
+	uint16_t y;
+	VDP_SpriteInfo info;
+	VDP_Tile tile;
+	uint16_t x;
+} VDP_Sprite;
 
 #pragma pack(pop)
 

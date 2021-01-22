@@ -1,15 +1,11 @@
 #include "GM_Sega.h"
 
-#include <Constants.h>
 #include "Game.h"
 #include "Video.h"
 #include "Palette.h"
 #include "PaletteCycle.h"
 
-#include "LevelScroll.h"
-
 #include <Backend/VDP.h>
-#include <Util/Macros.h>
 
 //SEGA art
 #ifdef SCP_REV00

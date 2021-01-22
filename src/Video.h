@@ -7,7 +7,7 @@ extern uint8_t vbla_routine;
 
 extern uint8_t wtr_state;
 
-extern uint64_t sprite_buffer[0x50];
+extern VDP_Sprite sprite_buffer[0x50];
 extern int16_t hscroll_buffer[SCREEN_HEIGHT][2];
 
 //Video interface

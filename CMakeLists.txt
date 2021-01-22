@@ -22,6 +22,8 @@ project(SoniCPort LANGUAGES C)
 add_executable(SoniCPort WIN32
 	# Game
 	"src/Main.c"
+	"src/Constants.h"
+	"src/Macros.h"
 	"src/Game.c"
 	"src/Game.h"
 	"src/Video.c"
@@ -42,9 +44,6 @@ add_executable(SoniCPort WIN32
 	"src/LevelScroll.h"
 	"src/Object.c"
 	"src/Object.h"
-	
-	# Utility
-	"src/Util/Macros.h"
 	
 	# Backend
 	"src/Backend/MegaDrive.c"

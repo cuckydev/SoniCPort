@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #include <Types.h>
+#include <Backend/VDP.h>
 
 //Object types
 #pragma pack(push)
@@ -29,19 +30,6 @@ typedef union
 {
 	struct
 	{
-		uint8_t priority : 1;  //If set, draw on top of the foreground plane
-		uint8_t palette : 2;   //Palette line to use
-		uint8_t y_flip : 1;    //Vertically flipped
-		uint8_t x_flip : 1;    //Horizontally flipped
-		uint16_t pattern : 11; //Pattern base for mappings
-	} f;
-	uint8_t b;
-} ObjectArt;
-
-typedef union
-{
-	struct
-	{
 		uint8_t flag7 : 1;        //Object-specific
 		uint8_t flag6 : 1;        //Unused
 		uint8_t player_push : 1;  //Player is pushing us
@@ -53,7 +41,7 @@ typedef union
 	uint8_t b;
 } ObjectStatus;
 
-typedef struct
+typedef union
 {
 	struct
 	{
@@ -75,7 +63,7 @@ typedef struct
 {
 	uint8_t type;         //Object type
 	ObjectRender render;  //Object render
-	ObjectArt art;        //Object art
+	VDP_Tile tile;        //Object base tile
 	void *mappings;       //Object mappings TODO: struct
 	union
 	{
