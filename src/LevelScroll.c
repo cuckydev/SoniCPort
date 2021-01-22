@@ -8,10 +8,11 @@
 //Level scroll state (TODO: clean this UP)
 uint8_t nobgscroll, bgscrollvert;
 
-uint16_t fg_scroll_flags, bg1_scroll_flags, bg2_scroll_flags, bg3_scroll_flags;
+uint16_t fg_scroll_flags,     bg1_scroll_flags,     bg2_scroll_flags,     bg3_scroll_flags;
+uint16_t fg_scroll_flags_dup, bg1_scroll_flags_dup, bg2_scroll_flags_dup, bg3_scroll_flags_dup;
 
-dword_s scrposx, scrposy, bgscrposx, bgscrposy, bg2scrposx, bg2scrposy, bg3scrposx, bg3scrposy;
-int16_t scrposy_dup, bgscrposy_dup, scrposx_dup, bgscrposx_dup, bg3scrposy_dup, bg3scrposx_dup;
+dword_s scrposx,     scrposy,     bgscrposx,     bgscrposy,     bg2scrposx,     bg2scrposy,     bg3scrposx,     bg3scrposy;
+dword_s scrposx_dup, scrposy_dup, bgscrposx_dup, bgscrposy_dup, bg2scrposx_dup, bg2scrposy_dup, bg3scrposx_dup, bg3scrposy_dup;
 
 int16_t scrshiftx, scrshifty;
 
@@ -90,9 +91,9 @@ void Deform_GHZ()
 	BGScroll_Block2(scrshiftx << 7, SCROLL_FLAG_LEFT2); //Hills and waterfalls
 	
 	//Get Y position
-	bgscrposy_dup =  0x20 - ((scrposy.f.u & 0x7FF) >> 5);
-	if (bgscrposy_dup < 0)
-		bgscrposy_dup = 0;
+	vid_bgscrposy_dup =  0x20 - ((scrposy.f.u & 0x7FF) >> 5);
+	if (vid_bgscrposy_dup < 0)
+		vid_bgscrposy_dup = 0;
 	
 	//Get foreground position
 	if (gamemode == GameMode_Title)
@@ -108,7 +109,7 @@ void Deform_GHZ()
 	
 	//Scroll cloud layer 1
 	bg_x = -(bg3scrposx.f.u + (scroll[0] >> 16));
-	for (int i = 0; i < 0x20 - bgscrposy_dup; i++)
+	for (int i = 0; i < 0x20 - vid_bgscrposy_dup; i++)
 	{ *bufp++ = fg_x; *bufp++ = bg_x; }
 	
 	//Scroll cloud layer 2
@@ -135,7 +136,7 @@ void Deform_GHZ()
 	int32_t wx = bg2scrposx.v;
 	int32_t wi = (((scrposx.f.u - bg2scrposx.f.u) << 8) / 0x68) << 8;
 	
-	for (int i = 0; i < 0x48 + bgscrposy_dup; i++)
+	for (int i = 0; i < 0x48 + vid_bgscrposy_dup; i++)
 	{
 		*bufp++ = fg_x; *bufp++ = -(wx >> 16);
 		wx += wi;
@@ -265,8 +266,8 @@ void DeformLayers()
 	ScrollVertical();
 	
 	//Copy screen Y position
-	scrposy_dup = scrposy.f.u;
-	bgscrposy_dup = bgscrposy.f.u;
+	vid_scrposy_dup = scrposy.f.u;
+	vid_bgscrposy_dup = bgscrposy.f.u;
 	
 	//Run zone's background deformation routine
 	deform_routines[level_id >> 8]();

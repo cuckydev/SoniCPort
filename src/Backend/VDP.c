@@ -202,7 +202,7 @@ static uint32_t vdp_screen_pal[4][16];
 
 static struct VDP_SpriteCache
 {
-	uint8_t sprite[SCANLINE_SPRITES];
+	const VDP_Sprite *sprite[SCANLINE_SPRITES];
 	uint8_t pushind;
 } vdp_sprite_cache[SCREEN_HEIGHT];
 
@@ -250,16 +250,17 @@ uint8_t *VDP_GetPatternAddress(size_t pattern)
 	from--;                               \
 }
 
-void VDP_DrawPlaneColumn(uint32_t *to, const VDP_Tile *plane, int16_t x, int16_t y)
+void VDP_DrawPlaneRow(uint32_t *to, const VDP_Tile *plane, int16_t x, int16_t y)
 {
 	//Get plane tile to use
 	size_t px = (x >> 3) % vdp_plane_w;
 	size_t py = (y >> 3) % vdp_plane_h;
 	const VDP_Tile *pb = plane + py * vdp_plane_w;
 	
-	//Draw plane column
+	//Draw plane row
 	uint32_t *toend = to + SCREEN_WIDTH;
 	to -= x & 7;
+	y &= 7;
 	
 	for (; to < toend; px = (px + 1) % vdp_plane_w, plane++)
 	{
@@ -273,9 +274,9 @@ void VDP_DrawPlaneColumn(uint32_t *to, const VDP_Tile *plane, int16_t x, int16_t
 		//Write tile
 		const uint8_t *from;
 		if (y_flip)
-			from = VDP_GetPatternAddress(pattern) + (((y ^ 7) & 7) << 2);
+			from = VDP_GetPatternAddress(pattern) + ((y ^ 7) << 2);
 		else
-			from = VDP_GetPatternAddress(pattern) + ((y & 7) << 2);
+			from = VDP_GetPatternAddress(pattern) + (y << 2);
 		if (x_flip)
 		{
 			from += 3;
@@ -294,6 +295,67 @@ void VDP_DrawPlaneColumn(uint32_t *to, const VDP_Tile *plane, int16_t x, int16_t
 	}
 }
 
+void VDP_DrawSpriteRow(uint32_t *to, const VDP_Sprite *sprite, int16_t y)
+{
+	//Get sprite information
+	uint8_t x_flip = sprite->tile.s.x_flip;
+	uint8_t y_flip = sprite->tile.s.y_flip;
+	uint8_t width = sprite->info.s.width;
+	uint8_t height = sprite->info.s.height;
+	uint16_t palette = sprite->tile.s.palette;
+	uint16_t pattern = sprite->tile.s.pattern;
+	
+	//Get sprite left and right coordinates
+	int16_t width_pixels = (width + 1) << 3;
+	int16_t left = sprite->x - 128;
+	if (left <= -width_pixels || left >= SCREEN_WIDTH)
+		return;
+	int16_t right = left + width_pixels;
+	
+	//Get Y tile
+	y -= (sprite->y - 128);
+	size_t ty = y >> 3;
+	if (y_flip)
+	{
+		ty = height - ty;
+		y = (y & 7) ^ 7;
+	}
+	else
+	{
+		y &= 7;
+	}
+	pattern += ty << 1;
+	
+	//Get X tile
+	if (x_flip)
+	{
+		pattern += (width * (height + 1)) << 1;
+		for (; left < right; left += 8)
+		{
+			//Write tile
+			const uint8_t *from = VDP_GetPatternAddress(pattern) + (y << 2) + 3;
+			WRITE_BYTE_FLIP(from, to, palette)
+			WRITE_BYTE_FLIP(from, to, palette)
+			WRITE_BYTE_FLIP(from, to, palette)
+			WRITE_BYTE_FLIP(from, to, palette)
+			pattern -= (height + 1) << 1;
+		}
+	}
+	else
+	{
+		for (; left < right; left += 8)
+		{
+			//Write tile
+			const uint8_t *from = VDP_GetPatternAddress(pattern) + (y << 2);
+			WRITE_BYTE(from, to, palette)
+			WRITE_BYTE(from, to, palette)
+			WRITE_BYTE(from, to, palette)
+			WRITE_BYTE(from, to, palette)
+			pattern += (height + 1) << 1;
+		}
+	}
+}
+
 int VDP_Render()
 {
 	//Handle events
@@ -306,28 +368,30 @@ int VDP_Render()
 	
 	//Calculate sprite cache
 	memset(vdp_sprite_cache, 0, sizeof(vdp_sprite_cache));
-	struct VDP_SpriteCache *scache = vdp_sprite_cache;
 	
 	for (uint8_t i = 0;;)
 	{
 		//Get sprite values
 		const VDP_Sprite *sprite = (const VDP_Sprite*)(vdp_vram + vdp_sprite_location + (i << 3));
-		int16_t sprite_y = sprite->y;
+		uint16_t sprite_y = sprite->y;
 		uint8_t sprite_height = sprite->info.s.height;
 		uint8_t sprite_link = sprite->info.s.link;
 		
 		//Get sprite bounding area
-		int16_t top = sprite_y - 128;
+		int top = sprite_y - 128;
 		if (top < 0)
 			top = 0;
-		int16_t bottom = sprite_y - 128 + ((sprite_height + 1) << 3);
+		int bottom = sprite_y - 128 + ((sprite_height + 1) << 3);
 		if (bottom > SCREEN_HEIGHT)
 			bottom = SCREEN_HEIGHT;
 		
 		//Write sprite cache
-		for (int16_t v = top; v < bottom; v++)
+		for (int v = top; v < bottom; v++)
+		{
+			struct VDP_SpriteCache *scache = &vdp_sprite_cache[v];
 			if (scache->pushind < SCANLINE_SPRITES)
-				scache->sprite[scache->pushind++] = i;
+				scache->sprite[scache->pushind++] = sprite;
+		}
 		
 		//Go to next sprite
 		if (sprite_link)
@@ -339,9 +403,10 @@ int VDP_Render()
 	//Render VDP screen
 	uint32_t *to = vdp_screen;
 	
+	struct VDP_SpriteCache *scache = vdp_sprite_cache;
 	const int16_t *hscroll = (int16_t*)(vdp_vram + vdp_hscroll_location);
 	
-	for (size_t y = 0; y < SCREEN_HEIGHT; y++)
+	for (size_t y = 0; y < SCREEN_HEIGHT; y++, scache++)
 	{
 		//Get palette
 		uint32_t *pal_to = &vdp_screen_pal[0][0];
@@ -354,8 +419,12 @@ int VDP_Render()
 		
 		//Draw planes
 		int16_t ascroll = *hscroll++, bscroll = *hscroll++;
-		VDP_DrawPlaneColumn(to, (const VDP_Tile*)(vdp_vram + vdp_plane_b_location), -bscroll, y + vdp_vscroll_b);
-		VDP_DrawPlaneColumn(to, (const VDP_Tile*)(vdp_vram + vdp_plane_a_location), -ascroll, y + vdp_vscroll_a);
+		VDP_DrawPlaneRow(to, (const VDP_Tile*)(vdp_vram + vdp_plane_b_location), -bscroll, y + vdp_vscroll_b);
+		VDP_DrawPlaneRow(to, (const VDP_Tile*)(vdp_vram + vdp_plane_a_location), -ascroll, y + vdp_vscroll_a);
+		
+		//Draw sprites
+		for (uint8_t i = 0; i < scache->pushind; i++)
+			VDP_DrawSpriteRow(to, scache->sprite[i], y);
 		
 		#ifdef VDP_PALETTE_DISPLAY
 			for (size_t i = 0; i < 4 * 16; i++)

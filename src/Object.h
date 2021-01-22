@@ -6,6 +6,27 @@
 #include <Types.h>
 #include <Backend/VDP.h>
 
+//Object IDs
+typedef enum
+{
+	ObjId_Null,       //00
+	ObjId_Sonic,      //01
+	ObjId_02,         //02
+	ObjId_03,         //03
+	ObjId_04,         //04
+	ObjId_05,         //05
+	ObjId_06,         //06
+	ObjId_07,         //07
+	ObjId_08,         //08
+	ObjId_09,         //09
+	ObjId_0A,         //0A
+	ObjId_0B,         //0B
+	ObjId_0C,         //0C
+	ObjId_0D,         //0D
+	ObjId_TitleSonic, //0E
+	ObjId_0F,         //0F
+} ObjectId;
+
 //Object types
 #pragma pack(push)
 #pragma pack(1)
@@ -61,10 +82,10 @@ typedef union
 
 typedef struct
 {
-	uint8_t type;         //Object type
-	ObjectRender render;  //Object render
-	VDP_Tile tile;        //Object base tile
-	void *mappings;       //Object mappings TODO: struct
+	uint8_t type;            //Object type
+	ObjectRender render;     //Object render
+	VDP_Tile tile;           //Object base tile
+	const uint8_t *mappings; //Object mappings
 	union
 	{
 		struct
@@ -109,3 +130,7 @@ typedef struct
 		int32_t  s32[0x6];
 	} scratch;             //Scratch memory
 } Object;
+
+//Object functions
+
+void BuildSprites();

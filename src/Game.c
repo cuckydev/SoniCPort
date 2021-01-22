@@ -1,6 +1,7 @@
 #include "Game.h"
 
 #include "Video.h"
+#include "Palette.h"
 #include "LevelScroll.h"
 
 #include "GM_Sega.h"
@@ -41,13 +42,28 @@ void EntryPoint()
 }
 
 //Interrupts
+void WriteVRAMBuffers()
+{
+	//Read controllers
+	
+	//Copy palette
+	if (wtr_state)
+		VDP_WriteCRAM(0, &wet_palette[0][0], 0x40);
+	else
+		VDP_WriteCRAM(0, &dry_palette[0][0], 0x40);
+	
+	//Copy buffers
+	VDP_WriteVRAM(VRAM_SPRITES, (const uint8_t*)sprite_buffer, sizeof(sprite_buffer));
+	VDP_WriteVRAM(VRAM_HSCROLL, (const uint8_t*)hscroll_buffer, sizeof(hscroll_buffer));
+}
+
 void VBlank()
 {
 	uint8_t routine = vbla_routine;
 	if (vbla_routine != 0x00)
 	{
 		//Set VDP state
-		VDP_SetVScroll(scrposy_dup, bgscrposy_dup);
+		VDP_SetVScroll(vid_scrposy_dup, vid_bgscrposy_dup);
 		
 		//Set screen state
 		vbla_routine = 0x00;
@@ -57,20 +73,20 @@ void VBlank()
 	switch (routine)
 	{
 		case 0x02:
-			VDPSetupFrame();
+			WriteVRAMBuffers();
 	//Fallthrough
 		case 0x14:
 			if (demo_length)
 				demo_length--;
 			break;
 		case 0x04:
-			VDPSetupFrame();
+			WriteVRAMBuffers();
 			LoadTilesAsYouMove_BGOnly();
 			if (demo_length)
 				demo_length--;
 			break;
 		case 0x12:
-			VDPSetupFrame();
+			WriteVRAMBuffers();
 			break;
 	}
 }

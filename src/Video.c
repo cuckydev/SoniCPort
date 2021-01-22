@@ -11,8 +11,10 @@ uint8_t vbla_routine;
 
 uint8_t wtr_state;
 
-VDP_Sprite sprite_buffer[0x50]; //Apparently the last 16 entries of this intrude other memory in the original
-                                //... now how would I emulate that?
+int16_t vid_scrposy_dup, vid_bgscrposy_dup, vid_scrposx_dup, vid_bgscrposx_dup, vid_bg3scrposy_dup, vid_bg3scrposx_dup;
+
+VDP_Sprite sprite_buffer[BUFFER_SPRITES]; //Apparently the last 16 entries of this intrude other memory in the original
+                                          //... now how would I emulate that?
 int16_t hscroll_buffer[SCREEN_HEIGHT][2];
 
 //Video interface
@@ -37,29 +39,6 @@ void VDPSetupGame()
 	memset(wet_palette_dup, 0, sizeof(wet_palette_dup));
 }
 
-void VDPSetupFrame()
-{
-	//Read controllers
-	
-	//Copy palette
-	#if 1
-		if (wtr_state)
-			VDP_WriteCRAM(0, &wet_palette[0][0], 0x40);
-		else
-			VDP_WriteCRAM(0, &dry_palette[0][0], 0x40);
-	#else
-		srand(0);
-		uint16_t pal[0x40];
-		for (int i = 0; i < 0x40; i++)
-			pal[i] = rand() & 0xEEE;
-		VDP_WriteCRAM(0, pal, 0x40);
-	#endif
-	
-	//Copy buffers
-	VDP_WriteVRAM(VRAM_SPRITES, (const uint8_t*)sprite_buffer, sizeof(sprite_buffer));
-	VDP_WriteVRAM(VRAM_HSCROLL, (const uint8_t*)hscroll_buffer, sizeof(hscroll_buffer));
-}
-
 int WaitForVBla()
 {
 	return VDP_Render();
@@ -72,10 +51,10 @@ void ClearScreen()
 	VDP_FillVRAM(VRAM_BG, 0x00, PLANE_SIZE);
 	
 	//Reset screen position duplicates
-	scrposy_dup = 0;
-	bgscrposy_dup = 0;
-	scrposx_dup = 0;
-	bg3scrposy_dup = 0;
+	vid_scrposy_dup = 0;
+	vid_bgscrposy_dup = 0;
+	vid_scrposx_dup = 0;
+	vid_bgscrposx_dup = 0;
 	
 	//Clear sprite buffer and hscroll buffer
 	memset(sprite_buffer, 0, sizeof(sprite_buffer));

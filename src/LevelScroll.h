@@ -16,9 +16,10 @@
 extern uint8_t nobgscroll, bgscrollvert;
 
 extern uint16_t fg_scroll_flags, bg1_scroll_flags, bg2_scroll_flags, bg3_scroll_flags;
+extern uint16_t fg_scroll_flags_dup, bg1_scroll_flags_dup, bg2_scroll_flags_dup, bg3_scroll_flags_dup;
 
-extern dword_s scrposx, scrposy, bgscrposx, bgscrposy, bg2scrposx, bg2scrposy, bg3scrposx, bg3scrposy;
-extern int16_t scrposy_dup, bgscrposy_dup, scrposx_dup, bgscrposx_dup, bg3scrposy_dup, bg3scrposx_dup;
+extern dword_s scrposx,     scrposy,     bgscrposx,     bgscrposy,     bg2scrposx,     bg2scrposy,     bg3scrposx,     bg3scrposy;
+extern dword_s scrposx_dup, scrposy_dup, bgscrposx_dup, bgscrposy_dup, bg2scrposx_dup, bg2scrposy_dup, bg3scrposx_dup, bg3scrposy_dup;
 
 extern int16_t scrshiftx, scrshifty;
 

@@ -136,7 +136,7 @@ int GM_Title()
 		//Handle objects and scrolling
 		//ExecuteObjects();
 		DeformLayers();
-		//BuildSprites();
+		BuildSprites();
 		
 		//Run palette cycle
 		PCycle_Title();

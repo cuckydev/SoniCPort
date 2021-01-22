@@ -4,6 +4,7 @@
 
 #include <Constants.h>
 #include <Macros.h>
+#include <stdbool.h>
 
 //VDP constants
 #define VDP_INTERNAL_PAD 32
@@ -32,15 +33,16 @@ typedef union
 	uint16_t w;
 } VDP_Tile;
 
-#define TILE_TO_STRUCT(v)    \
-{                            \
-	.s = {                   \
-		.priority = v >> 15, \
-		.palette = v >> 13,  \
-		.y_flip = v >> 12,   \
-		.x_flip = v >> 11,   \
-		.pattern = v,        \
-	}                        \
+//TODO: figure out how to just convert to .w?
+#define TILE_TO_STRUCT(v) \
+{                \
+	.s = {       \
+		v >> 15, \
+		v >> 13, \
+		v >> 12, \
+		v >> 11, \
+		v,       \
+	}            \
 }
 
 typedef union
