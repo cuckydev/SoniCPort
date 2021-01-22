@@ -86,9 +86,8 @@ void Deform_GHZ()
 	int16_t *bufp = &hscroll_buffer[0][0];
 	
 	//Scroll background layers
-	//These set SCROLL_FLAG_UP, despite scrolling horizontally?
-	BGScroll_Block3((scrshiftx << 6) + (scrshiftx << 5), SCROLL_FLAG_UP); //Upper mountains
-	BGScroll_Block2(scrshiftx << 7, SCROLL_FLAG_UP); //Hills and waterfalls
+	BGScroll_Block3((scrshiftx << 6) + (scrshiftx << 5), SCROLL_FLAG_LEFT2); //Upper mountains
+	BGScroll_Block2(scrshiftx << 7, SCROLL_FLAG_LEFT2); //Hills and waterfalls
 	
 	//Get Y position
 	bgscrposy_dup =  0x20 - ((scrposy.f.u & 0x7FF) >> 5);

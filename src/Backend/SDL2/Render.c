@@ -5,6 +5,17 @@
 
 #include <stdio.h>
 
+//Render compile options
+//#define DISPLAY_PADDING //Displays the internal VDP padding
+
+#ifdef DISPLAY_PADDING
+	#define TEXTURE_WIDTH  (SCREEN_WIDTH  + (VDP_INTERNAL_PAD * 2))
+	#define TEXTURE_HEIGHT SCREEN_HEIGHT
+#else
+	#define TEXTURE_WIDTH  SCREEN_WIDTH
+	#define TEXTURE_HEIGHT SCREEN_HEIGHT
+#endif
+
 //Icon
 static uint8_t icon_data[] = {
 	#include <Resource/Icon.h>
@@ -22,7 +33,7 @@ static int vsync;
 int Render_Init(const MD_Header *header)
 {
 	//Create window
-	if ((window = SDL_CreateWindow(header->title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH * SCREEN_SCALE, SCREEN_HEIGHT * SCREEN_SCALE, 0)) == NULL)
+	if ((window = SDL_CreateWindow(header->title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TEXTURE_WIDTH * SCREEN_SCALE, TEXTURE_HEIGHT * SCREEN_SCALE, 0)) == NULL)
 	{
 		printf("Render_Init: %s\n", SDL_GetError());
 		return -1;
@@ -56,7 +67,7 @@ int Render_Init(const MD_Header *header)
 	}
 	
 	//Create screen texture
-	if ((texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH, SCREEN_HEIGHT)) == NULL)
+	if ((texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, TEXTURE_WIDTH, TEXTURE_HEIGHT)) == NULL)
 	{
 		printf("Render_Init: %s\n", SDL_GetError());
 		return -1;
@@ -104,15 +115,19 @@ void Render_Screen(const uint32_t *screen)
 		
 		counter++;
 	}
+	
 	//Lock screen texture
 	uint8_t *to;
 	int pitch;
 	SDL_LockTexture(texture, NULL, (void**)&to, &pitch);
 	
 	//Copy screen
-	for (size_t i = 0; i < SCREEN_HEIGHT; i++)
+	#ifdef DISPLAY_PADDING
+		screen -= VDP_INTERNAL_PAD;
+	#endif
+	for (size_t i = 0; i < TEXTURE_HEIGHT; i++)
 	{
-		memcpy(to, screen, SCREEN_WIDTH << 2);
+		memcpy(to, screen, TEXTURE_WIDTH << 2);
 		to += pitch;
 		screen += SCREEN_WIDTH + (VDP_INTERNAL_PAD * 2);
 	}

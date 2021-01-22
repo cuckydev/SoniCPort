@@ -124,7 +124,15 @@ void DrawBlocks_LR(size_t offset, size_t pos, int16_t sx, int16_t sy, int16_t x,
 
 void DrawBlocks_TB_2(size_t offset, size_t pos, int16_t sx, int16_t sy, int16_t x, int16_t y, uint8_t *layout, size_t height)
 {
-	puts("DrawBlocks_TB_2");
+	const uint8_t *meta;
+	const uint8_t *block;
+	while (height-- > 0)
+	{
+		GetBlockData(&meta, &block, sx, sy, x, y, layout);
+		DrawBlock(meta, block, offset + pos);
+		pos = (((pos >> 1) + (PLANE_WIDTH * 2)) % (PLANE_WIDTH * PLANE_HEIGHT)) << 1;
+		y += 16;
+	}
 }
 
 void DrawBlocks_TB(size_t offset, size_t pos, int16_t sx, int16_t sy, int16_t x, int16_t y, uint8_t *layout)
@@ -145,6 +153,7 @@ void DrawChunks(int16_t sx, int16_t sy, uint8_t *layout, size_t offset)
 
 void DrawBGScrollBlock1(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout, size_t offset)
 {
+	//TODO: REV00
 	//Check if any flags have been set
 	if (*flag == 0)
 		return;
@@ -159,16 +168,49 @@ void DrawBGScrollBlock1(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout,
 	if (*flag != (*flag &= ~SCROLL_FLAG_RIGHT))
 		DrawBlocks_TB(offset, CalcVRAMPos(sx, sy, SCREEN_WIDTH, -16), sx, sy, SCREEN_WIDTH, -16, layout);
 	if (*flag != (*flag &= ~SCROLL_FLAG_UP2))
-		;//DrawBlocks_LB_3(offset, CalcVRAMPos_2(sx, sy, 0, -16), sx, sy, 0, -16, layout);
+		{}//DrawBlocks_LB_3(offset, CalcVRAMPos_2(sx, sy, 0, -16), sx, sy, 0, -16, layout);
 	if (*flag != (*flag &= ~SCROLL_FLAG_DOWN2))
-		;//DrawBlocks_LB_3(offset, CalcVRAMPos_2(sx, sy, 0, SCREEN_HEIGHT), sx, sy, 0, SCREEN_HEIGHT, layout);
+		{}//DrawBlocks_LB_3(offset, CalcVRAMPos_2(sx, sy, 0, SCREEN_HEIGHT), sx, sy, 0, SCREEN_HEIGHT, layout);
 }
 
 void DrawBGScrollBlock2(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout, size_t offset)
 {
+	//TODO: REV00
+	//Check if any flags have been set
+	if (*flag == 0)
+		return;
+	
+	//Run completely different code if in Scrap Brain Zone (what)
+	if ((level_id >> 8) != ZoneId_SBZ)
+	{
+		if (*flag != (*flag &= ~SCROLL_FLAG_LEFT2))
+			DrawBlocks_TB_2(offset, CalcVRAMPos(sx, sy, -16, SCREEN_HEIGHT / 2), sx, sy, -16, SCREEN_HEIGHT / 2, layout, 3);
+		if (*flag != (*flag &= ~SCROLL_FLAG_RIGHT2))
+			DrawBlocks_TB_2(offset, CalcVRAMPos(sx, sy, SCREEN_WIDTH, SCREEN_HEIGHT / 2), sx, sy, SCREEN_WIDTH, SCREEN_HEIGHT / 2, layout, 3);
+	}
+	else
+	{
+		//TODO
+	}
 }
 
 void DrawBGScrollBlock3(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout, size_t offset)
 {
+	//TODO: REV00
+	//Check if any flags have been set
+	if (*flag == 0)
+		return;
 	
+	//Run completely different code if in Marble Zone (what)
+	if ((level_id >> 8) != ZoneId_MZ)
+	{
+		if (*flag != (*flag &= ~SCROLL_FLAG_LEFT2))
+			DrawBlocks_TB_2(offset, CalcVRAMPos(sx, sy, -16, 64), sx, sy, -16, 64, layout, 3);
+		if (*flag != (*flag &= ~SCROLL_FLAG_RIGHT2))
+			DrawBlocks_TB_2(offset, CalcVRAMPos(sx, sy, SCREEN_WIDTH, 64), sx, sy, SCREEN_WIDTH, 64, layout, 3);
+	}
+	else
+	{
+		//TODO
+	}
 }

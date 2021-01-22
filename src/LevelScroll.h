@@ -3,12 +3,14 @@
 #include <Types.h>
 
 //Scroll flags
-#define SCROLL_FLAG_UP    (1 << 0)
-#define SCROLL_FLAG_DOWN  (1 << 1)
-#define SCROLL_FLAG_LEFT  (1 << 2)
-#define SCROLL_FLAG_RIGHT (1 << 3)
-#define SCROLL_FLAG_UP2   (1 << 4)
-#define SCROLL_FLAG_DOWN2 (1 << 5)
+#define SCROLL_FLAG_UP     (1 << 0)
+#define SCROLL_FLAG_DOWN   (1 << 1)
+#define SCROLL_FLAG_LEFT   (1 << 2)
+#define SCROLL_FLAG_RIGHT  (1 << 3)
+#define SCROLL_FLAG_UP2    (1 << 4)
+#define SCROLL_FLAG_DOWN2  (1 << 5)
+#define SCROLL_FLAG_LEFT2  (1 << 0) //scroll blocks 2 and 3
+#define SCROLL_FLAG_RIGHT2 (1 << 1) //scroll blocks 2 and 3
 
 //Level deformation globals
 extern uint8_t nobgscroll, bgscrollvert;
