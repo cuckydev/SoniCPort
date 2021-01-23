@@ -122,6 +122,13 @@ int GM_Title()
 	
 	//Load title objects
 	objects[1].type = ObjId_TitleSonic;
+	objects[2].type = ObjId_PSB;
+	#ifndef SCP_JP
+		objects[3].type = ObjId_PSB;
+		objects[3].frame = 3;
+	#endif
+	objects[4].type = ObjId_PSB;
+	objects[4].frame = 2;
 	
 	ExecuteObjects();
 	DeformLayers();

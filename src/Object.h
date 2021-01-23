@@ -24,7 +24,7 @@ typedef enum
 	ObjId_0C,         //0C
 	ObjId_0D,         //0D
 	ObjId_TitleSonic, //0E
-	ObjId_0F,         //0F
+	ObjId_PSB,        //0F
 } ObjectId;
 
 //Object types

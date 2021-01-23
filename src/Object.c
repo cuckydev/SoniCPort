@@ -14,7 +14,8 @@ struct SpriteQueue
 } sprite_queue[8];
 
 //Object execution
-void Obj_TitleSonic();
+void Obj_TitleSonic(Object *obj);
+void Obj_PSB(Object *obj);
 
 static void (*object_func[])(Object*) = {
 	/* ObjId_Null       */ NULL,
@@ -32,7 +33,7 @@ static void (*object_func[])(Object*) = {
 	/* ObjId_0C         */ NULL,
 	/* ObjId_0D         */ NULL,
 	/* ObjId_TitleSonic */ Obj_TitleSonic,
-	/* ObjId_0F         */ NULL,
+	/* ObjId_PSB        */ Obj_PSB,
 };
 
 void ExecuteObjects()

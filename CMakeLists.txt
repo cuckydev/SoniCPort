@@ -45,6 +45,7 @@ add_executable(SoniCPort WIN32
 	"src/Object.c"
 	"src/Object.h"
 	"src/Object/TitleSonic.c"
+	"src/Object/PSB.c"
 	
 	# Backend
 	"src/Backend/MegaDrive.c"
@@ -79,9 +80,11 @@ set(RESOURCES
 	"Palette/TitleCycle"
 	
 	"Animation/TitleSonic"
+	"Animation/PSB"
 	
 	"Mappings/Credits"
 	"Mappings/TitleSonic"
+	"Mappings/PSB"
 	
 	"Layout/GHZ1"
 	"Layout/GHZ2"

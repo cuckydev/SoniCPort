@@ -197,7 +197,7 @@ void VDP_SetVScroll(int16_t scroll_a, int16_t scroll_b)
 //VDP rendering
 #define SCREEN_PITCH SCREEN_WIDTH + (VDP_INTERNAL_PAD * 2)
 
-#define SCANLINE_SPRITES 20
+#define SCANLINE_SPRITES 40
 
 static uint32_t vdp_screen_internal[SCREEN_HEIGHT][SCREEN_PITCH];
 static uint8_t vdp_mask_internal[SCREEN_HEIGHT][SCREEN_PITCH];
@@ -211,6 +211,7 @@ static struct VDP_SpriteCache
 {
 	const VDP_Sprite *sprite[SCANLINE_SPRITES];
 	uint8_t pushind;
+	uint16_t pixels;
 } vdp_sprite_cache[SCREEN_HEIGHT];
 
 uint32_t VDP_GetColour(size_t index)
@@ -452,6 +453,7 @@ int VDP_Render()
 		//Get sprite values
 		const VDP_Sprite *sprite = (const VDP_Sprite*)(vdp_vram + vdp_sprite_location + (i << 3));
 		uint16_t sprite_y = sprite->y;
+		uint8_t sprite_width = sprite->size.s.width;
 		uint8_t sprite_height = sprite->size.s.height;
 		uint8_t sprite_link = sprite->link;
 		
@@ -467,7 +469,8 @@ int VDP_Render()
 		for (int v = top; v < bottom; v++)
 		{
 			struct VDP_SpriteCache *scache = &vdp_sprite_cache[v];
-			if (scache->pushind < SCANLINE_SPRITES)
+			scache->pixels += sprite_width + 1;
+			if (scache->pixels <= SCANLINE_SPRITES)
 				scache->sprite[scache->pushind++] = sprite;
 		}
 		
