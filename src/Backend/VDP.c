@@ -6,7 +6,7 @@
 //Render backend interface
 int Render_Init(const MD_Header *header);
 void Render_Quit();
-void Render_Screen(const uint32_t *screen);
+void Render_Screen(const uint32_t *screen, const uint8_t *mask);
 
 //Input backend interface
 int Input_HandleEvents();
@@ -14,6 +14,10 @@ int Input_HandleEvents();
 //VDP compile options
 #define VDP_SANITY //Enable sanity checks for the VDP
 //#define VDP_PALETTE_DISPLAY //Enable palette display
+
+//VDP masks
+#define VDP_MASK_PLANEPRI (1 << 0)
+#define VDP_MASK_SPRITE   (1 << 1)
 
 //VDP internal state
 static ALIGNED2 uint8_t vdp_vram[VRAM_SIZE];
@@ -196,7 +200,10 @@ void VDP_SetVScroll(int16_t scroll_a, int16_t scroll_b)
 #define SCANLINE_SPRITES 20
 
 static uint32_t vdp_screen_internal[SCREEN_HEIGHT][SCREEN_PITCH];
+static uint8_t vdp_mask_internal[SCREEN_HEIGHT][SCREEN_PITCH];
+
 static uint32_t *vdp_screen;
+static uint8_t *vdp_mask;
 
 static uint32_t vdp_screen_pal[4][16];
 
@@ -222,35 +229,95 @@ uint8_t *VDP_GetPatternAddress(size_t pattern)
 	return vdp_vram + (pattern << 5);
 }
 
-#define WRITE_BYTE(from, to, pal)         \
-{                                         \
-	uint8_t v;                            \
-	if ((v = *from >> 4))                 \
-		*to++ = vdp_screen_pal[(pal)][v]; \
-	else                                  \
-		to++;                             \
-	if ((v = *from & 0xF))                \
-		*to++ = vdp_screen_pal[(pal)][v]; \
-	else                                  \
-		to++;                             \
-	from++;                               \
+#define WRITE_BYTE(from, to, tom, pal, and, or) \
+{                                             \
+	uint8_t v;                                \
+	if ((v = *from >> 4))                     \
+	{                                         \
+		if (*tom & and)                       \
+		{                                     \
+			*tom |= or;                       \
+			to++;                             \
+		}                                     \
+		else                                  \
+		{                                     \
+			*tom |= or;                       \
+			*to++ = vdp_screen_pal[(pal)][v]; \
+		}                                     \
+		tom++;                                \
+	}                                         \
+	else                                      \
+	{                                         \
+		to++;                                 \
+		tom++;                                \
+	}                                         \
+	if ((v = *from & 0xF))                    \
+	{                                         \
+		if (*tom & and)                       \
+		{                                     \
+			*tom |= or;                       \
+			to++;                             \
+		}                                     \
+		else                                  \
+		{                                     \
+			*tom |= or;                       \
+			*to++ = vdp_screen_pal[(pal)][v]; \
+		}                                     \
+		tom++;                                \
+	}                                         \
+	else                                      \
+	{                                         \
+		to++;                                 \
+		tom++;                                \
+	}                                         \
+	from++;                                   \
 }
 
-#define WRITE_BYTE_FLIP(from, to, pal)    \
-{                                         \
-	uint8_t v;                            \
-	if ((v = *from & 0xF))                \
-		*to++ = vdp_screen_pal[(pal)][v]; \
-	else                                  \
-		to++;                             \
-	if ((v = *from >> 4))                 \
-		*to++ = vdp_screen_pal[(pal)][v]; \
-	else                                  \
-		to++;                             \
-	from--;                               \
+#define WRITE_BYTE_FLIP(from, to, tom, pal, and, or) \
+{                                             \
+	uint8_t v;                                \
+	if ((v = *from & 0xF))                    \
+	{                                         \
+		if (*tom & and)                       \
+		{                                     \
+			*tom |= or;                       \
+			to++;                             \
+		}                                     \
+		else                                  \
+		{                                     \
+			*tom |= or;                       \
+			*to++ = vdp_screen_pal[(pal)][v]; \
+		}                                     \
+		tom++;                                \
+	}                                         \
+	else                                      \
+	{                                         \
+		to++;                                 \
+		tom++;                                \
+	}                                         \
+	if ((v = *from >> 4))                     \
+	{                                         \
+		if (*tom & and)                       \
+		{                                     \
+			*tom |= or;                       \
+			to++;                             \
+		}                                     \
+		else                                  \
+		{                                     \
+			*tom |= or;                       \
+			*to++ = vdp_screen_pal[(pal)][v]; \
+		}                                     \
+		tom++;                                \
+	}                                         \
+	else                                      \
+	{                                         \
+		to++;                                 \
+		tom++;                                \
+	}                                         \
+	from--;                                   \
 }
 
-void VDP_DrawPlaneRow(uint32_t *to, const VDP_Tile *plane, int16_t x, int16_t y)
+void VDP_DrawPlaneRow(uint32_t *to, uint8_t *tom, const VDP_Tile *plane, int16_t x, int16_t y)
 {
 	//Get plane tile to use
 	size_t px = (x >> 3) % vdp_plane_w;
@@ -260,12 +327,14 @@ void VDP_DrawPlaneRow(uint32_t *to, const VDP_Tile *plane, int16_t x, int16_t y)
 	//Draw plane row
 	uint32_t *toend = to + SCREEN_WIDTH;
 	to -= x & 7;
+	tom -= x & 7;
 	y &= 7;
 	
 	for (; to < toend; px = (px + 1) % vdp_plane_w, plane++)
 	{
 		//Get tile information
 		const VDP_Tile *tile = pb + px;
+		uint8_t or = tile->s.priority ? VDP_MASK_PLANEPRI : 0;
 		uint8_t palette = tile->s.palette;
 		uint8_t x_flip = tile->s.x_flip;
 		uint8_t y_flip = tile->s.y_flip;
@@ -280,24 +349,25 @@ void VDP_DrawPlaneRow(uint32_t *to, const VDP_Tile *plane, int16_t x, int16_t y)
 		if (x_flip)
 		{
 			from += 3;
-			WRITE_BYTE_FLIP(from, to, palette)
-			WRITE_BYTE_FLIP(from, to, palette)
-			WRITE_BYTE_FLIP(from, to, palette)
-			WRITE_BYTE_FLIP(from, to, palette)
+			WRITE_BYTE_FLIP(from, to, tom, palette, VDP_MASK_PLANEPRI, or)
+			WRITE_BYTE_FLIP(from, to, tom, palette, VDP_MASK_PLANEPRI, or)
+			WRITE_BYTE_FLIP(from, to, tom, palette, VDP_MASK_PLANEPRI, or)
+			WRITE_BYTE_FLIP(from, to, tom, palette, VDP_MASK_PLANEPRI, or)
 		}
 		else
 		{
-			WRITE_BYTE(from, to, palette)
-			WRITE_BYTE(from, to, palette)
-			WRITE_BYTE(from, to, palette)
-			WRITE_BYTE(from, to, palette)
+			WRITE_BYTE(from, to, tom, palette, VDP_MASK_PLANEPRI, or)
+			WRITE_BYTE(from, to, tom, palette, VDP_MASK_PLANEPRI, or)
+			WRITE_BYTE(from, to, tom, palette, VDP_MASK_PLANEPRI, or)
+			WRITE_BYTE(from, to, tom, palette, VDP_MASK_PLANEPRI, or)
 		}
 	}
 }
 
-void VDP_DrawSpriteRow(uint32_t *to, const VDP_Sprite *sprite, int16_t y)
+void VDP_DrawSpriteRow(uint32_t *to, uint8_t *tom, const VDP_Sprite *sprite, int16_t y)
 {
 	//Get sprite information
+	uint8_t and = sprite->tile.s.priority ? (VDP_MASK_PLANEPRI | VDP_MASK_SPRITE) : VDP_MASK_SPRITE;
 	uint8_t x_flip = sprite->tile.s.x_flip;
 	uint8_t y_flip = sprite->tile.s.y_flip;
 	uint8_t width = sprite->size.s.width;
@@ -307,10 +377,13 @@ void VDP_DrawSpriteRow(uint32_t *to, const VDP_Sprite *sprite, int16_t y)
 	
 	//Get sprite left and right coordinates
 	int16_t width_pixels = (width + 1) << 3;
+	
 	int16_t left = sprite->x - 128;
 	if (left <= -width_pixels || left >= SCREEN_WIDTH)
 		return;
 	to += left;
+	tom += left;
+	
 	int16_t right = left + width_pixels;
 	
 	//Get Y tile
@@ -335,10 +408,10 @@ void VDP_DrawSpriteRow(uint32_t *to, const VDP_Sprite *sprite, int16_t y)
 		{
 			//Write tile
 			const uint8_t *from = VDP_GetPatternAddress(pattern) + (y << 2) + 3;
-			WRITE_BYTE_FLIP(from, to, palette)
-			WRITE_BYTE_FLIP(from, to, palette)
-			WRITE_BYTE_FLIP(from, to, palette)
-			WRITE_BYTE_FLIP(from, to, palette)
+			WRITE_BYTE_FLIP(from, to, tom, palette, and, VDP_MASK_SPRITE)
+			WRITE_BYTE_FLIP(from, to, tom, palette, and, VDP_MASK_SPRITE)
+			WRITE_BYTE_FLIP(from, to, tom, palette, and, VDP_MASK_SPRITE)
+			WRITE_BYTE_FLIP(from, to, tom, palette, and, VDP_MASK_SPRITE)
 			pattern -= height + 1;
 		}
 	}
@@ -348,10 +421,10 @@ void VDP_DrawSpriteRow(uint32_t *to, const VDP_Sprite *sprite, int16_t y)
 		{
 			//Write tile
 			const uint8_t *from = VDP_GetPatternAddress(pattern) + (y << 2);
-			WRITE_BYTE(from, to, palette)
-			WRITE_BYTE(from, to, palette)
-			WRITE_BYTE(from, to, palette)
-			WRITE_BYTE(from, to, palette)
+			WRITE_BYTE(from, to, tom, palette, and, VDP_MASK_SPRITE)
+			WRITE_BYTE(from, to, tom, palette, and, VDP_MASK_SPRITE)
+			WRITE_BYTE(from, to, tom, palette, and, VDP_MASK_SPRITE)
+			WRITE_BYTE(from, to, tom, palette, and, VDP_MASK_SPRITE)
 			pattern += height + 1;
 		}
 	}
@@ -366,11 +439,14 @@ int VDP_Render()
 	
 	//Get VDP screen pointer
 	vdp_screen = &vdp_screen_internal[0][VDP_INTERNAL_PAD];
+	vdp_mask = &vdp_mask_internal[0][VDP_INTERNAL_PAD];
+	
+	//Clear VDP mask
+	memset(vdp_mask_internal, 0, sizeof(vdp_mask_internal));
 	
 	//Calculate sprite cache
 	memset(vdp_sprite_cache, 0, sizeof(vdp_sprite_cache));
 	
-	int asldas = 0;
 	for (uint8_t i = 0;;)
 	{
 		//Get sprite values
@@ -388,7 +464,6 @@ int VDP_Render()
 			bottom = SCREEN_HEIGHT;
 		
 		//Write sprite cache
-		asldas++;
 		for (int v = top; v < bottom; v++)
 		{
 			struct VDP_SpriteCache *scache = &vdp_sprite_cache[v];
@@ -405,6 +480,7 @@ int VDP_Render()
 	
 	//Render VDP screen
 	uint32_t *to = vdp_screen;
+	uint8_t *tom = vdp_mask;
 	
 	struct VDP_SpriteCache *scache = vdp_sprite_cache;
 	const int16_t *hscroll = (int16_t*)(vdp_vram + vdp_hscroll_location);
@@ -422,12 +498,12 @@ int VDP_Render()
 		
 		//Draw planes
 		int16_t ascroll = *hscroll++, bscroll = *hscroll++;
-		VDP_DrawPlaneRow(to, (const VDP_Tile*)(vdp_vram + vdp_plane_b_location), -bscroll, y + vdp_vscroll_b);
-		VDP_DrawPlaneRow(to, (const VDP_Tile*)(vdp_vram + vdp_plane_a_location), -ascroll, y + vdp_vscroll_a);
+		VDP_DrawPlaneRow(to, tom, (const VDP_Tile*)(vdp_vram + vdp_plane_b_location), -bscroll, y + vdp_vscroll_b);
+		VDP_DrawPlaneRow(to, tom, (const VDP_Tile*)(vdp_vram + vdp_plane_a_location), -ascroll, y + vdp_vscroll_a);
 		
 		//Draw sprites
 		for (uint8_t i = 0; i < scache->pushind; i++)
-			VDP_DrawSpriteRow(to, scache->sprite[i], y);
+			VDP_DrawSpriteRow(to, tom, scache->sprite[i], y);
 		
 		#ifdef VDP_PALETTE_DISPLAY
 			for (size_t i = 0; i < 4 * 16; i++)
@@ -436,6 +512,7 @@ int VDP_Render()
 		
 		//Render next row
 		to += SCREEN_PITCH;
+		tom += SCREEN_PITCH;
 		
 		//Send horizontal interrupt
 		vdp_hint();
@@ -445,7 +522,7 @@ int VDP_Render()
 	vdp_vint();
 	
 	//Render screen
-	Render_Screen(vdp_screen);
+	Render_Screen(vdp_screen, vdp_mask);
 	
 	return 0;
 }

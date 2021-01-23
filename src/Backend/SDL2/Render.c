@@ -7,6 +7,7 @@
 
 //Render compile options
 //#define DISPLAY_PADDING //Displays the internal VDP padding
+//#define DISPLAY_MASK    //Displays the internal VDP mask buffer
 
 #ifdef DISPLAY_PADDING
 	#define TEXTURE_WIDTH  (SCREEN_WIDTH  + (VDP_INTERNAL_PAD * 2))
@@ -90,8 +91,11 @@ void Render_Quit()
 }
 
 //This takes in the internal VDP screen buffer positioned after the padding
-void Render_Screen(const uint32_t *screen)
+void Render_Screen(const uint32_t *screen, const uint8_t *mask)
 {
+	(void)screen;
+	(void)mask;
+	
 	//Framerate limiter (when VSync is unavailable)
 	if (!vsync)
 	{
@@ -122,15 +126,30 @@ void Render_Screen(const uint32_t *screen)
 	SDL_LockTexture(texture, NULL, (void**)&to, &pitch);
 	
 	//Copy screen
-	#ifdef DISPLAY_PADDING
-		screen -= VDP_INTERNAL_PAD;
+	#ifdef DISPLAY_MASK
+		#ifdef DISPLAY_PADDING
+			mask -= VDP_INTERNAL_PAD;
+		#endif
+		uint32_t *tod = (uint32_t*)to;
+		static const uint32_t col[4] = {0x000000FF, 0x0000FFFF, 0x00FF00FF, 0x00FFFFFF};
+		for (size_t i = 0; i < TEXTURE_HEIGHT; i++)
+		{
+			for (size_t x = 0; x < TEXTURE_WIDTH; x++)
+				*tod++ = col[mask[x]];
+			tod += (pitch >> 2) - TEXTURE_WIDTH;
+			mask += SCREEN_WIDTH + (VDP_INTERNAL_PAD * 2);
+		}
+	#else
+		#ifdef DISPLAY_PADDING
+			screen -= VDP_INTERNAL_PAD;
+		#endif
+		for (size_t i = 0; i < TEXTURE_HEIGHT; i++)
+		{
+			memcpy(to, screen, TEXTURE_WIDTH << 2);
+			to += pitch;
+			screen += SCREEN_WIDTH + (VDP_INTERNAL_PAD * 2);
+		}
 	#endif
-	for (size_t i = 0; i < TEXTURE_HEIGHT; i++)
-	{
-		memcpy(to, screen, TEXTURE_WIDTH << 2);
-		to += pitch;
-		screen += SCREEN_WIDTH + (VDP_INTERNAL_PAD * 2);
-	}
 	
 	//Unlock screen texture and draw to window
 	SDL_UnlockTexture(texture);

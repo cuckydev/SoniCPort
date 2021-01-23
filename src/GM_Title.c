@@ -114,6 +114,9 @@ int GM_Title()
 	VDP_WriteVRAM(0x0000, art_ghz1, art_ghz1_size);
 	PalLoad1(PalId_Title);
 	
+	//Run title screen for 376 frames
+	demo_length = 376;
+	
 	//Clear objects (Clears 0x20 bytes... weird)
 	memset(&objects[2], 0, 0x20);
 	
