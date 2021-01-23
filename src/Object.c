@@ -273,6 +273,78 @@ void BuildSprites()
 }
 
 //Object functions
+void AnimateSprite(Object *obj, const uint8_t *anim_script)
+{
+	//Check if animation changed
+	uint8_t anim = obj->anim;
+	if (anim != obj->prev_anim)
+	{
+		//Reset animation state
+		obj->prev_anim = anim;
+		obj->anim_frame = 0;
+		obj->frame_time = 0;
+	}
+	
+	//Wait for current animation frame to end
+	if (--obj->frame_time >= 0)
+		return;
+	
+	//Get animation script to use
+	anim <<= 1;
+	anim_script += (anim_script[anim] << 8) | (anim_script[anim + 1] << 0);
+	obj->frame_time = anim_script[0];
+	
+	//Read current animation command
+	uint8_t cmd = anim_script[1 + obj->anim_frame];
+	
+	if (!(cmd & 0x80))
+	{
+		Anim_Next:
+		//Set animation frame
+		obj->frame = cmd & 0x1F;
+		obj->render.f.x_flip = obj->status.o.f.x_flip ^ ((cmd >> 5) & 1);
+		obj->render.f.y_flip = obj->status.o.f.y_flip ^ ((cmd >> 6) & 1);
+		obj->anim_frame++;
+	}
+	else
+	{
+		if (++cmd == 0) //0xFF
+		{
+			//Restart animation
+			obj->anim_frame = 0;
+			cmd = anim_script[1];
+			goto Anim_Next;
+		}
+		if (++cmd == 0) //0xFE
+		{
+			//Go back (next byte) frames
+			obj->anim_frame -= anim_script[2 + obj->anim_frame];
+			cmd = anim_script[1 + obj->anim_frame];
+			goto Anim_Next;
+		}
+		if (++cmd == 0) //0xFD
+		{
+			//Change animation (falls through to the routine increment below)
+			obj->anim = anim_script[2 + obj->anim_frame];
+		}
+		if (++cmd == 0) //0xFC
+		{
+			//Increment routine (falls through to the routine secondary code below)
+			obj->routine += 2;
+		}
+		if (++cmd == 0) //0xFB
+		{
+			//Clear secondary routine (falls through to the increment below)
+			obj->routine_sec = 0;
+		}
+		if (++cmd == 0) //0xFA
+		{
+			//Increment secondary routine
+			obj->routine_sec += 2;
+		}
+	}
+}
+
 void DisplaySprite(Object *obj)
 {
 	//Get queue to use

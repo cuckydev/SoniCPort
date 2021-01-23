@@ -107,7 +107,7 @@ typedef struct
 	uint8_t frame;        //Mapping frame
 	uint8_t anim_frame;   //Frame index in animation
 	uint8_t anim;         //Animation
-	uint8_t prev_frame;   //Previous frame index
+	uint8_t prev_anim;    //Previous animation
 	int8_t frame_time;    //Frame duration remaining
 	uint8_t col_response; //Collision response
 	uint8_t col_property; //Collision property (object-specific)
@@ -134,4 +134,5 @@ typedef struct
 //Object functions
 void ExecuteObjects();
 void BuildSprites();
-void DisplaySprite();
+void AnimateSprite(Object *obj, const uint8_t *anim_script);
+void DisplaySprite(Object *obj);

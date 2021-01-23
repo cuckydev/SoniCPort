@@ -6,6 +6,10 @@
 
 #include <Backend/VDP.h>
 
+//Scroll dimensions (hack so that dimensions that aren't a multiple of 16 work)
+#define SCROLL_WIDTH  ((SCREEN_WIDTH  + 15) & ~15)
+#define SCROLL_HEIGHT ((SCREEN_HEIGHT + 15) & ~15)
+
 //Scroll blocks
 int16_t scroll_block_1_size;
 int16_t scroll_block_2_size;
@@ -120,7 +124,7 @@ void DrawBlocks_LR_2(size_t offset, size_t pos, int16_t sx, int16_t sy, int16_t 
 
 void DrawBlocks_LR(size_t offset, size_t pos, int16_t sx, int16_t sy, int16_t x, int16_t y, uint8_t *layout)
 {
-	DrawBlocks_LR_2(offset, pos, sx, sy, x, y, layout, (SCREEN_WIDTH + 16 + 16) / 16);
+	DrawBlocks_LR_2(offset, pos, sx, sy, x, y, layout, (SCROLL_WIDTH + 16 + 16) / 16);
 }
 
 void DrawBlocks_TB_2(size_t offset, size_t pos, int16_t sx, int16_t sy, int16_t x, int16_t y, uint8_t *layout, size_t height)
@@ -138,14 +142,14 @@ void DrawBlocks_TB_2(size_t offset, size_t pos, int16_t sx, int16_t sy, int16_t 
 
 void DrawBlocks_TB(size_t offset, size_t pos, int16_t sx, int16_t sy, int16_t x, int16_t y, uint8_t *layout)
 {
-	DrawBlocks_TB_2(offset, pos, sx, sy, x, y, layout, (SCREEN_HEIGHT + 16 + 16) / 16);
+	DrawBlocks_TB_2(offset, pos, sx, sy, x, y, layout, (SCROLL_HEIGHT + 16 + 16) / 16);
 }
 
 //Level drawing functions
 void DrawChunks(int16_t sx, int16_t sy, uint8_t *layout, size_t offset)
 {
 	int16_t y = -16;
-	for (size_t i = 0; i < (SCREEN_HEIGHT + 16 + 16) / 16; i++)
+	for (size_t i = 0; i < (SCROLL_HEIGHT + 16 + 16) / 16; i++)
 	{
 		DrawBlocks_LR_2(offset, CalcVRAMPos(sx, sy, 0, y), sx, sy, 0, y, layout, 512 / 16);
 		y += 16;
@@ -163,15 +167,15 @@ void DrawBGScrollBlock1(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout,
 	if (*flag != (*flag &= ~SCROLL_FLAG_UP))
 		DrawBlocks_LR_2(offset, CalcVRAMPos(sx, sy, -16, -16), sx, sy, -16, -16, layout, 512 / 16);
 	if (*flag != (*flag &= ~SCROLL_FLAG_DOWN))
-		DrawBlocks_LR_2(offset, CalcVRAMPos(sx, sy, -16, SCREEN_HEIGHT), sx, sy, -16, SCREEN_HEIGHT, layout, 512 / 16);
+		DrawBlocks_LR_2(offset, CalcVRAMPos(sx, sy, -16, SCROLL_HEIGHT), sx, sy, -16, SCROLL_HEIGHT, layout, 512 / 16);
 	if (*flag != (*flag &= ~SCROLL_FLAG_LEFT))
 		DrawBlocks_TB(offset, CalcVRAMPos(sx, sy, -16, -16), sx, sy, -16, -16, layout);
 	if (*flag != (*flag &= ~SCROLL_FLAG_RIGHT))
-		DrawBlocks_TB(offset, CalcVRAMPos(sx, sy, SCREEN_WIDTH, -16), sx, sy, SCREEN_WIDTH, -16, layout);
+		DrawBlocks_TB(offset, CalcVRAMPos(sx, sy, SCROLL_WIDTH, -16), sx, sy, SCROLL_WIDTH, -16, layout);
 	if (*flag != (*flag &= ~SCROLL_FLAG_UP2))
 		{}//DrawBlocks_LB_3(offset, CalcVRAMPos_2(sx, sy, 0, -16), sx, sy, 0, -16, layout);
 	if (*flag != (*flag &= ~SCROLL_FLAG_DOWN2))
-		{}//DrawBlocks_LB_3(offset, CalcVRAMPos_2(sx, sy, 0, SCREEN_HEIGHT), sx, sy, 0, SCREEN_HEIGHT, layout);
+		{}//DrawBlocks_LB_3(offset, CalcVRAMPos_2(sx, sy, 0, SCROLL_HEIGHT), sx, sy, 0, SCROLL_HEIGHT, layout);
 }
 
 void DrawBGScrollBlock2(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout, size_t offset)
@@ -185,9 +189,9 @@ void DrawBGScrollBlock2(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout,
 	if ((level_id >> 8) != ZoneId_SBZ)
 	{
 		if (*flag != (*flag &= ~SCROLL_FLAG_LEFT2))
-			DrawBlocks_TB_2(offset, CalcVRAMPos(sx, sy, -16, SCREEN_HEIGHT / 2), sx, sy, -16, SCREEN_HEIGHT / 2, layout, 3);
+			DrawBlocks_TB_2(offset, CalcVRAMPos(sx, sy, -16, SCROLL_HEIGHT / 2), sx, sy, -16, SCROLL_HEIGHT / 2, layout, 3);
 		if (*flag != (*flag &= ~SCROLL_FLAG_RIGHT2))
-			DrawBlocks_TB_2(offset, CalcVRAMPos(sx, sy, SCREEN_WIDTH, SCREEN_HEIGHT / 2), sx, sy, SCREEN_WIDTH, SCREEN_HEIGHT / 2, layout, 3);
+			DrawBlocks_TB_2(offset, CalcVRAMPos(sx, sy, SCROLL_WIDTH, SCROLL_HEIGHT / 2), sx, sy, SCROLL_WIDTH, SCROLL_HEIGHT / 2, layout, 3);
 	}
 	else
 	{
@@ -208,7 +212,7 @@ void DrawBGScrollBlock3(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout,
 		if (*flag != (*flag &= ~SCROLL_FLAG_LEFT2))
 			DrawBlocks_TB_2(offset, CalcVRAMPos(sx, sy, -16, 64), sx, sy, -16, 64, layout, 3);
 		if (*flag != (*flag &= ~SCROLL_FLAG_RIGHT2))
-			DrawBlocks_TB_2(offset, CalcVRAMPos(sx, sy, SCREEN_WIDTH, 64), sx, sy, SCREEN_WIDTH, 64, layout, 3);
+			DrawBlocks_TB_2(offset, CalcVRAMPos(sx, sy, SCROLL_WIDTH, 64), sx, sy, SCROLL_WIDTH, 64, layout, 3);
 	}
 	else
 	{

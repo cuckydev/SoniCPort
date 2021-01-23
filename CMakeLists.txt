@@ -78,6 +78,8 @@ set(RESOURCES
 	"Palette/Title"
 	"Palette/TitleCycle"
 	
+	"Animation/TitleSonic"
+	
 	"Mappings/Credits"
 	"Mappings/TitleSonic"
 	
