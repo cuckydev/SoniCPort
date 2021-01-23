@@ -161,6 +161,17 @@ int GM_Title()
 			gamemode = GameMode_Sega;
 			return 0;
 		}
+		
+		//TODO: Check for level select cheat
+		
+		//TODO: Check start
+		
+		//Check if the title's over
+		if (!demo_length)
+		{
+			gamemode = GameMode_Demo;
+			return 0;
+		}
 	}
 	
 	return 0;

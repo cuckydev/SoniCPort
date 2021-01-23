@@ -36,6 +36,11 @@ void Obj_PSB(Object *obj)
 					obj->pos.s.x = 0x170 + (PLANE_WIDEADD << 2);
 					obj->pos.s.y = 0xF8;
 				}
+				else if (obj->frame == 2)
+				{
+					//Sonic mask
+					obj->pos.s.x -= SCREEN_WIDEADD; //Widescreen hack so you don't see the masking sprites
+				}
 				break;
 			}
 	//Fallthrough

@@ -5,7 +5,6 @@
 //Game types
 typedef enum
 {
-	GameMode_Quit,
 	GameMode_Sega,
 	GameMode_Title,
 	GameMode_Demo,

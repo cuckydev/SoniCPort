@@ -189,6 +189,8 @@ void BuildSprites()
 		for (int j = 0; queue->size != 0; j++, queue->size--)
 		{
 			Object *obj = queue->obj[j];
+			if (obj->mappings == NULL) //This line isn't in the original, but without it, the title screen segfaults
+				continue;              //Basically, the bug that causes the 'PRESS START BUTTON' text to not appear gives the object null mappings
 			if (obj->type != ObjId_Null)
 			{
 				//Get object position on screen and check if visible

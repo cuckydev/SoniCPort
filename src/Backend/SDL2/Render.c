@@ -131,7 +131,7 @@ void Render_Screen(const uint32_t *screen, const uint8_t *mask)
 			mask -= VDP_INTERNAL_PAD;
 		#endif
 		uint32_t *tod = (uint32_t*)to;
-		static const uint32_t col[4] = {0x000000FF, 0x0000FFFF, 0x00FF00FF, 0x00FFFFFF};
+		static const uint32_t col[4] = {0x202020FF, 0x2020FFFF, 0x20FF20FF, 0x20FFFFFF};
 		for (size_t i = 0; i < TEXTURE_HEIGHT; i++)
 		{
 			for (size_t x = 0; x < TEXTURE_WIDTH; x++)

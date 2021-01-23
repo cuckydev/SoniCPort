@@ -22,7 +22,7 @@ void EntryPoint()
 	gamemode = GameMode_Sega;
 	
 	//Run game loop
-	while (gamemode != GameMode_Quit)
+	while (1)
 	{
 		switch (gamemode)
 		{
@@ -35,7 +35,8 @@ void EntryPoint()
 					return;
 				break;
 			default:
-				gamemode = GameMode_Quit;
+				VDPSetupGame();
+				gamemode = GameMode_Sega;
 				break;
 		}
 	}
