@@ -150,6 +150,8 @@ static void (*deform_routines[])() = {
 //Background scroll speed routines
 void BgScroll_GHZ(int16_t x, int16_t y)
 {
+	(void)x;
+	(void)y;
 	#ifdef SCP_REV00
 		Deform_GHZ();
 	#else

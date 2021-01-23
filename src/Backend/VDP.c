@@ -300,8 +300,8 @@ void VDP_DrawSpriteRow(uint32_t *to, const VDP_Sprite *sprite, int16_t y)
 	//Get sprite information
 	uint8_t x_flip = sprite->tile.s.x_flip;
 	uint8_t y_flip = sprite->tile.s.y_flip;
-	uint8_t width = sprite->info.s.width;
-	uint8_t height = sprite->info.s.height;
+	uint8_t width = sprite->size.s.width;
+	uint8_t height = sprite->size.s.height;
 	uint16_t palette = sprite->tile.s.palette;
 	uint16_t pattern = sprite->tile.s.pattern;
 	
@@ -310,6 +310,7 @@ void VDP_DrawSpriteRow(uint32_t *to, const VDP_Sprite *sprite, int16_t y)
 	int16_t left = sprite->x - 128;
 	if (left <= -width_pixels || left >= SCREEN_WIDTH)
 		return;
+	to += left;
 	int16_t right = left + width_pixels;
 	
 	//Get Y tile
@@ -324,12 +325,12 @@ void VDP_DrawSpriteRow(uint32_t *to, const VDP_Sprite *sprite, int16_t y)
 	{
 		y &= 7;
 	}
-	pattern += ty << 1;
+	pattern += ty;
 	
 	//Get X tile
 	if (x_flip)
 	{
-		pattern += (width * (height + 1)) << 1;
+		pattern += width * (height + 1);
 		for (; left < right; left += 8)
 		{
 			//Write tile
@@ -338,7 +339,7 @@ void VDP_DrawSpriteRow(uint32_t *to, const VDP_Sprite *sprite, int16_t y)
 			WRITE_BYTE_FLIP(from, to, palette)
 			WRITE_BYTE_FLIP(from, to, palette)
 			WRITE_BYTE_FLIP(from, to, palette)
-			pattern -= (height + 1) << 1;
+			pattern -= height + 1;
 		}
 	}
 	else
@@ -351,7 +352,7 @@ void VDP_DrawSpriteRow(uint32_t *to, const VDP_Sprite *sprite, int16_t y)
 			WRITE_BYTE(from, to, palette)
 			WRITE_BYTE(from, to, palette)
 			WRITE_BYTE(from, to, palette)
-			pattern += (height + 1) << 1;
+			pattern += height + 1;
 		}
 	}
 }
@@ -369,13 +370,14 @@ int VDP_Render()
 	//Calculate sprite cache
 	memset(vdp_sprite_cache, 0, sizeof(vdp_sprite_cache));
 	
+	int asldas = 0;
 	for (uint8_t i = 0;;)
 	{
 		//Get sprite values
 		const VDP_Sprite *sprite = (const VDP_Sprite*)(vdp_vram + vdp_sprite_location + (i << 3));
 		uint16_t sprite_y = sprite->y;
-		uint8_t sprite_height = sprite->info.s.height;
-		uint8_t sprite_link = sprite->info.s.link;
+		uint8_t sprite_height = sprite->size.s.height;
+		uint8_t sprite_link = sprite->link;
 		
 		//Get sprite bounding area
 		int top = sprite_y - 128;
@@ -386,6 +388,7 @@ int VDP_Render()
 			bottom = SCREEN_HEIGHT;
 		
 		//Write sprite cache
+		asldas++;
 		for (int v = top; v < bottom; v++)
 		{
 			struct VDP_SpriteCache *scache = &vdp_sprite_cache[v];
@@ -394,7 +397,7 @@ int VDP_Render()
 		}
 		
 		//Go to next sprite
-		if (sprite_link)
+		if (sprite_link != 0)
 			i = sprite_link;
 		else
 			break;

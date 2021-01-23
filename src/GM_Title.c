@@ -75,7 +75,8 @@ int GM_Title()
 	PalLoad1(PalId_Sonic);
 	
 	//Load "SONIC TEAM PRESENTS" object
-	//objects[2].type = 0;
+	ExecuteObjects();
+	BuildSprites();
 	
 	//Fade in
 	if ((result = PaletteFadeIn()))
@@ -117,9 +118,11 @@ int GM_Title()
 	memset(&objects[2], 0, 0x20);
 	
 	//Load title objects
+	objects[1].type = ObjId_TitleSonic;
 	
-	//Deform background
+	ExecuteObjects();
 	DeformLayers();
+	BuildSprites();
 	
 	//Fade in
 	if ((result = PaletteFadeIn()))
@@ -134,7 +137,7 @@ int GM_Title()
 			return result;
 		
 		//Handle objects and scrolling
-		//ExecuteObjects();
+		ExecuteObjects();
 		DeformLayers();
 		BuildSprites();
 		

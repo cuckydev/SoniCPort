@@ -44,6 +44,7 @@ add_executable(SoniCPort WIN32
 	"src/LevelScroll.h"
 	"src/Object.c"
 	"src/Object.h"
+	"src/Object/TitleSonic.c"
 	
 	# Backend
 	"src/Backend/MegaDrive.c"

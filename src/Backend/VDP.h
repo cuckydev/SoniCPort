@@ -34,15 +34,15 @@ typedef union
 } VDP_Tile;
 
 //TODO: figure out how to just convert to .w?
-#define TILE_TO_STRUCT(v) \
-{                \
-	.s = {       \
-		v >> 15, \
-		v >> 13, \
-		v >> 12, \
-		v >> 11, \
-		v,       \
-	}            \
+#define TILE_TO_STRUCT(v)           \
+{                                   \
+	.s = {                          \
+		(uint8_t)(((v) >> 15) & 1), \
+		(uint8_t)(((v) >> 13) & 3), \
+		(uint8_t)(((v) >> 12) & 1), \
+		(uint8_t)(((v) >> 11) & 1), \
+		(uint16_t)((v) & 0x7FF),    \
+	}                               \
 }
 
 typedef union
@@ -61,7 +61,17 @@ typedef struct
 {
 	//Y coordinate
 	uint16_t y;
-	VDP_SpriteInfo info;
+	union
+	{
+		struct
+		{
+			uint8_t pad : 4;
+			uint8_t width : 2;
+			uint8_t height : 2;
+		} s;
+		uint8_t b;
+	} size;
+	uint8_t link;
 	VDP_Tile tile;
 	uint16_t x;
 } VDP_Sprite;

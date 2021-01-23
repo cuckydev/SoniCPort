@@ -108,7 +108,7 @@ typedef struct
 	uint8_t anim_frame;   //Frame index in animation
 	uint8_t anim;         //Animation
 	uint8_t prev_frame;   //Previous frame index
-	uint8_t frame_time;   //Frame duration remaining
+	int8_t frame_time;    //Frame duration remaining
 	uint8_t col_response; //Collision response
 	uint8_t col_property; //Collision property (object-specific)
 	union
@@ -132,5 +132,6 @@ typedef struct
 } Object;
 
 //Object functions
-
+void ExecuteObjects();
 void BuildSprites();
+void DisplaySprite();
