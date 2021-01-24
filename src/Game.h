@@ -30,6 +30,8 @@ extern uint8_t jpad_hold2,  jpad_press2;
 extern uint8_t jpad1_hold1, jpad1_press1;
 extern uint8_t jpad2_hold,  jpad2_press;
 
+extern uint32_t vbla_count;
+
 //General game functions
 void ReadJoypads();
 

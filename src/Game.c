@@ -16,9 +16,11 @@ uint16_t credits_num;
 
 uint8_t credits_cheat;
 
-uint8_t jpad_hold2,  jpad_press2;
-uint8_t jpad1_hold1, jpad1_press1;
-uint8_t jpad2_hold,  jpad2_press;
+uint8_t jpad_hold2,  jpad_press2; //Joypad 2 state
+uint8_t jpad1_hold1, jpad1_press1; //Joypad 1 state
+uint8_t jpad2_hold,  jpad2_press; //Sonic controls
+
+uint32_t vbla_count;
 
 //General game functions
 void ReadJoypads()
@@ -113,6 +115,11 @@ void VBlank()
 			WriteVRAMBuffers();
 			break;
 	}
+	
+	//Update music
+	
+	//Increment VBlank counter
+	vbla_count++;
 }
 
 void HBlank()

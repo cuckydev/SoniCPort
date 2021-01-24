@@ -4,6 +4,7 @@
 #include "Video.h"
 #include "Palette.h"
 #include "PaletteCycle.h"
+#include "Nemesis.h"
 
 #include <Backend/VDP.h>
 
@@ -43,7 +44,7 @@ void GM_Sega()
 	//Clear screen and load SEGA graphics
 	ClearScreen();
 	
-	VDP_WriteVRAM(0x0000, art_sega, sizeof(art_sega));
+	NemDec(0x0000, art_sega);
 	
 	CopyTilemap(&map_sega[0x0000], 0xE510 + PLANE_WIDEADD, 24, 8);
 	CopyTilemap(&map_sega[0x0180], 0xC000 + PLANE_WIDEADD, 40, 28);
@@ -83,6 +84,4 @@ void GM_Sega()
 	
 	//Start title gamemode
 	gamemode = GameMode_Title;
-	
-	return 0;
 }

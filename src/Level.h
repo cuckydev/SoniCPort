@@ -2,8 +2,6 @@
 
 #include "Object.h"
 
-#include <stddef.h>
-
 //Level constants
 #define RESERVED_OBJECTS 0x20
 #define LEVEL_OBJECTS    0x60
@@ -49,7 +47,6 @@ extern Object *const level_objects;
 
 //Global level resources
 extern const uint8_t art_ghz1[];
-extern const size_t art_ghz1_size;
 
 //Level functions
 void LoadLevelMaps();

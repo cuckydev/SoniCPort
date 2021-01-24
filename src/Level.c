@@ -4,6 +4,7 @@
 #include "Game.h"
 #include "LevelScroll.h"
 #include "LevelDraw.h"
+#include "Kosinski.h"
 
 #include <Backend/VDP.h>
 
@@ -36,7 +37,6 @@ Object *const level_objects = objects + RESERVED_OBJECTS;
 const uint8_t art_ghz1[] = {
 	#include <Resource/Art/GHZ1.h>
 };
-const size_t art_ghz1_size = sizeof(art_ghz1);
 static const uint8_t art_ghz2[] = {
 	#include <Resource/Art/GHZ2.h>
 };
@@ -190,7 +190,7 @@ void LoadLevelMaps()
 {
 	//Load chunk maps and tile map
 	ZoneId zone = level_id >> 8;
-	memcpy(level_map256, level_maps[zone].map256, level_maps[zone].map256_size);
+	KosDec(level_maps[zone].map256, level_map256);//memcpy(level_map256, level_maps[zone].map256, level_maps[zone].map256_size);
 	memcpy(level_map16, level_maps[zone].map16, level_maps[zone].map16_size);
 }
 
