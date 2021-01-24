@@ -23,5 +23,5 @@ void PalLoad3_Water(PaletteId id);
 void PalLoad4_Water(PaletteId id);
 
 //Palette fading
-int PaletteFadeIn();
-int PaletteFadeOut();
+void PaletteFadeIn();
+void PaletteFadeOut();

@@ -34,7 +34,7 @@ static int vsync;
 int Render_Init(const MD_Header *header)
 {
 	//Create window
-	if ((window = SDL_CreateWindow(header->title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TEXTURE_WIDTH * SCREEN_SCALE, TEXTURE_HEIGHT * SCREEN_SCALE, 0)) == NULL)
+	if ((window = SDL_CreateWindow(header->title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TEXTURE_WIDTH * SCREEN_SCALE, TEXTURE_HEIGHT * SCREEN_SCALE, SDL_WINDOW_HIDDEN)) == NULL)
 	{
 		printf("Render_Init: %s\n", SDL_GetError());
 		return -1;
@@ -51,6 +51,9 @@ int Render_Init(const MD_Header *header)
 		SDL_SetWindowIcon(window, icon_surface);
 		SDL_FreeSurface(icon_surface);
 	}
+	
+	//Show window now that the icon's been loaded
+	SDL_ShowWindow(window);
 	
 	//Check if VSync should be used
 	SDL_DisplayMode display_mode;

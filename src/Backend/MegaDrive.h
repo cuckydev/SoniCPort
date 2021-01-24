@@ -27,3 +27,4 @@ typedef struct
 
 //MegaDrive interface
 int MegaDrive_Start(const MD_Header *header);
+void MegaDrive_Quit();

@@ -10,7 +10,31 @@
 //Game
 GameMode gamemode;
 
+int16_t demo;
 uint16_t demo_length;
+uint16_t credits_num;
+
+uint8_t credits_cheat;
+
+uint8_t jpad_hold2,  jpad_press2;
+uint8_t jpad1_hold1, jpad1_press1;
+uint8_t jpad2_hold,  jpad2_press;
+
+//General game functions
+void ReadJoypads()
+{
+	uint8_t state;
+	
+	//Read joypad 1
+	state = Joypad_GetState1();
+	jpad1_press1 = (state ^ jpad1_hold1) & state;
+	jpad1_hold1 = state;
+	
+	//Read joypad 2
+	state = Joypad_GetState2();
+	jpad2_press = (state ^ jpad2_hold) & state;
+	jpad2_hold = state;
+}
 
 //Game entry point
 void EntryPoint()
@@ -27,12 +51,10 @@ void EntryPoint()
 		switch (gamemode)
 		{
 			case GameMode_Sega:
-				if (GM_Sega())
-					return;
+				GM_Sega();
 				break;
 			case GameMode_Title:
-				if (GM_Title())
-					return;
+				GM_Title();
 				break;
 			default:
 				VDPSetupGame();
@@ -45,7 +67,8 @@ void EntryPoint()
 //Interrupts
 void WriteVRAMBuffers()
 {
-	//Read controllers
+	//Read joypad state
+	ReadJoypads();
 	
 	//Copy palette
 	if (wtr_state)
@@ -64,7 +87,7 @@ void VBlank()
 	if (vbla_routine != 0x00)
 	{
 		//Set VDP state
-		VDP_SetVScroll(vid_scrposy_dup, vid_bgscrposy_dup);
+		VDP_SetVScroll(vid_scrpos_y_dup, vid_bg_scrpos_y_dup);
 		
 		//Set screen state
 		vbla_routine = 0x00;

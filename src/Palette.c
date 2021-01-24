@@ -116,10 +116,8 @@ void FadeIn_FromBlack()
 		FadeIn_AddColour(col++, *ref++);
 }
 
-int PaletteFadeIn()
+void PaletteFadeIn()
 {
-	int result;
-	
 	//Initialize fade
 	palette_fade.ind = 0x00;
 	palette_fade.len = 0x40;
@@ -131,12 +129,9 @@ int PaletteFadeIn()
 	for (int i = 0; i < 22; i++)
 	{
 		vbla_routine = 0x12;
-		if ((result = WaitForVBla()))
-			return result;
+		WaitForVBla();
 		FadeIn_FromBlack();
 	}
-	
-	return 0;
 }
 
 //Fade out to black
@@ -169,10 +164,8 @@ void FadeOut_ToBlack()
 		FadeOut_DecColour(col++);
 }
 
-int PaletteFadeOut()
+void PaletteFadeOut()
 {
-	int result;
-	
 	//Initialize fade
 	palette_fade.ind = 0x00;
 	palette_fade.len = 0x40;
@@ -181,10 +174,7 @@ int PaletteFadeOut()
 	for (int i = 0; i < 22; i++)
 	{
 		vbla_routine = 0x12;
-		if ((result = WaitForVBla()))
-			return result;
+		WaitForVBla();
 		FadeOut_ToBlack();
 	}
-	
-	return 0;
 }

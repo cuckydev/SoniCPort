@@ -1,7 +1,10 @@
 #include "VDP.h"
 
+#include "MegaDrive.h"
+
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 //Render backend interface
 int Render_Init(const MD_Header *header);
@@ -431,13 +434,8 @@ void VDP_DrawSpriteRow(uint32_t *to, uint8_t *tom, const VDP_Sprite *sprite, int
 	}
 }
 
-int VDP_Render()
+void VDP_Render()
 {
-	//Handle events
-	int result;
-	if ((result = Input_HandleEvents()))
-		return result;
-	
 	//Get VDP screen pointer
 	vdp_screen = &vdp_screen_internal[0][VDP_INTERNAL_PAD];
 	vdp_mask = &vdp_mask_internal[0][VDP_INTERNAL_PAD];
@@ -527,5 +525,11 @@ int VDP_Render()
 	//Render screen
 	Render_Screen(vdp_screen, vdp_mask);
 	
-	return 0;
+	//Handle events
+	if (Input_HandleEvents())
+	{
+		//Game should close
+		MegaDrive_Quit();
+		exit(0);
+	}
 }

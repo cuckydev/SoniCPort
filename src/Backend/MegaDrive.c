@@ -20,8 +20,13 @@ int MegaDrive_Start(const MD_Header *header)
 	}
 	
 	//Quit MegaDrive subsystems
+	MegaDrive_Quit();
+	return result;
+}
+
+void MegaDrive_Quit()
+{
+	//Quit MegaDrive subsystems
 	VDP_Quit();
 	System_Quit();
-	
-	return result;
 }

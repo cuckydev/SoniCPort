@@ -1,3 +1,3 @@
 #pragma once
 
-int GM_Title();
+void GM_Title();

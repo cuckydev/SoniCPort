@@ -40,16 +40,13 @@ static ALIGNED2 const uint8_t map_title_fg[] = {
 };
 
 //Title gamemode
-int GM_Title()
+void GM_Title()
 {
-	int result;
-	
 	//Stop music
 	//sfx	bgm_Stop,0,1,1
 	
 	//Clear the pattern load queue and fade out
-	if ((result = PaletteFadeOut()))
-		return result;
+	PaletteFadeOut();
 	
 	//Set VDP state
 	VDP_SetPlaneALocation(VRAM_FG);
@@ -75,12 +72,13 @@ int GM_Title()
 	PalLoad1(PalId_Sonic);
 	
 	//Load "SONIC TEAM PRESENTS" object
+	objects[2].type = ObjId_Credits;
+	
 	ExecuteObjects();
 	BuildSprites();
 	
 	//Fade in
-	if ((result = PaletteFadeIn()))
-		return result;
+	PaletteFadeIn();
 	
 	//Load title art
 	VDP_WriteVRAM(0x4000, art_title_fg, sizeof(art_title_fg));
@@ -88,6 +86,8 @@ int GM_Title()
 	VDP_WriteVRAM(0xA200, art_title_tm, sizeof(art_title_tm));
 	
 	//Reset game state
+	last_lamp = 0;
+	demo = 0;
 	
 	//Load GHZ
 	level_id = LEVEL_ID(ZoneId_GHZ, 0);
@@ -100,12 +100,11 @@ int GM_Title()
 	player->pos.l.x.f.u += SCREEN_WIDEADD2; //For widescreen so the title starts scrolling at the correct time
 	
 	//Fade out
-	if ((result = PaletteFadeOut()))
-		return result;
+	PaletteFadeOut();
 	
 	//Draw background
 	ClearScreen();
-	DrawChunks(bgscrposx.f.u, bgscrposy.f.u, level_layout[0][1], VRAM_BG);
+	DrawChunks(bg_scrpos_x.f.u, bg_scrpos_y.f.u, level_layout[0][1], VRAM_BG);
 	
 	//Load title mappings
 	CopyTilemap(&map_title_fg[0x0000], 0xC206 + PLANE_WIDEADD, 34, 22);
@@ -117,8 +116,13 @@ int GM_Title()
 	//Run title screen for 376 frames
 	demo_length = 376;
 	
-	//Clear objects (Clears 0x20 bytes... weird)
-	memset(&objects[2], 0, 0x20);
+	//Clear objects
+	#ifdef SCP_FIX_BUGS
+		memset(&objects[2], 0, sizeof(Object));
+	#else
+		memset(&objects[2], 0, 0x20); //0x20 instead of the object structure size?
+		                              //This why the "PRESS START BUTTON" text is missing.
+	#endif
 	
 	//Load title objects
 	objects[1].type = ObjId_TitleSonic;
@@ -135,16 +139,14 @@ int GM_Title()
 	BuildSprites();
 	
 	//Fade in
-	if ((result = PaletteFadeIn()))
-		return result;
+	PaletteFadeIn();
 	
 	//Loop
 	while (1)
 	{
 		//Render frame
 		vbla_routine = 0x04;
-		if ((result = WaitForVBla()))
-			return result;
+		WaitForVBla();
 		
 		//Handle objects and scrolling
 		ExecuteObjects();
@@ -159,20 +161,22 @@ int GM_Title()
 		if ((player->pos.l.x.f.u += 2) >= 0x1C00)
 		{
 			gamemode = GameMode_Sega;
-			return 0;
+			return;
 		}
 		
 		//TODO: Check for level select cheat
 		
-		//TODO: Check start
+		//Check if start is pressed
+		if (jpad1_press1 & JPAD_START)
+		{
+			;
+		}
 		
 		//Check if the title's over
 		if (!demo_length)
 		{
 			gamemode = GameMode_Demo;
-			return 0;
+			return;
 		}
 	}
-	
-	return 0;
 }

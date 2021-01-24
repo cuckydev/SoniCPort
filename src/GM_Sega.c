@@ -25,16 +25,13 @@
 #endif
 
 //SEGA gamemode
-int GM_Sega()
+void GM_Sega()
 {
-	int result;
-	
 	//Stop music
 	//sfx	bgm_Stop,0,1,1
 	
 	//Clear the pattern load queue and fade out
-	if ((result = PaletteFadeOut()))
-		return result;
+	PaletteFadeOut();
 	
 	//Set VDP state
 	VDP_SetPlaneALocation(VRAM_FG);
@@ -65,27 +62,24 @@ int GM_Sega()
 	do
 	{
 		vbla_routine = 0x02;
-		if ((result = WaitForVBla()))
-			return result;
+		WaitForVBla();
 	}
 	while (PCycle_Sega());
 	
 	//Play "SEGA" sound
 	
 	vbla_routine = 0x14;
-	if ((result = WaitForVBla()))
-		return result;
+	WaitForVBla();
 	
 	//Wait a bit before resuming
 	demo_length = 30;
 	do
 	{
 		vbla_routine = 0x02;
-		if ((result = WaitForVBla()))
-			return result;
+		WaitForVBla();
 		if (!demo_length)
 			break;
-	} while (1); //TODO: start button isn't pressed
+	} while (!(jpad1_press1 & JPAD_START));
 	
 	//Start title gamemode
 	gamemode = GameMode_Title;

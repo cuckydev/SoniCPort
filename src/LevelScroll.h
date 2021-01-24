@@ -18,15 +18,15 @@ extern uint8_t nobgscroll, bgscrollvert;
 extern uint16_t fg_scroll_flags, bg1_scroll_flags, bg2_scroll_flags, bg3_scroll_flags;
 extern uint16_t fg_scroll_flags_dup, bg1_scroll_flags_dup, bg2_scroll_flags_dup, bg3_scroll_flags_dup;
 
-extern dword_s scrposx,     scrposy,     bgscrposx,     bgscrposy,     bg2scrposx,     bg2scrposy,     bg3scrposx,     bg3scrposy;
-extern dword_s scrposx_dup, scrposy_dup, bgscrposx_dup, bgscrposy_dup, bg2scrposx_dup, bg2scrposy_dup, bg3scrposx_dup, bg3scrposy_dup;
+extern dword_s scrpos_x,     scrpos_y,     bg_scrpos_x,     bg_scrpos_y,     bg2_scrpos_x,     bg2_scrpos_y,     bg3_scrpos_x,     bg3_scrpos_y;
+extern dword_s scrpos_x_dup, scrpos_y_dup, bg_scrpos_x_dup, bg_scrpos_y_dup, bg2_scrpos_x_dup, bg2_scrpos_y_dup, bg3_scrpos_x_dup, bg3_scrpos_y_dup;
 
-extern int16_t scrshiftx, scrshifty;
+extern int16_t scrshift_x, scrshift_y;
 
 extern uint8_t fg_xblock, bg1_xblock, bg2_xblock, bg3_xblock;
 extern uint8_t fg_yblock, bg1_yblock, bg2_yblock, bg3_yblock;
 
-extern int16_t lookshift;
+extern int16_t look_shift;
 
 //Level scroll functions
 void BgScrollSpeed(int16_t x, int16_t y);

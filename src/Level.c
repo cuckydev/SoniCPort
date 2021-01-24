@@ -1,6 +1,7 @@
 #include "Level.h"
 
 #include <Constants.h>
+#include "Game.h"
 #include "LevelScroll.h"
 #include "LevelDraw.h"
 
@@ -13,14 +14,11 @@ uint16_t level_id;
 
 uint8_t dle_routine;
 
-int16_t limitleft1, limitright1, limittop1, limitbtm1;
-int16_t limitleft2, limitright2, limittop2, limitbtm2;
-int16_t limitleft3;
+int16_t limit_left1, limit_right1, limit_top1, limit_btm1;
+int16_t limit_left2, limit_right2, limit_top2, limit_btm2;
+int16_t limit_left3;
 
-uint8_t lastlamp;
-
-int16_t demo;
-uint16_t creditsnum;
+uint8_t last_lamp;
 
 //Loaded level data
 ALIGNED2 uint8_t level_map256[0xA400];
@@ -229,20 +227,20 @@ void LevelSizeLoad()
 	
 	//Load sizes and other stuff
 	/* FFFFF730 = */ sizes++;
-	limitleft2 = *sizes;
-	limitleft1 = *sizes++;
-	limitright2 = *sizes;
-	limitright1 = *sizes++;
-	limittop2 = *sizes;
-	limittop1 = *sizes++;
-	limitbtm2 = *sizes;
-	limitbtm1 = *sizes++;
-	limitleft3 = limitleft2 + 0x240;
-	lookshift = *sizes++;
+	limit_left2 = *sizes;
+	limit_left1 = *sizes++;
+	limit_right2 = *sizes;
+	limit_right1 = *sizes++;
+	limit_top2 = *sizes;
+	limit_top1 = *sizes++;
+	limit_btm2 = *sizes;
+	limit_btm1 = *sizes++;
+	limit_left3 = limit_left2 + 0x240;
+	look_shift = *sizes++;
 	
 	//Load player start
 	int16_t x, y;
-	if (lastlamp)
+	if (last_lamp)
 	{
 		//TODO
 		//Lamp_LoadInfo();
@@ -269,27 +267,27 @@ void LevelSizeLoad()
 	}
 	
 	//Clip camera position against left and right
-	if ((x -= (SCREEN_WIDTH / 2)) < 0) //0 instead of limitleft
+	if ((x -= (SCREEN_WIDTH / 2)) < 0) //0 instead of limit_left
 		x = 0;
-	if (x >= limitright2)
-		x = limitright2;
-	scrposx.f.u = x;
+	if (x >= limit_right2)
+		x = limit_right2;
+	scrpos_x.f.u = x;
 	
 	//Clip camera position against top and bottom
-	if ((y -= (96 + SCREEN_TALLADD2)) < 0) //0 instead of limittop
+	if ((y -= (96 + SCREEN_TALLADD2)) < 0) //0 instead of limit_top
 		y = 0;
-	if (y >= limitbtm2)
-		y = limitbtm2;
-	scrposy.f.u = y;
+	if (y >= limit_btm2)
+		y = limit_btm2;
+	scrpos_y.f.u = y;
 	
 	//Load other level stuff
 	BgScrollSpeed(x, y);
 	memcpy(&loopchunks[0][0], &level_loops[level_id >> 8][0][0], 4);
 	
 	const int16_t *scroll_size = level_scrollsize[level_id >> 8];
-	scroll_block_1_size = *scroll_size++;
-	scroll_block_2_size = *scroll_size++;
-	scroll_block_3_size = *scroll_size++;
-	scroll_block_4_size = *scroll_size++;
+	scroll_block1_size = *scroll_size++;
+	scroll_block2_size = *scroll_size++;
+	scroll_block3_size = *scroll_size++;
+	scroll_block4_size = *scroll_size++;
 }
 

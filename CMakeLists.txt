@@ -6,6 +6,7 @@ cmake_minimum_required(VERSION 3.12)
 set(BACKEND "SDL2" CACHE STRING "Which backend to use (SDL2)")
 option(REV01 "Compile REV01 ROM" ON)
 option(JAPANESE "Compile Japanese ROM" OFF)
+option(FIX_BUGS "Fix bugs (completely screwed up code, not gameplay bugs)" OFF)
 
 option(SANITIZE "Enable sanitization" OFF)
 option(LTO "Enable link-time optimization" OFF)
@@ -46,12 +47,15 @@ add_executable(SoniCPort WIN32
 	"src/Object.h"
 	"src/Object/TitleSonic.c"
 	"src/Object/PSB.c"
+	"src/Object/Credits.c"
 	
 	# Backend
 	"src/Backend/MegaDrive.c"
 	"src/Backend/MegaDrive.h"
 	"src/Backend/VDP.c"
 	"src/Backend/VDP.h"
+	"src/Backend/Joypad.c"
+	"src/Backend/Joypad.h"
 )
 
 set(RESOURCES
@@ -149,6 +153,11 @@ endif()
 # Region
 if(JAPANESE)
 	target_compile_definitions(SoniCPort PRIVATE SCP_JP)
+endif()
+
+# Bug fixes
+if(FIX_BUGS)
+	target_compile_definitions(SoniCPort PRIVATE SCP_FIX_BUGS)
 endif()
 
 # Sanitization
