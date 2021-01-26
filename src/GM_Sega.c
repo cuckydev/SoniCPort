@@ -1,9 +1,11 @@
 #include "GM_Sega.h"
 
 #include "Game.h"
+#include "Level.h"
 #include "Video.h"
 #include "Palette.h"
 #include "PaletteCycle.h"
+#include "PLC.h"
 #include "Nemesis.h"
 
 #include <Backend/VDP.h>
@@ -29,9 +31,10 @@
 void GM_Sega()
 {
 	//Stop music
-	//sfx	bgm_Stop,0,1,1
+	//sfx	bgm_Stop,0,1,1 //TODO
 	
 	//Clear the pattern load queue and fade out
+	ClearPLC();
 	PaletteFadeOut();
 	
 	//Set VDP state

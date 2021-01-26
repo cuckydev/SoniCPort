@@ -16,6 +16,7 @@ struct SpriteQueue
 //Object execution
 void Obj_TitleSonic(Object *obj);
 void Obj_PSB(Object *obj);
+void Obj_TitleCard(Object *obj);
 void Obj_Credits(Object *obj);
 
 static void (*object_func[])(Object*) = {
@@ -71,7 +72,7 @@ static void (*object_func[])(Object*) = {
 	/* ObjId_31         */ NULL,
 	/* ObjId_32         */ NULL,
 	/* ObjId_33         */ NULL,
-	/* ObjId_34         */ NULL,
+	/* ObjId_TitleCard  */ Obj_TitleCard,
 	/* ObjId_35         */ NULL,
 	/* ObjId_36         */ NULL,
 	/* ObjId_37         */ NULL,
@@ -197,13 +198,18 @@ void BuildSprites_Draw(VDP_Sprite **sprite, uint8_t *sprite_i, uint16_t x, uint1
 				(*sprite)->link = ++(*sprite_i);
 				uint16_t tile = (*mappings++ << 8) | (*mappings++ << 0);
 				(*sprite)->tile.s.priority = obj->tile.s.priority ^ (uint8_t)(tile >> 15);
-				(*sprite)->tile.s.y_flip   = obj->tile.s.y_flip   ^ (uint8_t)(tile >> 13) ^ 1;
-				(*sprite)->tile.s.x_flip   = obj->tile.s.x_flip   ^ (uint8_t)(tile >> 12) ^ 1;
-				(*sprite)->tile.s.palette  = obj->tile.s.palette  + (uint8_t)(tile >> 11);
+				(*sprite)->tile.s.palette  = obj->tile.s.palette  + (uint8_t)(tile >> 13);
+				(*sprite)->tile.s.y_flip   = obj->tile.s.y_flip   ^ (uint8_t)(tile >> 12) ^ 1;
+				(*sprite)->tile.s.x_flip   = obj->tile.s.x_flip   ^ (uint8_t)(tile >> 11) ^ 1;
 				(*sprite)->tile.s.pattern  = obj->tile.s.pattern  + (uint16_t)tile;
 				uint16_t px = x - ((int8_t)*mappings++) - (((size << 1) & 0x18) + 8);
-				if ((px &= 0x1FF) == 0)
-					px++; //Prevent sprite from being x=0 (acts as a mask)
+				#if (SCREEN_WIDTH <= 320)
+					if ((px &= 0x1FF) == 0)
+						px++; //Prevent sprite from being x=0 (acts as a mask)
+				#else
+					if (px == 0)
+						px++;
+				#endif
 				(*sprite)->x = px;
 				
 				(*sprite)++;
@@ -227,13 +233,18 @@ void BuildSprites_Draw(VDP_Sprite **sprite, uint8_t *sprite_i, uint16_t x, uint1
 				(*sprite)->link = ++(*sprite_i);
 				uint16_t tile = (*mappings++ << 8) | (*mappings++ << 0);
 				(*sprite)->tile.s.priority = obj->tile.s.priority ^ (uint8_t)(tile >> 15);
-				(*sprite)->tile.s.y_flip   = obj->tile.s.y_flip   ^ (uint8_t)(tile >> 13);
-				(*sprite)->tile.s.x_flip   = obj->tile.s.x_flip   ^ (uint8_t)(tile >> 12) ^ 1;
-				(*sprite)->tile.s.palette  = obj->tile.s.palette  + (uint8_t)(tile >> 11);
+				(*sprite)->tile.s.palette  = obj->tile.s.palette  + (uint8_t)(tile >> 13);
+				(*sprite)->tile.s.y_flip   = obj->tile.s.y_flip   ^ (uint8_t)(tile >> 12);
+				(*sprite)->tile.s.x_flip   = obj->tile.s.x_flip   ^ (uint8_t)(tile >> 11) ^ 1;
 				(*sprite)->tile.s.pattern  = obj->tile.s.pattern  + (uint16_t)tile;
 				uint16_t px = x - ((int8_t)*mappings++) - (((size << 1) & 0x18) + 8);
-				if ((px &= 0x1FF) == 0)
-					px++; //Prevent sprite from being x=0 (acts as a mask)
+				#if (SCREEN_WIDTH <= 320)
+					if ((px &= 0x1FF) == 0)
+						px++; //Prevent sprite from being x=0 (acts as a mask)
+				#else
+					if (px == 0)
+						px++;
+				#endif
 				(*sprite)->x = px;
 				
 				(*sprite)++;
@@ -258,13 +269,18 @@ void BuildSprites_Draw(VDP_Sprite **sprite, uint8_t *sprite_i, uint16_t x, uint1
 			(*sprite)->link = ++(*sprite_i);
 			uint16_t tile = (*mappings++ << 8) | (*mappings++ << 0);
 			(*sprite)->tile.s.priority = obj->tile.s.priority ^ (uint8_t)(tile >> 15);
-			(*sprite)->tile.s.y_flip   = obj->tile.s.y_flip   ^ (uint8_t)(tile >> 13) ^ 1;
-			(*sprite)->tile.s.x_flip   = obj->tile.s.x_flip   ^ (uint8_t)(tile >> 12);
-			(*sprite)->tile.s.palette  = obj->tile.s.palette  + (uint8_t)(tile >> 11);
+			(*sprite)->tile.s.palette  = obj->tile.s.palette  + (uint8_t)(tile >> 13);
+			(*sprite)->tile.s.y_flip   = obj->tile.s.y_flip   ^ (uint8_t)(tile >> 12) ^ 1;
+			(*sprite)->tile.s.x_flip   = obj->tile.s.x_flip   ^ (uint8_t)(tile >> 11);
 			(*sprite)->tile.s.pattern  = obj->tile.s.pattern  + (uint16_t)tile;
 			uint16_t px = x + (int8_t)*mappings++;
-			if ((px &= 0x1FF) == 0)
-				px++; //Prevent sprite from being x=0 (acts as a mask)
+			#if (SCREEN_WIDTH <= 320)
+				if ((px &= 0x1FF) == 0)
+					px++; //Prevent sprite from being x=0 (acts as a mask)
+			#else
+				if (px == 0)
+					px++;
+			#endif
 			(*sprite)->x = px;
 			
 			(*sprite)++;
@@ -288,13 +304,18 @@ void BuildSprites_Draw(VDP_Sprite **sprite, uint8_t *sprite_i, uint16_t x, uint1
 			(*sprite)->link = ++(*sprite_i);
 			uint16_t tile = (*mappings++ << 8) | (*mappings++ << 0);
 			(*sprite)->tile.s.priority = obj->tile.s.priority ^ (uint8_t)(tile >> 15);
-			(*sprite)->tile.s.y_flip   = obj->tile.s.y_flip   ^ (uint8_t)(tile >> 13);
-			(*sprite)->tile.s.x_flip   = obj->tile.s.x_flip   ^ (uint8_t)(tile >> 12);
-			(*sprite)->tile.s.palette  = obj->tile.s.palette  + (uint8_t)(tile >> 11);
-			(*sprite)->tile.s.pattern  = obj->tile.s.pattern  + (uint16_t)tile;
+			(*sprite)->tile.s.palette  = obj->tile.s.palette  + (uint8_t)(tile >> 13);
+			(*sprite)->tile.s.y_flip   = obj->tile.s.y_flip   ^ (uint8_t)(tile >> 12);
+			(*sprite)->tile.s.x_flip   = obj->tile.s.x_flip   ^ (uint8_t)(tile >> 11);
+			(*sprite)->tile.s.pattern  = obj->tile.s.pattern  + (uint16_t)(tile & 0x7FF);
 			uint16_t px = x + (int8_t)*mappings++;
-			if ((px &= 0x1FF) == 0)
-				px++; //Prevent sprite from being x=0 (acts as a mask)
+			#if (SCREEN_WIDTH <= 320)
+				if ((px &= 0x1FF) == 0)
+					px++; //Prevent sprite from being x=0 (acts as a mask)
+			#else
+				if (px == 0)
+					px++;
+			#endif
 			(*sprite)->x = px;
 			
 			(*sprite)++;

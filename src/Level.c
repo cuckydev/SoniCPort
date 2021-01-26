@@ -18,28 +18,71 @@ uint8_t dle_routine;
 int16_t limit_left1, limit_right1, limit_top1, limit_btm1;
 int16_t limit_left2, limit_right2, limit_top2, limit_btm2;
 int16_t limit_left3;
+int16_t limit_top_db, limit_btm_db;
+
+LevelAnim level_anim[6];
+const uint8_t *coll_index;
 
 uint8_t last_lamp;
+
+uint16_t restart;
+uint16_t pause;
+
+uint16_t frame_count;
+
+//Player state
+uint8_t lives;
+uint16_t air;
+uint8_t last_special;
+uint8_t continues;
+
+//Water state
+int16_t wtr_pos1, wtr_pos2, wtr_pos3;
+uint8_t water;
+uint8_t wtr_routine;
+uint8_t wtr_state;
 
 //Loaded level data
 ALIGNED2 uint8_t level_map256[0xA400];
 ALIGNED2 uint8_t level_map16[0x1800];
 uint8_t level_layout[8][2][0x40];
 
-uint8_t loopchunks[2][2];
+uint8_t level_schunks[2][2];
 
-//Objects
+//Object state
 Object objects[OBJECTS];
 Object *const player = objects;
 Object *const level_objects = objects + RESERVED_OBJECTS;
 
-//Level art
-const uint8_t art_ghz1[] = {
-	#include <Resource/Art/GHZ1.h>
-};
-static const uint8_t art_ghz2[] = {
-	#include <Resource/Art/GHZ2.h>
-};
+uint8_t btn_pushtime1, btn_pushtime2;
+int16_t obj31_ypos;
+uint8_t boss_status;
+word_u track_pos;
+uint8_t lock_screen;
+uint16_t gfx_big_ring;
+uint8_t convey_rev;
+uint8_t obj63[6];
+uint8_t tunnel_mode;
+uint8_t lock_multi;
+uint8_t tunnel_allow;
+uint8_t jump_only;
+uint8_t obj6B;
+uint8_t lock_ctrl;
+uint8_t big_ring;
+uint16_t item_bonus;
+uint16_t time_bonus;
+uint16_t ring_bonus;
+uint8_t endact_bonus;
+uint8_t sonicend;
+uint16_t lz_deform;
+uint8_t f_switch[0x10];
+
+LevelAnim sprite_anim[4];
+
+Oscillatory oscillatory;
+
+uint16_t opl_routine, opl_screen;
+uint8_t opl_data[0x10];
 
 //Level layouts
 static const uint8_t layout_ghz1[] = {
@@ -72,7 +115,7 @@ static const struct
 	/* ZoneId_GHZ */ {map256_ghz, sizeof(map256_ghz), map16_ghz, sizeof(map16_ghz)},
 };
 
-static const int16_t level_size[ZoneId_Num][4][6] = {
+static const int16_t ldef_size[ZoneId_Num][4][6] = {
 	{ //ZoneId_GHZ
 		{0x0004, 0x0000, 0x24BF, 0x0000, 0x0300, 96 + SCREEN_TALLADD2},
 		{0x0004, 0x0000, 0x1EBF, 0x0000, 0x0300, 96 + SCREEN_TALLADD2},
@@ -118,7 +161,7 @@ static const int16_t level_size[ZoneId_Num][4][6] = {
 };
 
 //Player start positions
-static const int16_t level_start[ZoneId_Num][4][2] = {
+static const int16_t ldef_start[ZoneId_Num][4][2] = {
 	{ //ZoneId_GHZ
 		{0x0050, 0x03B0},
 		{0x0050, 0x00FC},
@@ -164,7 +207,7 @@ static const int16_t level_start[ZoneId_Num][4][2] = {
 };
 
 //Level loop (and S-tube) chunks
-static const uint8_t level_loops[ZoneId_Num][2][2] = {
+static const uint8_t ldef_schunks[ZoneId_Num][2][2] = {
 	{{0xB5, 0x7F}, {0x1F, 0x20}}, //ZoneId_GHZ
 	{{0x7F, 0x7F}, {0x7F, 0x7F}}, //ZoneId_LZ
 	{{0x7F, 0x7F}, {0x7F, 0x7F}}, //ZoneId_MZ
@@ -175,7 +218,7 @@ static const uint8_t level_loops[ZoneId_Num][2][2] = {
 };
 
 //Level scroll block sizes
-static const int16_t level_scrollsize[ZoneId_Num][4] = {
+static const int16_t ldef_scrollsize[ZoneId_Num][4] = {
 	{ 0x70, 0x100, 0x100, 0x100},
 	{0x800, 0x100, 0x100, 0},
 	{0x800, 0x100, 0x100, 0},
@@ -189,7 +232,7 @@ static const int16_t level_scrollsize[ZoneId_Num][4] = {
 void LoadLevelMaps()
 {
 	//Load chunk maps and tile map
-	ZoneId zone = level_id >> 8;
+	ZoneId zone = LEVEL_ZONE(level_id);
 	KosDec(level_maps[zone].map256, level_map256);//memcpy(level_map256, level_maps[zone].map256, level_maps[zone].map256_size);
 	memcpy(level_map16, level_maps[zone].map16, level_maps[zone].map16_size);
 }
@@ -212,7 +255,7 @@ void LoadLayout(const uint8_t *from, uint8_t *to)
 void LoadLevelLayout()
 {
 	//Load foreground and background layers
-	uint16_t index = ((level_id & 0xFF00) >> 6) | (level_id & 0x0003);
+	uint16_t index = LEVEL_INDEX(level_id);
 	LoadLayout(level_layouts[index][0], level_layout[0][0]);
 	LoadLayout(level_layouts[index][1], level_layout[0][1]);
 }
@@ -223,7 +266,7 @@ void LevelSizeLoad()
 	dle_routine = 0;
 	
 	//Get sizes to load
-	const int16_t *sizes = level_size[level_id & 0xFF00 >> 8][level_id & 3];
+	const int16_t *sizes = ldef_size[LEVEL_ZONE(level_id)][LEVEL_ACT(level_id)];
 	
 	//Load sizes and other stuff
 	/* FFFFF730 = */ sizes++;
@@ -258,8 +301,8 @@ void LevelSizeLoad()
 		else
 		{
 			//Level
-			x = level_start[level_id & 0xFF00 >> 8][level_id & 3][0];
-			y = level_start[level_id & 0xFF00 >> 8][level_id & 3][1];
+			x = ldef_start[LEVEL_ZONE(level_id)][LEVEL_ACT(level_id)][0];
+			y = ldef_start[LEVEL_ZONE(level_id)][LEVEL_ACT(level_id)][1];
 		}
 		
 		player->pos.l.x.f.u = x;
@@ -282,9 +325,9 @@ void LevelSizeLoad()
 	
 	//Load other level stuff
 	BgScrollSpeed(x, y);
-	memcpy(&loopchunks[0][0], &level_loops[level_id >> 8][0][0], 4);
+	memcpy(&level_schunks[0][0], &ldef_schunks[LEVEL_ZONE(level_id)][0][0], 4);
 	
-	const int16_t *scroll_size = level_scrollsize[level_id >> 8];
+	const int16_t *scroll_size = ldef_scrollsize[LEVEL_ZONE(level_id)];
 	scroll_block1_size = *scroll_size++;
 	scroll_block2_size = *scroll_size++;
 	scroll_block3_size = *scroll_size++;

@@ -9,7 +9,8 @@
 //Video state
 uint8_t vbla_routine;
 
-uint8_t wtr_state;
+uint8_t hbla_pal;
+int16_t hbla_pos;
 
 int16_t vid_scrpos_y_dup, vid_bg_scrpos_y_dup, vid_scrpos_x_dup, vid_bg_scrpos_x_dup, vid_bg3_scrpos_y_dup, vid_bg3_scrpos_x_dup;
 

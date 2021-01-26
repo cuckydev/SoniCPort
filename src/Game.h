@@ -18,7 +18,7 @@ typedef enum
 } GameMode;
 
 //Game state
-extern GameMode gamemode;
+extern uint8_t gamemode;
 
 extern int16_t demo;
 extern uint16_t demo_length;

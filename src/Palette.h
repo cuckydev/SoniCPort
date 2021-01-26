@@ -3,6 +3,8 @@
 #include <stdint.h>
 
 //Palette globals
+extern uint16_t pal_chgspeed;
+
 extern uint16_t dry_palette[4][16];
 extern uint16_t dry_palette_dup[4][16];
 extern uint16_t wet_palette[4][16];
@@ -14,6 +16,8 @@ typedef enum
 	PalId_SegaBG,
 	PalId_Title,
 	PalId_Sonic,
+	PalId_SonicLZ,
+	PalId_SonicSBZ,
 } PaletteId;
 
 //Palette interface

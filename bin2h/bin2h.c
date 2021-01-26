@@ -33,7 +33,12 @@ int main(int argc, char *argv[])
 			in_file_size = ftell(in_file);
 			rewind(in_file);
 			in_file_buffer = malloc(in_file_size);
-			fread(in_file_buffer, 1, in_file_size, in_file);
+			if (fread(in_file_buffer, 1, in_file_size, in_file) < in_file_size)
+			{
+				printf("Couldn't read '%s'\n", argv[1]);
+				fclose(in_file);
+				return -1;
+			}
 			fclose(in_file);
 			in_file_pointer = in_file_buffer;
 

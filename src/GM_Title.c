@@ -7,6 +7,7 @@
 #include "Level.h"
 #include "LevelDraw.h"
 #include "LevelScroll.h"
+#include "PLC.h"
 #include "Nemesis.h"
 
 #include <Backend/VDP.h>
@@ -44,15 +45,16 @@ static ALIGNED2 const uint8_t map_title_fg[] = {
 void GM_Title()
 {
 	//Stop music
-	//sfx	bgm_Stop,0,1,1
+	//sfx	bgm_Stop,0,1,1 //TODO
 	
 	//Clear the pattern load queue and fade out
+	ClearPLC();
 	PaletteFadeOut();
 	
 	//Set VDP state
 	VDP_SetPlaneALocation(VRAM_FG);
 	VDP_SetPlaneBLocation(VRAM_BG);
-	VDP_SetBackgroundColour(0x20);
+	VDP_SetBackgroundColour(0x20); //Line 2, entry 0
 	
 	wtr_state = 0;
 	
@@ -170,13 +172,15 @@ void GM_Title()
 		//Check if start is pressed
 		if (jpad1_press1 & JPAD_START)
 		{
-			;
+			gamemode = GameMode_Level;
+			return;
 		}
 		
 		//Check if the title's over
 		if (!demo_length)
 		{
-			gamemode = GameMode_Demo;
+			//Start a demo TODO
+			gamemode = GameMode_Level;//GameMode_Demo;
 			return;
 		}
 	}

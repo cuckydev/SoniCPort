@@ -7,6 +7,8 @@
 #include <stdlib.h>
 
 //Palette state
+uint16_t pal_chgspeed;
+
 uint16_t dry_palette[4][16];
 uint16_t dry_palette_dup[4][16];
 uint16_t wet_palette[4][16];
@@ -27,6 +29,12 @@ static ALIGNED2 const uint8_t pal_title[] = {
 static ALIGNED2 const uint8_t pal_sonic[] = {
 	#include <Resource/Palette/Sonic.h>
 };
+static ALIGNED2 const uint8_t pal_sonic_lz[] = {
+	#include <Resource/Palette/SonicLZ.h>
+};
+static ALIGNED2 const uint8_t pal_sonic_sbz[] = {
+	#include <Resource/Palette/SonicSBZ.h>
+};
 
 static struct PalettePointer
 {
@@ -34,9 +42,11 @@ static struct PalettePointer
 	uint16_t *target;
 	size_t colours;
 } palette_pointers[] = {
-	/* PalId_SegaBG */ {(const uint16_t*)pal_sega_background, &dry_palette[0][0], 0x40},
-	/* PalId_Title  */ {(const uint16_t*)pal_title,           &dry_palette[0][0], 0x40},
-	/* PalId_Sonic  */ {(const uint16_t*)pal_sonic,           &dry_palette[0][0], 0x10},
+	/* PalId_SegaBG   */ {(const uint16_t*)pal_sega_background, &dry_palette[0][0], 0x40},
+	/* PalId_Title    */ {(const uint16_t*)pal_title,           &dry_palette[0][0], 0x40},
+	/* PalId_Sonic    */ {(const uint16_t*)pal_sonic,           &dry_palette[0][0], 0x10},
+	/* PalId_SonicLZ  */ {(const uint16_t*)pal_sonic_lz,        &dry_palette[0][0], 0x10},
+	/* PalId_SonicSBZ */ {(const uint16_t*)pal_sonic_sbz,       &dry_palette[0][0], 0x10},
 };
 
 //Palette interface

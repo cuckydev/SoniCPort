@@ -61,7 +61,7 @@ typedef enum
 	ObjId_31,         //31
 	ObjId_32,         //32
 	ObjId_33,         //33
-	ObjId_34,         //34
+	ObjId_TitleCard,  //34
 	ObjId_35,         //35
 	ObjId_36,         //36
 	ObjId_37,         //37
@@ -219,8 +219,8 @@ typedef struct
 		} l; //Level
 		struct
 		{
-			uint16_t x; //X position
-			uint16_t y; //Y position
+			int16_t x; //X position
+			int16_t y; //Y position
 		} s; //Screen (VDP coordinates)
 	} pos;                //Position
 	int16_t xsp;          //Horizontal speed

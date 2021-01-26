@@ -9,13 +9,13 @@
 //Render backend interface
 int Render_Init(const MD_Header *header);
 void Render_Quit();
-void Render_Screen(const uint32_t *screen, const uint8_t *mask);
+void Render_Screen(const uint32_t *screen);
 
 //Input backend interface
 int Input_HandleEvents();
 
 //VDP compile options
-#define VDP_SANITY //Enable sanity checks for the VDP
+#define VDP_SANITY //Enable sanity checks for the VDP (slower, but technically safer, basically for testing)
 //#define VDP_PALETTE_DISPLAY //Enable palette display
 
 //VDP masks
@@ -31,6 +31,8 @@ static size_t vdp_plane_w, vdp_plane_h;
 static uint8_t vdp_background_colour;
 
 static int16_t vdp_vscroll_a, vdp_vscroll_b;
+
+static int16_t vdp_hint_pos;
 
 static MD_Vector vdp_hint, vdp_vint;
 
@@ -51,6 +53,7 @@ int VDP_Init(const MD_Header *header)
 	vdp_background_colour = 0;
 	vdp_vscroll_a = 0;
 	vdp_vscroll_b = 0;
+	vdp_hint_pos = -1;
 	
 	vdp_hint = header->h_interrupt;
 	vdp_vint = header->v_interrupt;
@@ -197,6 +200,11 @@ void VDP_SetVScroll(int16_t scroll_a, int16_t scroll_b)
 	vdp_vscroll_b = scroll_b;
 }
 
+void VDP_SetHIntPosition(int16_t pos)
+{
+	vdp_hint_pos = pos;
+}
+
 //VDP rendering
 #define SCREEN_PITCH SCREEN_WIDTH + (VDP_INTERNAL_PAD * 2)
 
@@ -219,6 +227,14 @@ static struct VDP_SpriteCache
 
 uint32_t VDP_GetColour(size_t index)
 {
+	#ifdef VDP_SANITY
+	if (index >= COLOURS)
+	{
+		puts("VDP_GetColour: Illegal colour index");
+		return 0xFF0000FF;
+	}
+	#endif
+	
 	uint16_t cv = vdp_cram[index >> 4][index & 0xF];
 	uint8_t r = (cv & 0x00E) >> 1;
 	uint8_t g = (cv & 0x0E0) >> 5;
@@ -230,13 +246,21 @@ uint32_t VDP_GetColour(size_t index)
 
 uint8_t *VDP_GetPatternAddress(size_t pattern)
 {
+	#ifdef VDP_SANITY
+	if (pattern >= (VRAM_SIZE >> 5))
+	{
+		printf("VDP_GetPatternAddress: Out-of-bounds");
+		return vdp_vram;
+	}
+	#endif
+	
 	return vdp_vram + (pattern << 5);
 }
 
-#define WRITE_BYTE(from, to, tom, pal, and, or) \
+#define WRITE_NIBBLE(from, to, tom, pal, and, or, nibs) \
 {                                             \
 	uint8_t v;                                \
-	if ((v = *from >> 4))                     \
+	if ((v = (*from >> nibs) & 0xF))          \
 	{                                         \
 		if (*tom & and)                       \
 		{                                     \
@@ -255,70 +279,20 @@ uint8_t *VDP_GetPatternAddress(size_t pattern)
 		to++;                                 \
 		tom++;                                \
 	}                                         \
-	if ((v = *from & 0xF))                    \
-	{                                         \
-		if (*tom & and)                       \
-		{                                     \
-			*tom |= or;                       \
-			to++;                             \
-		}                                     \
-		else                                  \
-		{                                     \
-			*tom |= or;                       \
-			*to++ = vdp_screen_pal[(pal)][v]; \
-		}                                     \
-		tom++;                                \
-	}                                         \
-	else                                      \
-	{                                         \
-		to++;                                 \
-		tom++;                                \
-	}                                         \
-	from++;                                   \
+}
+
+#define WRITE_BYTE(from, to, tom, pal, and, or)  \
+{                                                \
+	WRITE_NIBBLE(from, to, tom, pal, and, or, 4) \
+	WRITE_NIBBLE(from, to, tom, pal, and, or, 0) \
+	from++;                                      \
 }
 
 #define WRITE_BYTE_FLIP(from, to, tom, pal, and, or) \
-{                                             \
-	uint8_t v;                                \
-	if ((v = *from & 0xF))                    \
-	{                                         \
-		if (*tom & and)                       \
-		{                                     \
-			*tom |= or;                       \
-			to++;                             \
-		}                                     \
-		else                                  \
-		{                                     \
-			*tom |= or;                       \
-			*to++ = vdp_screen_pal[(pal)][v]; \
-		}                                     \
-		tom++;                                \
-	}                                         \
-	else                                      \
-	{                                         \
-		to++;                                 \
-		tom++;                                \
-	}                                         \
-	if ((v = *from >> 4))                     \
-	{                                         \
-		if (*tom & and)                       \
-		{                                     \
-			*tom |= or;                       \
-			to++;                             \
-		}                                     \
-		else                                  \
-		{                                     \
-			*tom |= or;                       \
-			*to++ = vdp_screen_pal[(pal)][v]; \
-		}                                     \
-		tom++;                                \
-	}                                         \
-	else                                      \
-	{                                         \
-		to++;                                 \
-		tom++;                                \
-	}                                         \
-	from--;                                   \
+{                                                \
+	WRITE_NIBBLE(from, to, tom, pal, and, or, 0) \
+	WRITE_NIBBLE(from, to, tom, pal, and, or, 4) \
+	from--;                                      \
 }
 
 void VDP_DrawPlaneRow(uint32_t *to, uint8_t *tom, const VDP_Tile *plane, int16_t x, int16_t y)
@@ -434,14 +408,39 @@ void VDP_DrawSpriteRow(uint32_t *to, uint8_t *tom, const VDP_Sprite *sprite, int
 	}
 }
 
+static inline void VDP_DrawScanline(size_t y, uint32_t *to, uint8_t *tom, struct VDP_SpriteCache *scache, const int16_t *hscroll)
+{
+	//Clear scanline
+	for (size_t i = 0; i < SCREEN_WIDTH; i++)
+		to[i] = vdp_screen_pal[0][vdp_background_colour];
+	memset(tom, 0, SCREEN_WIDTH);
+	
+	//Draw planes
+	VDP_DrawPlaneRow(to, tom, (const VDP_Tile*)(vdp_vram + vdp_plane_b_location), -hscroll[1], y + vdp_vscroll_b);
+	VDP_DrawPlaneRow(to, tom, (const VDP_Tile*)(vdp_vram + vdp_plane_a_location), -hscroll[0], y + vdp_vscroll_a);
+	
+	//Draw sprites
+	for (uint8_t i = 0; i < scache->pushind; i++)
+		VDP_DrawSpriteRow(to, tom, scache->sprite[i], y);
+	
+	#ifdef VDP_PALETTE_DISPLAY
+		for (size_t i = 0; i < 4 * 16; i++)
+			to[i] = vdp_screen_pal[i >> 4][i & 0xF];
+	#endif
+}
+
+static inline void VDP_RefreshPalette()
+{
+	uint32_t *pal_to = &vdp_screen_pal[0][0];
+	for (size_t i = 0; i < 4 * 16; i++)
+		*pal_to++ = VDP_GetColour(i);
+}
+
 void VDP_Render()
 {
 	//Get VDP screen pointer
 	vdp_screen = &vdp_screen_internal[0][VDP_INTERNAL_PAD];
 	vdp_mask = &vdp_mask_internal[0][VDP_INTERNAL_PAD];
-	
-	//Clear VDP mask
-	memset(vdp_mask_internal, 0, sizeof(vdp_mask_internal));
 	
 	//Calculate sprite cache
 	memset(vdp_sprite_cache, 0, sizeof(vdp_sprite_cache));
@@ -480,50 +479,40 @@ void VDP_Render()
 	}
 	
 	//Render VDP screen
+	VDP_RefreshPalette();
+	
 	uint32_t *to = vdp_screen;
 	uint8_t *tom = vdp_mask;
-	
 	struct VDP_SpriteCache *scache = vdp_sprite_cache;
 	const int16_t *hscroll = (int16_t*)(vdp_vram + vdp_hscroll_location);
 	
-	for (size_t y = 0; y < SCREEN_HEIGHT; y++, scache++)
+	if (vdp_hint_pos >= 0 && vdp_hint_pos < SCREEN_HEIGHT)
 	{
-		//Get palette
-		uint32_t *pal_to = &vdp_screen_pal[0][0];
-		for (size_t i = 0; i < 4 * 16; i++)
-			*pal_to++ = VDP_GetColour(i);
-		
-		//Clear screen
-		for (size_t i = 0; i < SCREEN_WIDTH; i++)
-			to[i] = vdp_screen_pal[0][vdp_background_colour];
-		
-		//Draw planes
-		int16_t ascroll = *hscroll++, bscroll = *hscroll++;
-		VDP_DrawPlaneRow(to, tom, (const VDP_Tile*)(vdp_vram + vdp_plane_b_location), -bscroll, y + vdp_vscroll_b);
-		VDP_DrawPlaneRow(to, tom, (const VDP_Tile*)(vdp_vram + vdp_plane_a_location), -ascroll, y + vdp_vscroll_a);
-		
-		//Draw sprites
-		for (uint8_t i = 0; i < scache->pushind; i++)
-			VDP_DrawSpriteRow(to, tom, scache->sprite[i], y);
-		
-		#ifdef VDP_PALETTE_DISPLAY
-			for (size_t i = 0; i < 4 * 16; i++)
-				to[i] = vdp_screen_pal[i >> 4][i & 0xF];
-		#endif
-		
-		//Render next row
-		to += SCREEN_PITCH;
-		tom += SCREEN_PITCH;
+		//Draw up to horizontal interrupt
+		size_t y = 0;
+		for (; y < (size_t)vdp_hint_pos; y++, scache++, hscroll += 2, to += SCREEN_PITCH, tom += SCREEN_PITCH)
+			VDP_DrawScanline(y, to, tom, scache, hscroll);
 		
 		//Send horizontal interrupt
 		vdp_hint();
+		VDP_RefreshPalette();
+		
+		//Draw rest of screen
+		for (; y < SCREEN_HEIGHT; y++, scache++, hscroll += 2, to += SCREEN_PITCH, tom += SCREEN_PITCH)
+			VDP_DrawScanline(y, to, tom, scache, hscroll);
+	}
+	else
+	{
+		//Draw entire screen
+		for (size_t y = 0; y < SCREEN_HEIGHT; y++, scache++, hscroll += 2, to += SCREEN_PITCH, tom += SCREEN_PITCH)
+			VDP_DrawScanline(y, to, tom, scache, hscroll);
 	}
 	
 	//Send vertical interrupt
 	vdp_vint();
 	
 	//Render screen
-	Render_Screen(vdp_screen, vdp_mask);
+	Render_Screen(vdp_screen);
 	
 	//Handle events
 	if (Input_HandleEvents())

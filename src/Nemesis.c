@@ -204,6 +204,11 @@ static void NemDecMain(NemesisState *state)
 	NemDecRun(state);
 }
 
+void NemDecSeek(size_t off)
+{
+	nemesis_off = off;
+}
+
 void NemDec(size_t off, const uint8_t *source)
 {
 	NemesisState state;

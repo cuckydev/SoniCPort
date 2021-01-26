@@ -95,5 +95,6 @@ void VDP_SetHScrollLocation(size_t loc);
 void VDP_SetPlaneSize(size_t w, size_t h);
 void VDP_SetBackgroundColour(uint8_t index);
 void VDP_SetVScroll(int16_t scroll_a, int16_t scroll_b);
+void VDP_SetHIntPosition(int16_t pos);
 
 void VDP_Render();

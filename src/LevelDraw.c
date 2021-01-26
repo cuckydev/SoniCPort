@@ -11,10 +11,7 @@
 #define SCROLL_HEIGHT ((SCREEN_HEIGHT + 15) & ~15)
 
 //Scroll blocks
-int16_t scroll_block1_size;
-int16_t scroll_block2_size;
-int16_t scroll_block3_size;
-int16_t scroll_block4_size;
+int16_t scroll_block1_size, scroll_block2_size, scroll_block3_size, scroll_block4_size;
 
 //Block drawing functions
 size_t CalcVRAMPos(int16_t sx, int16_t sy, int16_t x, int16_t y)
