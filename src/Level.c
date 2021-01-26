@@ -249,7 +249,7 @@ void LoadLayout(const uint8_t *from, uint8_t *to)
 	{
 		for (size_t i = 0; i <= width; i++)
 			*to++ = *from++;
-		to += 0x80 - width;
+		to += 0x80 - (width + 1);
 	} while (height-- > 0);
 }
 

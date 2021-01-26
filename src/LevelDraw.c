@@ -41,7 +41,7 @@ void GetBlockData(const uint8_t **meta, const uint8_t **block, int16_t sx, int16
 	
 	//Get chunk
 	uint8_t chunk = layout[(cy << 7) + cx] & 0x7F;
-	if (chunk == 0xFF)
+	if (chunk == 0)
 	{
 		*meta = level_map256;
 		*block = level_map16;
@@ -76,32 +76,32 @@ void DrawBlock(const uint8_t *meta, const uint8_t *block, size_t offset)
 	{
 		if (flag & 0x10) //Y flip
 		{
-			WRITE_TILE((PLANE_WIDTH * 2) + 2, 0x1800)
-			WRITE_TILE((PLANE_WIDTH * 2) + 0, 0x1800)
-			WRITE_TILE(                    2, 0x1800)
-			WRITE_TILE(                    0, 0x1800)
+			WRITE_TILE((PLANE_WIDTH << 1) + 2, 0x1800)
+			WRITE_TILE((PLANE_WIDTH << 1) + 0, 0x1800)
+			WRITE_TILE(                     2, 0x1800)
+			WRITE_TILE(                     0, 0x1800)
 		}
 		else
 		{
-			WRITE_TILE(                    2, 0x0800)
-			WRITE_TILE(                    0, 0x0800)
-			WRITE_TILE((PLANE_WIDTH * 2) + 2, 0x0800)
-			WRITE_TILE((PLANE_WIDTH * 2) + 0, 0x0800)
+			WRITE_TILE(                     2, 0x0800)
+			WRITE_TILE(                     0, 0x0800)
+			WRITE_TILE((PLANE_WIDTH << 1) + 2, 0x0800)
+			WRITE_TILE((PLANE_WIDTH << 1) + 0, 0x0800)
 		}
 	}
 	else if (flag & 0x10) //Y flip
 	{
-		WRITE_TILE((PLANE_WIDTH * 2) + 0, 0x1000)
-		WRITE_TILE((PLANE_WIDTH * 2) + 2, 0x1000)
-		WRITE_TILE(                    0, 0x1000)
-		WRITE_TILE(                    2, 0x1000)
+		WRITE_TILE((PLANE_WIDTH << 1) + 0, 0x1000)
+		WRITE_TILE((PLANE_WIDTH << 1) + 2, 0x1000)
+		WRITE_TILE(                     0, 0x1000)
+		WRITE_TILE(                     2, 0x1000)
 	}
 	else
 	{
-		WRITE_TILE(                    0, 0x0000)
-		WRITE_TILE(                    2, 0x0000)
-		WRITE_TILE((PLANE_WIDTH * 2) + 0, 0x0000)
-		WRITE_TILE((PLANE_WIDTH * 2) + 2, 0x0000)
+		WRITE_TILE(                     0, 0x0000)
+		WRITE_TILE(                     2, 0x0000)
+		WRITE_TILE((PLANE_WIDTH << 1) + 0, 0x0000)
+		WRITE_TILE((PLANE_WIDTH << 1) + 2, 0x0000)
 	}
 }
 
@@ -113,8 +113,9 @@ void DrawBlocks_LR_2(size_t offset, size_t pos, int16_t sx, int16_t sy, int16_t 
 	{
 		GetBlockData(&meta, &block, sx, sy, x, y, layout);
 		DrawBlock(meta, block, offset + pos);
-		pos = ((((pos >> 1) / PLANE_WIDTH) * PLANE_WIDTH) +
-			((((pos >> 1) % PLANE_WIDTH) + 2) % PLANE_WIDTH)) << 1;
+		size_t tx = pos % (PLANE_WIDTH << 1);
+		size_t ty = pos / (PLANE_WIDTH << 1);
+		pos = (ty * (PLANE_WIDTH << 1)) + ((tx + 4) % (PLANE_WIDTH << 1));
 		x += 16;
 	}
 }
@@ -132,7 +133,9 @@ void DrawBlocks_TB_2(size_t offset, size_t pos, int16_t sx, int16_t sy, int16_t 
 	{
 		GetBlockData(&meta, &block, sx, sy, x, y, layout);
 		DrawBlock(meta, block, offset + pos);
-		pos = (((pos >> 1) + (PLANE_WIDTH * 2)) % (PLANE_WIDTH * PLANE_HEIGHT)) << 1;
+		size_t tx = pos % (PLANE_WIDTH << 1);
+		size_t ty = pos / (PLANE_WIDTH << 1);
+		pos = (((ty + 2) % (PLANE_HEIGHT << 1)) * (PLANE_WIDTH << 1)) + tx;
 		y += 16;
 	}
 }
@@ -140,6 +143,24 @@ void DrawBlocks_TB_2(size_t offset, size_t pos, int16_t sx, int16_t sy, int16_t 
 void DrawBlocks_TB(size_t offset, size_t pos, int16_t sx, int16_t sy, int16_t x, int16_t y, uint8_t *layout)
 {
 	DrawBlocks_TB_2(offset, pos, sx, sy, x, y, layout, (SCROLL_HEIGHT + 16 + 16) / 16);
+}
+
+void DrawBlocks_BG(size_t offset, int16_t sy, int16_t y, uint8_t *layout, const uint8_t *array)
+{
+	static const dword_s *bg_pos[] = {&bg_scrpos_x, &bg_scrpos_x, &bg2_scrpos_x, &bg3_scrpos_y};
+	int16_t sx = bg_pos[array[y >> 4] >> 1]->f.u;
+	DrawBlocks_LR(offset, CalcVRAMPos(sx, sy, 0, y), sx, sy, 0, y, layout);
+}
+
+void Draw_GHZ_Bg(int16_t sy, uint8_t *layout, size_t offset)
+{
+	int16_t y = 0;
+	for (size_t i = 0; i < (SCROLL_HEIGHT + 16 + 16) / 16; i++)
+	{
+		static const uint8_t bg_array[] = {0x00, 0x00, 0x00, 0x00, 0x06, 0x06, 0x06, 0x04, 0x04, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+		DrawBlocks_BG(offset, sy, y, layout, bg_array);
+		y += 16;
+	}
 }
 
 //Level drawing functions
@@ -151,6 +172,23 @@ void DrawChunks(int16_t sx, int16_t sy, uint8_t *layout, size_t offset)
 		DrawBlocks_LR_2(offset, CalcVRAMPos(sx, sy, 0, y), sx, sy, 0, y, layout, 512 / 16);
 		y += 16;
 	}
+}
+
+void LoadTilesFromStart()
+{
+	DrawChunks(scrpos_x.f.u, scrpos_y.f.u, level_layout[0][0], VRAM_FG);
+	#ifndef SCP_REV00
+		if (LEVEL_ZONE(level_id) == ZoneId_GHZ)
+			Draw_GHZ_Bg(bg_scrpos_y.f.u, level_layout[0][1], VRAM_BG);
+		else if (LEVEL_ZONE(level_id) == ZoneId_MZ)
+			{;}//Draw_MZ_Bg(bg_scrpos_y.f.u, level_layout[0][1], VRAM_BG);
+		else if (level_id == LEVEL_ID(ZoneId_SBZ, 0))
+			{;}//Draw_SBZ_Bg(bg_scrpos_y.f.u, level_layout[0][1], VRAM_BG);
+		else if (LEVEL_ZONE(level_id) == ZoneId_EndZ)
+			Draw_GHZ_Bg(bg_scrpos_y.f.u, level_layout[0][1], VRAM_BG);
+		else
+	#endif
+	DrawChunks(bg_scrpos_x.f.u, bg_scrpos_y.f.u, level_layout[0][1], VRAM_BG);
 }
 
 void DrawBGScrollBlock1(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout, size_t offset)
@@ -170,9 +208,9 @@ void DrawBGScrollBlock1(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout,
 	if (*flag != (*flag &= ~SCROLL_FLAG_RIGHT))
 		DrawBlocks_TB(offset, CalcVRAMPos(sx, sy, SCROLL_WIDTH, -16), sx, sy, SCROLL_WIDTH, -16, layout);
 	if (*flag != (*flag &= ~SCROLL_FLAG_UP2))
-		{}//DrawBlocks_LB_3(offset, CalcVRAMPos_2(sx, sy, 0, -16), sx, sy, 0, -16, layout);
+		{;}//DrawBlocks_LB_3(offset, CalcVRAMPos_2(sx, sy, 0, -16), sx, sy, 0, -16, layout);
 	if (*flag != (*flag &= ~SCROLL_FLAG_DOWN2))
-		{}//DrawBlocks_LB_3(offset, CalcVRAMPos_2(sx, sy, 0, SCROLL_HEIGHT), sx, sy, 0, SCROLL_HEIGHT, layout);
+		{;}//DrawBlocks_LB_3(offset, CalcVRAMPos_2(sx, sy, 0, SCROLL_HEIGHT), sx, sy, 0, SCROLL_HEIGHT, layout);
 }
 
 void DrawBGScrollBlock2(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout, size_t offset)
@@ -183,7 +221,7 @@ void DrawBGScrollBlock2(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout,
 		return;
 	
 	//Run completely different code if in Scrap Brain Zone (what)
-	if ((level_id >> 8) != ZoneId_SBZ)
+	if (LEVEL_ZONE(level_id) != ZoneId_SBZ)
 	{
 		if (*flag != (*flag &= ~SCROLL_FLAG_LEFT2))
 			DrawBlocks_TB_2(offset, CalcVRAMPos(sx, sy, -16, SCROLL_HEIGHT / 2), sx, sy, -16, SCROLL_HEIGHT / 2, layout, 3);
@@ -204,7 +242,7 @@ void DrawBGScrollBlock3(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout,
 		return;
 	
 	//Run completely different code if in Marble Zone (what)
-	if ((level_id >> 8) != ZoneId_MZ)
+	if (LEVEL_ZONE(level_id) != ZoneId_MZ)
 	{
 		if (*flag != (*flag &= ~SCROLL_FLAG_LEFT2))
 			DrawBlocks_TB_2(offset, CalcVRAMPos(sx, sy, -16, 64), sx, sy, -16, 64, layout, 3);

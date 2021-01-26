@@ -231,7 +231,16 @@ void GM_Level()
 		DeformLayers();
 		fg_scroll_flags |= SCROLL_FLAG_LEFT;
 		LevelDataLoad();
+		LoadTilesFromStart();
 		
+		//Fade into level
 		PaletteFadeIn_At(0x10, 0x30);
+		
+		while (1)
+		{
+			//Run game and load PLCs
+			vbla_routine = 0x0C;
+			WaitForVBla();
+		}
 	}
 }

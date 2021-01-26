@@ -116,6 +116,7 @@ void VBlank()
 		case 0x04:
 			WriteVRAMBuffers();
 			LoadTilesAsYouMove_BGOnly();
+			ProcessDPLC();
 			if (demo_length)
 				demo_length--;
 			break;
@@ -158,8 +159,8 @@ void VBlank()
 			
 			//Update level animations and HUD
 			
-			//Handle PLC stuff
-			RunPLC_VBlank();
+			//Process PLCs
+			ProcessDPLC();
 			break;
 		case 0x12:
 			WriteVRAMBuffers();

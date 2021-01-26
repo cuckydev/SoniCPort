@@ -217,7 +217,7 @@ static void ProcessDPLC_Main(size_t off)
 	} while (--plc_buffer_reg1A != 0);
 }
 
-void RunPLC_VBlank()
+void ProcessDPLC()
 {
 	if (plc_buffer_reg18 != 0)
 	{

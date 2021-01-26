@@ -345,7 +345,7 @@ void VDP_DrawPlaneRow(uint32_t *to, uint8_t *tom, const VDP_Tile *plane, int16_t
 void VDP_DrawSpriteRow(uint32_t *to, uint8_t *tom, const VDP_Sprite *sprite, int16_t y)
 {
 	//Get sprite information
-	uint8_t and = sprite->tile.s.priority ? (VDP_MASK_PLANEPRI | VDP_MASK_SPRITE) : VDP_MASK_SPRITE;
+	uint8_t and = sprite->tile.s.priority ? VDP_MASK_SPRITE : (VDP_MASK_PLANEPRI | VDP_MASK_SPRITE);
 	uint8_t x_flip = sprite->tile.s.x_flip;
 	uint8_t y_flip = sprite->tile.s.y_flip;
 	uint8_t width = sprite->size.s.width;

@@ -59,6 +59,6 @@ extern const uint8_t art_ghz2[];
 void AddPLC(PlcId plc);
 void ClearPLC();
 void RunPLC();
-void RunPLC_VBlank();
+void ProcessDPLC();
 void ProcessDPLC2();
 void QuickPLC(PlcId plc);
