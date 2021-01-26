@@ -231,5 +231,7 @@ void GM_Level()
 		DeformLayers();
 		fg_scroll_flags |= SCROLL_FLAG_LEFT;
 		LevelDataLoad();
+		
+		PaletteFadeIn_At(0x10, 0x30);
 	}
 }

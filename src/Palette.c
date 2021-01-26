@@ -129,12 +129,19 @@ void FadeIn_FromBlack()
 
 void PaletteFadeIn()
 {
+	PaletteFadeIn_At(0x00, 0x40);
+}
+
+void PaletteFadeIn_At(uint8_t ind, uint8_t len)
+{
 	//Initialize fade
-	palette_fade.ind = 0x00;
-	palette_fade.len = 0x40;
+	palette_fade.ind = ind;
+	palette_fade.len = len;
 	
 	//Fill palette with black
-	VDP_FillCRAM(0x0000, 0x0000, 0x40);
+	uint16_t *col = (&dry_palette[0][0]) + palette_fade.ind;
+	for (int i = 0; i < palette_fade.len; i++)
+		*col++ = 0x000;
 	
 	//Fade for 22 frames
 	for (int i = 0; i < 22; i++)
@@ -178,9 +185,14 @@ void FadeOut_ToBlack()
 
 void PaletteFadeOut()
 {
+	PaletteFadeOut_At(0x00, 0x40);
+}
+
+void PaletteFadeOut_At(uint8_t ind, uint8_t len)
+{
 	//Initialize fade
-	palette_fade.ind = 0x00;
-	palette_fade.len = 0x40;
+	palette_fade.ind = ind;
+	palette_fade.len = len;
 	
 	//Fade for 22 frames
 	for (int i = 0; i < 22; i++)

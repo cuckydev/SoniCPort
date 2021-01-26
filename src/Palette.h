@@ -29,4 +29,6 @@ void PalLoad4_Water(PaletteId id);
 
 //Palette fading
 void PaletteFadeIn();
+void PaletteFadeIn_At(uint8_t ind, uint8_t len);
 void PaletteFadeOut();
+void PaletteFadeOut_At(uint8_t ind, uint8_t len);
