@@ -5,6 +5,7 @@
 #include "LevelScroll.h"
 #include "Level.h"
 #include "Object/Sonic.h"
+#include "PLC.h"
 
 #include "GM_Sega.h"
 #include "GM_Title.h"
@@ -157,6 +158,8 @@ void VBlank()
 			
 			//Update level animations and HUD
 			
+			//Handle PLC stuff
+			RunPLC_VBlank();
 			break;
 		case 0x12:
 			WriteVRAMBuffers();

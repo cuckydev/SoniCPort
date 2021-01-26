@@ -141,6 +141,8 @@ void GM_Title()
 	DeformLayers();
 	BuildSprites();
 	
+	AddPLC(PlcId_Main);
+	
 	//Fade in
 	PaletteFadeIn();
 	
@@ -151,10 +153,11 @@ void GM_Title()
 		vbla_routine = 0x04;
 		WaitForVBla();
 		
-		//Handle objects and scrolling
+		//Run game and load PLCs
 		ExecuteObjects();
 		DeformLayers();
 		BuildSprites();
+		RunPLC();
 		
 		//Run palette cycle
 		PCycle_Title();

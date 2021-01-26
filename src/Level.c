@@ -5,84 +5,12 @@
 #include "LevelScroll.h"
 #include "LevelDraw.h"
 #include "Kosinski.h"
+#include "PLC.h"
+#include "Palette.h"
 
 #include <Backend/VDP.h>
 
 #include <string.h>
-
-//Level state
-uint16_t level_id;
-
-uint8_t dle_routine;
-
-int16_t limit_left1, limit_right1, limit_top1, limit_btm1;
-int16_t limit_left2, limit_right2, limit_top2, limit_btm2;
-int16_t limit_left3;
-int16_t limit_top_db, limit_btm_db;
-
-LevelAnim level_anim[6];
-const uint8_t *coll_index;
-
-uint8_t last_lamp;
-
-uint16_t restart;
-uint16_t pause;
-
-uint16_t frame_count;
-
-//Player state
-uint8_t lives;
-uint16_t air;
-uint8_t last_special;
-uint8_t continues;
-
-//Water state
-int16_t wtr_pos1, wtr_pos2, wtr_pos3;
-uint8_t water;
-uint8_t wtr_routine;
-uint8_t wtr_state;
-
-//Loaded level data
-ALIGNED2 uint8_t level_map256[0xA400];
-ALIGNED2 uint8_t level_map16[0x1800];
-uint8_t level_layout[8][2][0x40];
-
-uint8_t level_schunks[2][2];
-
-//Object state
-Object objects[OBJECTS];
-Object *const player = objects;
-Object *const level_objects = objects + RESERVED_OBJECTS;
-
-uint8_t btn_pushtime1, btn_pushtime2;
-int16_t obj31_ypos;
-uint8_t boss_status;
-word_u track_pos;
-uint8_t lock_screen;
-uint16_t gfx_big_ring;
-uint8_t convey_rev;
-uint8_t obj63[6];
-uint8_t tunnel_mode;
-uint8_t lock_multi;
-uint8_t tunnel_allow;
-uint8_t jump_only;
-uint8_t obj6B;
-uint8_t lock_ctrl;
-uint8_t big_ring;
-uint16_t item_bonus;
-uint16_t time_bonus;
-uint16_t ring_bonus;
-uint8_t endact_bonus;
-uint8_t sonicend;
-uint16_t lz_deform;
-uint8_t f_switch[0x10];
-
-LevelAnim sprite_anim[4];
-
-Oscillatory oscillatory;
-
-uint16_t opl_routine, opl_screen;
-uint8_t opl_data[0x10];
 
 //Level layouts
 static const uint8_t layout_ghz1[] = {
@@ -105,14 +33,6 @@ static const uint8_t map16_ghz[] = {
 //Level definitions
 static const uint8_t *level_layouts[][2] = {
 	{layout_ghz1, layout_ghzbg},
-};
-
-static const struct
-{
-	const uint8_t *map256; size_t map256_size;
-	const uint8_t *map16; size_t map16_size;
-} level_maps[] = {
-	/* ZoneId_GHZ */ {map256_ghz, sizeof(map256_ghz), map16_ghz, sizeof(map16_ghz)},
 };
 
 static const int16_t ldef_size[ZoneId_Num][4][6] = {
@@ -228,13 +148,94 @@ static const int16_t ldef_scrollsize[ZoneId_Num][4] = {
 	{ 0x70, 0x100, 0x100, 0x100},
 };
 
+//Level headers
+const LevelHeader level_header[ZoneId_Num] = {
+	{PlcId_GHZ, art_ghz2, PlcId_GHZ2, map16_ghz, map256_ghz, 0, 0, PalId_GHZ, PalId_GHZ, sizeof(map16_ghz)},
+};
+
+//Level state
+uint16_t level_id;
+
+uint8_t dle_routine;
+
+int16_t limit_left1, limit_right1, limit_top1, limit_btm1;
+int16_t limit_left2, limit_right2, limit_top2, limit_btm2;
+int16_t limit_left3;
+int16_t limit_top_db, limit_btm_db;
+
+LevelAnim level_anim[6];
+const uint8_t *coll_index;
+
+uint8_t last_lamp;
+
+uint16_t restart;
+uint16_t pause;
+
+uint16_t frame_count;
+
+//Player state
+uint8_t lives;
+uint16_t air;
+uint8_t last_special;
+uint8_t continues;
+
+//Water state
+int16_t wtr_pos1, wtr_pos2, wtr_pos3;
+uint8_t water;
+uint8_t wtr_routine;
+uint8_t wtr_state;
+
+//Loaded level data
+ALIGNED2 uint8_t level_map256[0xA400];
+ALIGNED2 uint8_t level_map16[0x1800];
+uint8_t level_layout[8][2][0x40];
+
+uint8_t level_schunks[2][2];
+
+//Object state
+Object objects[OBJECTS];
+Object *const player = objects;
+Object *const level_objects = objects + RESERVED_OBJECTS;
+
+uint8_t btn_pushtime1, btn_pushtime2;
+int16_t obj31_ypos;
+uint8_t boss_status;
+word_u track_pos;
+uint8_t lock_screen;
+uint16_t gfx_big_ring;
+uint8_t convey_rev;
+uint8_t obj63[6];
+uint8_t tunnel_mode;
+uint8_t lock_multi;
+uint8_t tunnel_allow;
+uint8_t jump_only;
+uint8_t obj6B;
+uint8_t lock_ctrl;
+uint8_t big_ring;
+uint16_t item_bonus;
+uint16_t time_bonus;
+uint16_t ring_bonus;
+uint8_t endact_bonus;
+uint8_t sonicend;
+uint16_t lz_deform;
+uint8_t f_switch[0x10];
+
+LevelAnim sprite_anim[4];
+
+Oscillatory oscillatory;
+
+uint16_t opl_routine, opl_screen;
+uint8_t opl_data[0x10];
+
 //Level loading
 void LoadLevelMaps()
 {
+	//Get header
+	const LevelHeader *header = &level_header[LEVEL_ZONE(level_id)];
+	
 	//Load chunk maps and tile map
-	ZoneId zone = LEVEL_ZONE(level_id);
-	KosDec(level_maps[zone].map256, level_map256);//memcpy(level_map256, level_maps[zone].map256, level_maps[zone].map256_size);
-	memcpy(level_map16, level_maps[zone].map16, level_maps[zone].map16_size);
+	KosDec(header->map256, level_map256);
+	memcpy(level_map16, header->map16, header->map16_size);
 }
 
 void LoadLayout(const uint8_t *from, uint8_t *to)
@@ -334,3 +335,27 @@ void LevelSizeLoad()
 	scroll_block4_size = *scroll_size++;
 }
 
+void LevelDataLoad()
+{
+	//Get header
+	const LevelHeader *header = &level_header[LEVEL_ZONE(level_id)];
+	
+	//Load chunk maps and tile map
+	KosDec(header->map256, level_map256);
+	memcpy(level_map16, header->map16, header->map16_size);
+	
+	//Load level layout
+	LoadLevelLayout();
+	
+	//Load level palette
+	PaletteId pal = header->pal;
+	//if (level_id == LEVEL_ID(ZoneId_LZ, 3))
+	//	pal = PalId_SBZ3;
+	//if (level_id == LEVEL_ID(ZoneId_SBZ, 1) || level_id == LEVEL_ID(ZoneId_SBZ, 2))
+	//	pal = PalId_SBZ2;
+	PalLoad1(pal);
+	
+	//Load level art
+	if (header->plc2 != PlcId_Main)
+		AddPLC(header->plc2);
+}

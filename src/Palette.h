@@ -16,6 +16,7 @@ typedef enum
 	PalId_SegaBG,
 	PalId_Title,
 	PalId_Sonic,
+	PalId_GHZ,
 	PalId_SonicLZ,
 	PalId_SonicSBZ,
 } PaletteId;

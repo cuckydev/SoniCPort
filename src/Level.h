@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Object.h"
+#include "PLC.h"
 
 //Level constants
 #define RESERVED_OBJECTS 0x20
@@ -37,6 +38,23 @@ typedef struct
 	uint16_t direction;
 	uint16_t state[16][2];
 } Oscillatory;
+
+typedef struct
+{
+	uint8_t plc1;
+	const uint8_t *art;
+	uint8_t plc2;
+	const uint8_t *map16;
+	const uint8_t *map256;
+	uint8_t pad;
+	uint8_t music;
+	uint8_t pal_dup;
+	uint8_t pal;
+	size_t map16_size; //TEMP
+} LevelHeader;
+
+//Level headers
+extern const LevelHeader level_header[ZoneId_Num];
 
 //Level globals
 extern uint16_t level_id;
@@ -109,3 +127,4 @@ void LoadLevelLayout();
 void LoadMap16(ZoneId zone);
 void LoadMap256(ZoneId zone);
 void LevelSizeLoad();
+void LevelDataLoad();

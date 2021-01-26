@@ -1,6 +1,7 @@
 #include "Palette.h"
 
 #include "Video.h"
+#include "PLC.h"
 
 #include <Backend/VDP.h>
 
@@ -141,6 +142,7 @@ void PaletteFadeIn()
 		vbla_routine = 0x12;
 		WaitForVBla();
 		FadeIn_FromBlack();
+		RunPLC();
 	}
 }
 
@@ -186,5 +188,6 @@ void PaletteFadeOut()
 		vbla_routine = 0x12;
 		WaitForVBla();
 		FadeOut_ToBlack();
+		RunPLC();
 	}
 }

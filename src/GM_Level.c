@@ -36,8 +36,13 @@ void GM_Level()
 	//Load art if not in credits
 	if (demo >= 0)
 	{
-		//TODO
+		//Load title card art
 		NemDec(0xB000, art_titlecard);
+		
+		//Load level art and general art
+		if (level_header[LEVEL_ZONE(level_id)].plc1 != PlcId_Main)
+			AddPLC(level_header[LEVEL_ZONE(level_id)].plc1);
+		AddPLC(PlcId_Main2);
 	}
 	
 	//Clear object memory
@@ -203,17 +208,28 @@ void GM_Level()
 		//Start title card
 		objects[2].type = ObjId_TitleCard;
 		
-		//Wait until title card has finished
-		do
+		while (1)
 		{
+			//Run game and load PLCs
 			vbla_routine = 0x0C;
 			WaitForVBla();
-			
 			ExecuteObjects();
 			BuildSprites();
-		} while (objects[4].pos.s.x != objects[4].scratch.u16[1]);
+			RunPLC();
+			
+			//Break if title card is over and PLCs have loaded
+			if (objects[4].pos.s.x != objects[4].scratch.u16[1])
+				continue;
+			if (plc_buffer[0].art != NULL)
+				continue;
+			break;
+		}
 		
-		//TEMP
-		gamemode = GameMode_Sega;
+		//Load level
+		PalLoad1(PalId_Sonic);
+		LevelSizeLoad();
+		DeformLayers();
+		fg_scroll_flags |= SCROLL_FLAG_LEFT;
+		LevelDataLoad();
 	}
 }

@@ -1,6 +1,17 @@
 #pragma once
 
 #include <stdint.h>
+#include <stddef.h>
+
+//PLC structure
+typedef struct
+{
+	const uint8_t *art;
+	size_t off;
+} PLC;
+
+//PLC buffer
+extern PLC plc_buffer[16];
 
 //PLC IDs
 typedef enum
@@ -37,6 +48,7 @@ typedef enum
 	PlcId_TryAgain,
 	PlcId_EggmanSBZ2,
 	PlcId_FZBoss,
+	PlcId_Num,
 } PlcId;
 
 //Level art
@@ -44,4 +56,9 @@ extern const uint8_t art_ghz1[];
 extern const uint8_t art_ghz2[];
 
 //PLC interface
+void AddPLC(PlcId plc);
 void ClearPLC();
+void RunPLC();
+void RunPLC_VBlank();
+void ProcessDPLC2();
+void QuickPLC(PlcId plc);
