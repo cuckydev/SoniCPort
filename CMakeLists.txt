@@ -123,6 +123,7 @@ set(RESOURCES
 	"Palette/Ending"
 	"Palette/TitleCycle"
 	
+	"Animation/Sonic"
 	"Animation/TitleSonic"
 	"Animation/PSB"
 	

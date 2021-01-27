@@ -55,7 +55,7 @@ void GM_Level()
 	pcyc_num = 0;
 	pcyc_time = 0;
 	random_seed.v = 0;
-	pause = 0;
+	pause = false;
 	hbla_pal = 0;
 	wtr_pos1 = 0;
 	wtr_pos2 = 0;
@@ -89,7 +89,7 @@ void GM_Level()
 	
 	look_shift = 0;
 	dle_routine = 0;
-	nobgscroll = 0;
+	nobgscroll = false;
 	
 	fg_xblock = 0;
 	fg_yblock = 0;
@@ -110,7 +110,8 @@ void GM_Level()
 	sonspeed_dec = 0;
 	sonframe_num = 0;
 	sonframe_chg = 0;
-	angle_buffer = 0;
+	angle_buffer0 = 0;
+	angle_buffer1 = 0;
 	
 	opl_routine = 0;
 	opl_screen = 0;
@@ -141,7 +142,7 @@ void GM_Level()
 	tunnel_allow = 0;
 	jump_only = 0;
 	obj6B = 0;
-	lock_ctrl = 0;
+	lock_ctrl = false;
 	big_ring = 0;
 	item_bonus = 0;
 	time_bonus = 0;
@@ -220,7 +221,7 @@ void GM_Level()
 			RunPLC();
 			
 			//Break if title card is over and PLCs have loaded
-			if (objects[4].pos.s.x != objects[4].scratch.u16[1])
+			if (objects[4].pos.s.x != objects[4].scratch.u16[4])
 				continue;
 			if (plc_buffer[0].art != NULL)
 				continue;
@@ -259,12 +260,12 @@ void GM_Level()
 			lifecount = 0;
 		}
 		
-		time_over = 0;
-		shield = 0;
-		invincibility = 0;
-		shoes = 0;
-		debug_use = 0;
-		restart = 0;
+		time_over = false;
+		shield = false;
+		invincibility = false;
+		shoes = false;
+		debug_use = false;
+		restart = false;
 		frame_count = 0;
 		
 		//OscillateNumInit();

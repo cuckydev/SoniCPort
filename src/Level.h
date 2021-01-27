@@ -114,7 +114,6 @@ extern Object *const level_objects;
 extern uint8_t btn_pushtime1, btn_pushtime2;
 extern int16_t obj31_ypos;
 extern uint8_t boss_status;
-extern word_u track_pos;
 extern uint8_t lock_screen;
 extern uint16_t gfx_big_ring;
 extern uint8_t convey_rev;

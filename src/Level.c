@@ -423,7 +423,6 @@ Object *const level_objects = objects + RESERVED_OBJECTS;
 uint8_t btn_pushtime1, btn_pushtime2;
 int16_t obj31_ypos;
 uint8_t boss_status;
-word_u track_pos;
 uint8_t lock_screen;
 uint16_t gfx_big_ring;
 uint8_t convey_rev;
