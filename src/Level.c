@@ -16,23 +16,215 @@
 static const uint8_t layout_ghz1[] = {
 	#include <Resource/Layout/GHZ1.h>
 };
+static const uint8_t layout_ghz2[] = {
+	#include <Resource/Layout/GHZ2.h>
+};
+static const uint8_t layout_ghz3[] = {
+	#include <Resource/Layout/GHZ3.h>
+};
 static const uint8_t layout_ghzbg[] = {
 	#include <Resource/Layout/GHZBG.h>
+};
+static const uint8_t layout_lz1[] = {
+	#include <Resource/Layout/LZ1.h>
+};
+static const uint8_t layout_lz2[] = {
+	#include <Resource/Layout/LZ2.h>
+};
+static const uint8_t layout_lz3[] = {
+	#include <Resource/Layout/LZ3.h>
+};
+static const uint8_t layout_lzbg[] = {
+	#include <Resource/Layout/LZBG.h>
+};
+static const uint8_t layout_mz1[] = {
+	#include <Resource/Layout/MZ1.h>
+};
+static const uint8_t layout_mz1bg[] = {
+	#include <Resource/Layout/MZ1BG.h>
+};
+static const uint8_t layout_mz2[] = {
+	#include <Resource/Layout/MZ2.h>
+};
+static const uint8_t layout_mz2bg[] = {
+	#include <Resource/Layout/MZ2BG.h>
+};
+static const uint8_t layout_mz3[] = {
+	#include <Resource/Layout/MZ3.h>
+};
+static const uint8_t layout_mz3bg[] = {
+	#include <Resource/Layout/MZ3BG.h>
+};
+static const uint8_t layout_slz1[] = {
+	#include <Resource/Layout/SLZ1.h>
+};
+static const uint8_t layout_slz2[] = {
+	#include <Resource/Layout/SLZ2.h>
+};
+static const uint8_t layout_slz3[] = {
+	#include <Resource/Layout/SLZ3.h>
+};
+static const uint8_t layout_slzbg[] = {
+	#include <Resource/Layout/SLZBG.h>
+};
+static const uint8_t layout_syz1[] = {
+	#include <Resource/Layout/SYZ1.h>
+};
+static const uint8_t layout_syz2[] = {
+	#include <Resource/Layout/SYZ2.h>
+};
+static const uint8_t layout_syz3[] = {
+	#include <Resource/Layout/SYZ3.h>
+};
+#ifdef SCP_REV00
+	static const uint8_t layout_syzbg[] = {
+		#include <Resource/Layout/SYZBGREV00.h>
+	};
+#else
+	static const uint8_t layout_syzbg[] = {
+		#include <Resource/Layout/SYZBGREV01.h>
+	};
+#endif
+static const uint8_t layout_sbz1[] = {
+	#include <Resource/Layout/SBZ1.h>
+};
+static const uint8_t layout_sbz1bg[] = {
+	#include <Resource/Layout/SBZ1BG.h>
+};
+static const uint8_t layout_sbz2[] = {
+	#include <Resource/Layout/SBZ2.h>
+};
+static const uint8_t layout_sbz2bg[] = {
+	#include <Resource/Layout/SBZ2BG.h>
+};
+static const uint8_t layout_sbz3[] = {
+	#include <Resource/Layout/SBZ3.h>
+};
+static const uint8_t layout_ending[] = {
+	#include <Resource/Layout/Ending.h>
 };
 
 //256x256 mappings
 static const uint8_t map256_ghz[] = {
 	#include <Resource/Map256/GHZ.h>
 };
+static const uint8_t map256_lz[] = {
+	#include <Resource/Map256/LZ.h>
+};
+#ifdef SCP_REV00
+	static const uint8_t map256_mz[] = {
+		#include <Resource/Map256/MZREV00.h>
+	};
+#else
+	static const uint8_t map256_mz[] = {
+		#include <Resource/Map256/MZREV01.h>
+	};
+#endif
+static const uint8_t map256_slz[] = {
+	#include <Resource/Map256/SLZ.h>
+};
+static const uint8_t map256_syz[] = {
+	#include <Resource/Map256/SYZ.h>
+};
+#ifdef SCP_REV00
+	static const uint8_t map256_sbz[] = {
+		#include <Resource/Map256/SBZREV00.h>
+	};
+#else
+	static const uint8_t map256_sbz[] = {
+		#include <Resource/Map256/SBZREV01.h>
+	};
+#endif
 
 //16x16 mappings
 static const uint8_t map16_ghz[] = {
 	#include <Resource/Map16/GHZ.h>
 };
+static const uint8_t map16_lz[] = {
+	#include <Resource/Map16/LZ.h>
+};
+static const uint8_t map16_mz[] = {
+	#include <Resource/Map16/MZ.h>
+};
+static const uint8_t map16_slz[] = {
+	#include <Resource/Map16/SLZ.h>
+};
+static const uint8_t map16_syz[] = {
+	#include <Resource/Map16/SYZ.h>
+};
+static const uint8_t map16_sbz[] = {
+	#include <Resource/Map16/SBZ.h>
+};
+
+//Collision indices
+static const uint8_t coli_ghz[] = {
+	#include <Resource/CollisionIndex/GHZ.h>
+};
+static const uint8_t coli_lz[] = {
+	#include <Resource/CollisionIndex/LZ.h>
+};
+static const uint8_t coli_mz[] = {
+	#include <Resource/CollisionIndex/MZ.h>
+};
+static const uint8_t coli_slz[] = {
+	#include <Resource/CollisionIndex/SLZ.h>
+};
+static const uint8_t coli_syz[] = {
+	#include <Resource/CollisionIndex/SYZ.h>
+};
+static const uint8_t coli_sbz[] = {
+	#include <Resource/CollisionIndex/SBZ.h>
+};
 
 //Level definitions
-static const uint8_t *level_layouts[][2] = {
-	{layout_ghz1, layout_ghzbg},
+static const struct
+{
+	const uint8_t *layout_fg;
+	const uint8_t *layout_bg;
+	const uint8_t *layout_3;
+} level_layouts[ZoneId_Num][4] = {
+	{ //ZoneId_GHZ
+		{layout_ghz1,   layout_ghzbg,  NULL},
+		{layout_ghz2,   layout_ghzbg,  NULL},
+		{layout_ghz3,   layout_ghzbg,  NULL},
+		{NULL,          NULL,          NULL},
+	},
+	{ //ZoneId_LZ
+		{layout_lz1,    layout_lzbg,   NULL},
+		{layout_lz2,    layout_lzbg,   NULL},
+		{layout_lz3,    layout_lzbg,   NULL},
+		{layout_sbz3,   layout_lzbg,   NULL},
+	},
+	{ //ZoneId_MZ
+		{layout_mz1,    layout_mz1bg,  layout_mz1},
+		{layout_mz2,    layout_mz2bg,  NULL},
+		{layout_mz3,    layout_mz3bg,  NULL},
+		{NULL,          NULL,          NULL},
+	},
+	{ //ZoneId_SLZ
+		{layout_slz1,   layout_slzbg,  NULL},
+		{layout_slz2,   layout_slzbg,  NULL},
+		{layout_slz3,   layout_slzbg,  NULL},
+		{NULL,          NULL,          NULL},
+	},
+	{ //ZoneId_SYZ
+		{layout_syz1,   layout_syzbg,  NULL},
+		{layout_syz2,   layout_syzbg,  NULL},
+		{layout_syz3,   layout_syzbg,  NULL},
+		{NULL,          NULL,          NULL},
+	},
+	{ //ZoneId_SBZ
+		{layout_sbz1,   layout_sbz1bg, layout_sbz1bg},
+		{layout_sbz2,   layout_sbz2bg, layout_sbz2bg},
+		{layout_sbz2,   layout_sbz2bg, NULL},
+		{NULL,          NULL,          NULL},
+	},
+	{ //ZoneId_EndZ
+		{layout_ending, layout_ghzbg,  NULL},
+		{layout_ending, layout_ghzbg,  NULL},
+		{NULL,          NULL,          NULL},
+		{NULL,          NULL,          NULL},
+	},
 };
 
 static const int16_t ldef_size[ZoneId_Num][4][6] = {
@@ -89,38 +281,38 @@ static const int16_t ldef_start[ZoneId_Num][4][2] = {
 		{0x0080, 0x00A8},
 	},
 	{ //ZoneId_LZ
-		{0x0060, 0x00C0},
-		{0x0080, 0x00A8},
-		{0x0080, 0x00A8},
-		{0x0080, 0x00A8},
+		{0x0060, 0x006C},
+		{0x0050, 0x00EC},
+		{0x0050, 0x02EC},
+		{0x0B80, 0x0000},
 	},
 	{ //ZoneId_MZ
-		{0x0080, 0x00A8},
-		{0x0080, 0x00A8},
-		{0x0080, 0x00A8},
+		{0x0030, 0x0266},
+		{0x0030, 0x0266},
+		{0x0030, 0x0166},
 		{0x0080, 0x00A8},
 	},
 	{ //ZoneId_SLZ
-		{0x0080, 0x00A8},
-		{0x0080, 0x00A8},
-		{0x0080, 0x00A8},
+		{0x0040, 0x02CC},
+		{0x0040, 0x014C},
+		{0x0040, 0x014C},
 		{0x0080, 0x00A8},
 	},
 	{ //ZoneId_SYZ
-		{0x0080, 0x00A8},
-		{0x0080, 0x00A8},
-		{0x0080, 0x00A8},
+		{0x0030, 0x03BD},
+		{0x0030, 0x01BD},
+		{0x0030, 0x00EC},
 		{0x0080, 0x00A8},
 	},
 	{ //ZoneId_SBZ
-		{0x0080, 0x00A8},
-		{0x0080, 0x00A8},
-		{0x0080, 0x00A8},
+		{0x0030, 0x048C},
+		{0x0030, 0x074C},
+		{0x2140, 0x05AC},
 		{0x0080, 0x00A8},
 	},
 	{ //ZoneId_EndZ
-		{0x0080, 0x00A8},
-		{0x0080, 0x00A8},
+		{0x0620, 0x016B},
+		{0x0EE0, 0x016C},
 		{0x0080, 0x00A8},
 		{0x0080, 0x00A8},
 	},
@@ -150,7 +342,23 @@ static const int16_t ldef_scrollsize[ZoneId_Num][4] = {
 
 //Level headers
 const LevelHeader level_header[ZoneId_Num] = {
-	{PlcId_GHZ, art_ghz2, PlcId_GHZ2, map16_ghz, map256_ghz, 0, 0, PalId_GHZ, PalId_GHZ, sizeof(map16_ghz)},
+	{PlcId_GHZ, art_ghz2, PlcId_GHZ2, map16_ghz, map256_ghz, 0, 0, PalId_GHZ,  PalId_GHZ,  sizeof(map16_ghz)},
+	{PlcId_LZ,  art_lz,   PlcId_LZ2,  map16_lz,  map256_lz,  0, 0, PalId_LZ,   PalId_LZ,   sizeof(map16_lz)},
+	{PlcId_MZ,  art_mz,   PlcId_MZ2,  map16_mz,  map256_mz,  0, 0, PalId_MZ,   PalId_MZ,   sizeof(map16_mz)},
+	{PlcId_SLZ, art_slz,  PlcId_SLZ2, map16_slz, map256_slz, 0, 0, PalId_SLZ,  PalId_SLZ,  sizeof(map16_slz)},
+	{PlcId_SYZ, art_syz,  PlcId_SYZ2, map16_syz, map256_syz, 0, 0, PalId_SYZ,  PalId_SYZ,  sizeof(map16_syz)},
+	{PlcId_SBZ, art_sbz,  PlcId_SBZ2, map16_sbz, map256_sbz, 0, 0, PalId_SBZ1, PalId_SBZ1, sizeof(map16_sbz)},
+	{0,         art_ghz2, 0,          map16_ghz, map256_ghz, 0, 0, PalId_GHZ,  PalId_GHZ,  sizeof(map16_ghz)},
+};
+
+//Level collision indices
+const uint8_t *level_coli[ZoneId_Num - 1] = {
+	coli_ghz,
+	coli_lz,
+	coli_mz,
+	coli_slz,
+	coli_syz,
+	coli_sbz,
 };
 
 //Level state
@@ -164,7 +372,6 @@ int16_t limit_left3;
 int16_t limit_top_db, limit_btm_db;
 
 LevelAnim level_anim[6];
-const uint8_t *coll_index;
 
 uint8_t last_lamp;
 
@@ -189,8 +396,8 @@ uint8_t wtr_state;
 ALIGNED2 uint8_t level_map256[0xA400];
 ALIGNED2 uint8_t level_map16[0x1800];
 uint8_t level_layout[8][2][0x40];
-
 uint8_t level_schunks[2][2];
+const uint8_t *coll_index;
 
 //Object state
 Object objects[OBJECTS];
@@ -256,9 +463,12 @@ void LoadLayout(const uint8_t *from, uint8_t *to)
 void LoadLevelLayout()
 {
 	//Load foreground and background layers
-	uint16_t index = LEVEL_INDEX(level_id);
-	LoadLayout(level_layouts[index][0], level_layout[0][0]);
-	LoadLayout(level_layouts[index][1], level_layout[0][1]);
+	LoadLayout(
+		level_layouts[LEVEL_ZONE(level_id)][LEVEL_ACT(level_id)].layout_fg,
+		level_layout[0][0]);
+	LoadLayout(
+		level_layouts[LEVEL_ZONE(level_id)][LEVEL_ACT(level_id)].layout_bg,
+		level_layout[0][1]);
 }
 
 void LevelSizeLoad()
@@ -349,13 +559,19 @@ void LevelDataLoad()
 	
 	//Load level palette
 	PaletteId pal = header->pal;
-	//if (level_id == LEVEL_ID(ZoneId_LZ, 3))
-	//	pal = PalId_SBZ3;
-	//if (level_id == LEVEL_ID(ZoneId_SBZ, 1) || level_id == LEVEL_ID(ZoneId_SBZ, 2))
-	//	pal = PalId_SBZ2;
+	if (level_id == LEVEL_ID(ZoneId_LZ, 3))
+		pal = PalId_SBZ3;
+	if (level_id == LEVEL_ID(ZoneId_SBZ, 1) || level_id == LEVEL_ID(ZoneId_SBZ, 2))
+		pal = PalId_SBZ2;
 	PalLoad1(pal);
 	
 	//Load level art
-	if (header->plc2 != PlcId_Main)
+	if (header->plc2 != 0)
 		AddPLC(header->plc2);
+}
+
+void ColIndexLoad()
+{
+	//Use zone's collision indices
+	
 }

@@ -274,10 +274,3 @@ void DeformLayers()
 	//Run zone's background deformation routine
 	deform_routines[level_id >> 8]();
 }
-
-void LoadTilesAsYouMove_BGOnly()
-{
-	DrawBGScrollBlock1(bg_scrpos_x.f.u,  bg_scrpos_y.f.u,  &bg1_scroll_flags, level_layout[0][1], VRAM_BG);
-	DrawBGScrollBlock2(bg2_scrpos_x.f.u, bg2_scrpos_y.f.u, &bg2_scroll_flags, level_layout[0][1], VRAM_BG);
-	//No scroll block 3, even in REV01... odd
-}

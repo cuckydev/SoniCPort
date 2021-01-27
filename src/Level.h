@@ -67,7 +67,6 @@ extern int16_t limit_left3;
 extern int16_t limit_top_db, limit_btm_db;
 
 extern LevelAnim level_anim[6];
-extern const uint8_t *coll_index;
 
 extern uint8_t last_lamp;
 
@@ -84,8 +83,8 @@ extern uint8_t wtr_state;
 extern uint8_t level_map256[0xA400];
 extern uint8_t level_map16[0x1800];
 extern uint8_t level_layout[8][2][0x40];
-
 extern uint8_t level_schunks[2][2];
+extern const uint8_t *coll_index;
 
 extern Object objects[OBJECTS];
 extern Object *const player;
@@ -128,3 +127,4 @@ void LoadMap16(ZoneId zone);
 void LoadMap256(ZoneId zone);
 void LevelSizeLoad();
 void LevelDataLoad();
+void ColIndexLoad();

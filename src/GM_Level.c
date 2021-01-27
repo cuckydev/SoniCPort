@@ -5,6 +5,7 @@
 #include "Level.h"
 #include "LevelDraw.h"
 #include "LevelScroll.h"
+#include "LevelCollision.h"
 #include "SpecialStage.h"
 #include "Object/Sonic.h"
 #include "Video.h"
@@ -40,7 +41,7 @@ void GM_Level()
 		NemDec(0xB000, art_titlecard);
 		
 		//Load level art and general art
-		if (level_header[LEVEL_ZONE(level_id)].plc1 != PlcId_Main)
+		if (level_header[LEVEL_ZONE(level_id)].plc1 != 0)
 			AddPLC(level_header[LEVEL_ZONE(level_id)].plc1);
 		AddPLC(PlcId_Main2);
 	}
@@ -232,6 +233,7 @@ void GM_Level()
 		fg_scroll_flags |= SCROLL_FLAG_LEFT;
 		LevelDataLoad();
 		LoadTilesFromStart();
+		FloorLog_Unk();
 		
 		//Fade into level
 		PaletteFadeIn_At(0x10, 0x30);
@@ -239,8 +241,11 @@ void GM_Level()
 		while (1)
 		{
 			//Run game and load PLCs
-			vbla_routine = 0x0C;
+			vbla_routine = 0x08;
 			WaitForVBla();
+			
+			DeformLayers();
+			RunPLC();
 		}
 	}
 }

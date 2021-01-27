@@ -2,8 +2,9 @@
 
 #include "Video.h"
 #include "Palette.h"
-#include "LevelScroll.h"
 #include "Level.h"
+#include "LevelDraw.h"
+#include "LevelScroll.h"
 #include "Object/Sonic.h"
 #include "PLC.h"
 
@@ -120,7 +121,7 @@ void VBlank()
 			if (demo_length)
 				demo_length--;
 			break;
-		case 0x0C:
+		case 0x08:
 			//Read joypad state
 			ReadJoypads();
 			
@@ -134,6 +135,13 @@ void VBlank()
 			VDP_SetHIntPosition(hbla_pos);
 			VDP_WriteVRAM(VRAM_SPRITES, (const uint8_t*)sprite_buffer, sizeof(sprite_buffer));
 			VDP_WriteVRAM(VRAM_HSCROLL, (const uint8_t*)hscroll_buffer, sizeof(hscroll_buffer));
+			
+			//Update Sonic's art
+			if (sonframe_chg)
+			{
+				//TODO: Write Sonic DPLC
+				sonframe_chg = false;
+			}
 			
 			//Copy duplicate plane positions and flags
 			scrpos_x_dup.v     = scrpos_x.v;
@@ -150,12 +158,53 @@ void VBlank()
 			bg2_scroll_flags_dup = bg2_scroll_flags;
 			bg3_scroll_flags_dup = bg3_scroll_flags;
 			
+			//Scroll camera
+			LoadTilesAsYouMove();
+			
+			//Update level animations and HUD
+			
+			//Process PLCs
+			ProcessDPLC();
+			break;
+		case 0x0C:
+			//Read joypad state
+			ReadJoypads();
+			
+			//Copy palette
+			if (wtr_state)
+				VDP_WriteCRAM(0, &wet_palette[0][0], 0x40);
+			else
+				VDP_WriteCRAM(0, &dry_palette[0][0], 0x40);
+			
+			//Copy buffers
+			VDP_SetHIntPosition(hbla_pos);
+			VDP_WriteVRAM(VRAM_SPRITES, (const uint8_t*)sprite_buffer, sizeof(sprite_buffer));
+			VDP_WriteVRAM(VRAM_HSCROLL, (const uint8_t*)hscroll_buffer, sizeof(hscroll_buffer));
+			
 			//Update Sonic's art
 			if (sonframe_chg)
 			{
 				//TODO: Write Sonic DPLC
 				sonframe_chg = false;
 			}
+			
+			//Copy duplicate plane positions and flags
+			scrpos_x_dup.v     = scrpos_x.v;
+			scrpos_y_dup.v     = scrpos_y.v;
+			bg_scrpos_x_dup.v  = bg_scrpos_x.v;
+			bg_scrpos_y_dup.v  = bg_scrpos_y.v;
+			bg2_scrpos_x_dup.v = bg2_scrpos_x.v;
+			bg2_scrpos_y_dup.v = bg2_scrpos_y.v;
+			bg3_scrpos_x_dup.v = bg3_scrpos_x.v;
+			bg3_scrpos_y_dup.v = bg3_scrpos_y.v;
+			
+			fg_scroll_flags_dup = fg_scroll_flags;
+			bg1_scroll_flags_dup = bg1_scroll_flags;
+			bg2_scroll_flags_dup = bg2_scroll_flags;
+			bg3_scroll_flags_dup = bg3_scroll_flags;
+			
+			//Scroll camera
+			LoadTilesAsYouMove();
 			
 			//Update level animations and HUD
 			

@@ -54,6 +54,11 @@ typedef enum
 //Level art
 extern const uint8_t art_ghz1[];
 extern const uint8_t art_ghz2[];
+extern const uint8_t art_lz[];
+extern const uint8_t art_mz[];
+extern const uint8_t art_slz[];
+extern const uint8_t art_syz[];
+extern const uint8_t art_sbz[];
 
 //PLC interface
 void AddPLC(PlcId plc);

@@ -135,7 +135,7 @@ void DrawBlocks_TB_2(size_t offset, size_t pos, int16_t sx, int16_t sy, int16_t 
 		DrawBlock(meta, block, offset + pos);
 		size_t tx = pos % (PLANE_WIDTH << 1);
 		size_t ty = pos / (PLANE_WIDTH << 1);
-		pos = (((ty + 2) % (PLANE_HEIGHT << 1)) * (PLANE_WIDTH << 1)) + tx;
+		pos = (((ty + 2) % PLANE_HEIGHT) * (PLANE_WIDTH << 1)) + tx;
 		y += 16;
 	}
 }
@@ -145,11 +145,20 @@ void DrawBlocks_TB(size_t offset, size_t pos, int16_t sx, int16_t sy, int16_t x,
 	DrawBlocks_TB_2(offset, pos, sx, sy, x, y, layout, (SCROLL_HEIGHT + 16 + 16) / 16);
 }
 
-void DrawBlocks_BG(size_t offset, int16_t sy, int16_t y, uint8_t *layout, const uint8_t *array)
+void DrawBlocks_BG(size_t offset, int16_t sx, int16_t sy, int16_t y, uint8_t *layout, const uint8_t *array)
 {
 	static const dword_s *bg_pos[] = {&bg_scrpos_x, &bg_scrpos_x, &bg2_scrpos_x, &bg3_scrpos_y};
-	int16_t sx = bg_pos[array[y >> 4] >> 1]->f.u;
-	DrawBlocks_LR(offset, CalcVRAMPos(sx, sy, 0, y), sx, sy, 0, y, layout);
+	uint8_t bg_pos_i = array[y >> 4];
+	if (bg_pos_i != 0)
+	{
+		sx = bg_pos[bg_pos_i >> 1]->f.u;
+		sy = (sy & ~0xF) % SCROLL_HEIGHT;
+		DrawBlocks_LR(offset, CalcVRAMPos(sx, sy, 0, y), sx, sy, 0, y, layout);
+	}
+	else
+	{
+		DrawBlocks_LR_2(offset, CalcVRAMPos(sx, sy, 0, y), sx, sy, 0, y, layout, PLANE_WIDTH);
+	}
 }
 
 void Draw_GHZ_Bg(int16_t sy, uint8_t *layout, size_t offset)
@@ -158,7 +167,7 @@ void Draw_GHZ_Bg(int16_t sy, uint8_t *layout, size_t offset)
 	for (size_t i = 0; i < (SCROLL_HEIGHT + 16 + 16) / 16; i++)
 	{
 		static const uint8_t bg_array[] = {0x00, 0x00, 0x00, 0x00, 0x06, 0x06, 0x06, 0x04, 0x04, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-		DrawBlocks_BG(offset, sy, y, layout, bg_array);
+		DrawBlocks_BG(offset, bg_scrpos_y.f.u, sy, y, layout, bg_array);
 		y += 16;
 	}
 }
@@ -199,18 +208,36 @@ void DrawBGScrollBlock1(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout,
 		return;
 	
 	//Handle flags
-	if (*flag != (*flag &= ~SCROLL_FLAG_UP))
+	if (*flag & SCROLL_FLAG_UP)
+	{
 		DrawBlocks_LR_2(offset, CalcVRAMPos(sx, sy, -16, -16), sx, sy, -16, -16, layout, 512 / 16);
-	if (*flag != (*flag &= ~SCROLL_FLAG_DOWN))
+		*flag &= ~SCROLL_FLAG_UP;
+	}
+	if (*flag & SCROLL_FLAG_DOWN)
+	{
 		DrawBlocks_LR_2(offset, CalcVRAMPos(sx, sy, -16, SCROLL_HEIGHT), sx, sy, -16, SCROLL_HEIGHT, layout, 512 / 16);
-	if (*flag != (*flag &= ~SCROLL_FLAG_LEFT))
+		*flag &= ~SCROLL_FLAG_DOWN;
+	}
+	if (*flag & SCROLL_FLAG_LEFT)
+	{
 		DrawBlocks_TB(offset, CalcVRAMPos(sx, sy, -16, -16), sx, sy, -16, -16, layout);
-	if (*flag != (*flag &= ~SCROLL_FLAG_RIGHT))
+		*flag &= ~SCROLL_FLAG_LEFT;
+	}
+	if (*flag & SCROLL_FLAG_RIGHT)
+	{
 		DrawBlocks_TB(offset, CalcVRAMPos(sx, sy, SCROLL_WIDTH, -16), sx, sy, SCROLL_WIDTH, -16, layout);
-	if (*flag != (*flag &= ~SCROLL_FLAG_UP2))
-		{;}//DrawBlocks_LB_3(offset, CalcVRAMPos_2(sx, sy, 0, -16), sx, sy, 0, -16, layout);
-	if (*flag != (*flag &= ~SCROLL_FLAG_DOWN2))
-		{;}//DrawBlocks_LB_3(offset, CalcVRAMPos_2(sx, sy, 0, SCROLL_HEIGHT), sx, sy, 0, SCROLL_HEIGHT, layout);
+		*flag &= ~SCROLL_FLAG_RIGHT;
+	}
+	if (*flag & SCROLL_FLAG_UP2)
+	{
+		DrawBlocks_LR_2(offset, CalcVRAMPos(0, sy, 0, -16), 0, sy, 0, -16, layout, 512 / 16);
+		*flag &= ~SCROLL_FLAG_UP2;
+	}
+	if (*flag & SCROLL_FLAG_DOWN2)
+	{
+		DrawBlocks_LR_2(offset, CalcVRAMPos(0, sy, 0, SCROLL_HEIGHT), 0, sy, 0, SCROLL_HEIGHT, layout, 512 / 16);
+		*flag &= ~SCROLL_FLAG_DOWN2;
+	}
 }
 
 void DrawBGScrollBlock2(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout, size_t offset)
@@ -223,10 +250,16 @@ void DrawBGScrollBlock2(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout,
 	//Run completely different code if in Scrap Brain Zone (what)
 	if (LEVEL_ZONE(level_id) != ZoneId_SBZ)
 	{
-		if (*flag != (*flag &= ~SCROLL_FLAG_LEFT2))
+		if (*flag & SCROLL_FLAG_LEFT2)
+		{
 			DrawBlocks_TB_2(offset, CalcVRAMPos(sx, sy, -16, SCROLL_HEIGHT / 2), sx, sy, -16, SCROLL_HEIGHT / 2, layout, 3);
-		if (*flag != (*flag &= ~SCROLL_FLAG_RIGHT2))
+			*flag &= ~SCROLL_FLAG_LEFT2;
+		}
+		if (*flag & SCROLL_FLAG_RIGHT2)
+		{
 			DrawBlocks_TB_2(offset, CalcVRAMPos(sx, sy, SCROLL_WIDTH, SCROLL_HEIGHT / 2), sx, sy, SCROLL_WIDTH, SCROLL_HEIGHT / 2, layout, 3);
+			*flag &= ~SCROLL_FLAG_RIGHT2;
+		}
 	}
 	else
 	{
@@ -244,13 +277,63 @@ void DrawBGScrollBlock3(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout,
 	//Run completely different code if in Marble Zone (what)
 	if (LEVEL_ZONE(level_id) != ZoneId_MZ)
 	{
-		if (*flag != (*flag &= ~SCROLL_FLAG_LEFT2))
+		if (*flag & SCROLL_FLAG_LEFT2)
+		{
 			DrawBlocks_TB_2(offset, CalcVRAMPos(sx, sy, -16, 64), sx, sy, -16, 64, layout, 3);
-		if (*flag != (*flag &= ~SCROLL_FLAG_RIGHT2))
+			*flag &= ~SCROLL_FLAG_LEFT2;
+		}
+		if (*flag & SCROLL_FLAG_RIGHT2)
+		{
 			DrawBlocks_TB_2(offset, CalcVRAMPos(sx, sy, SCROLL_WIDTH, 64), sx, sy, SCROLL_WIDTH, 64, layout, 3);
+			*flag &= ~SCROLL_FLAG_RIGHT2;
+		}
 	}
 	else
 	{
 		//TODO
 	}
+}
+
+void LoadTilesAsYouMove()
+{
+	//Scroll background
+	DrawBGScrollBlock1(bg_scrpos_x.f.u,  bg_scrpos_y.f.u,  &bg1_scroll_flags, level_layout[0][1], VRAM_BG);
+	DrawBGScrollBlock2(bg2_scrpos_x.f.u, bg2_scrpos_y.f.u, &bg2_scroll_flags, level_layout[0][1], VRAM_BG);
+	DrawBGScrollBlock3(bg3_scrpos_x.f.u, bg3_scrpos_y.f.u, &bg3_scroll_flags, level_layout[0][1], VRAM_BG);
+	
+	//Scroll foreground
+	int16_t sx = scrpos_x_dup.f.u;
+	int16_t sy = scrpos_y_dup.f.u;
+	uint8_t *layout = level_layout[0][0];
+	
+	if (fg_scroll_flags == 0)
+		return;
+	
+	if (fg_scroll_flags & SCROLL_FLAG_UP)
+	{
+		DrawBlocks_LR(VRAM_FG, CalcVRAMPos(sx, sy, -16, -16), sx, sy, -16, -16, layout);
+		fg_scroll_flags &= ~SCROLL_FLAG_UP;
+	}
+	if (fg_scroll_flags & SCROLL_FLAG_DOWN)
+	{
+		DrawBlocks_LR(VRAM_FG, CalcVRAMPos(sx, sy, -16, SCROLL_HEIGHT), sx, sy, -16, SCROLL_HEIGHT, layout);
+		fg_scroll_flags &= ~SCROLL_FLAG_DOWN;
+	}
+	if (fg_scroll_flags & SCROLL_FLAG_LEFT)
+	{
+		DrawBlocks_TB(VRAM_FG, CalcVRAMPos(sx, sy, -16, -16), sx, sy, -16, -16, layout);
+		fg_scroll_flags &= ~SCROLL_FLAG_LEFT;
+	}
+	if (fg_scroll_flags & SCROLL_FLAG_RIGHT)
+	{
+		DrawBlocks_TB(VRAM_FG, CalcVRAMPos(sx, sy, SCROLL_WIDTH, -16), sx, sy, SCROLL_WIDTH, -16, layout);
+		fg_scroll_flags &= ~SCROLL_FLAG_RIGHT;
+	}
+}
+
+void LoadTilesAsYouMove_BGOnly()
+{
+	DrawBGScrollBlock1(bg_scrpos_x.f.u,  bg_scrpos_y.f.u,  &bg1_scroll_flags, level_layout[0][1], VRAM_BG);
+	DrawBGScrollBlock2(bg2_scrpos_x.f.u, bg2_scrpos_y.f.u, &bg2_scroll_flags, level_layout[0][1], VRAM_BG);
+	//No scroll block 3, even in REV01... odd
 }

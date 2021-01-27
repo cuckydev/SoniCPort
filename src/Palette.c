@@ -21,20 +21,65 @@ static struct
 } palette_fade;
 
 //Palettes
-static ALIGNED2 const uint8_t pal_sega_background[] = {
+static ALIGNED2 const uint8_t pal_sega_bg[] = {
 	#include <Resource/Palette/SegaBackground.h>
 };
 static ALIGNED2 const uint8_t pal_title[] = {
 	#include <Resource/Palette/Title.h>
 };
+static ALIGNED2 const uint8_t pal_level_sel[] = {
+	#include <Resource/Palette/LevelSel.h>
+};
 static ALIGNED2 const uint8_t pal_sonic[] = {
 	#include <Resource/Palette/Sonic.h>
+};
+static ALIGNED2 const uint8_t pal_ghz[] = {
+	#include <Resource/Palette/GHZ.h>
+};
+static ALIGNED2 const uint8_t pal_lz[] = {
+	#include <Resource/Palette/LZ.h>
+};
+static ALIGNED2 const uint8_t pal_mz[] = {
+	#include <Resource/Palette/MZ.h>
+};
+static ALIGNED2 const uint8_t pal_slz[] = {
+	#include <Resource/Palette/SLZ.h>
+};
+static ALIGNED2 const uint8_t pal_syz[] = {
+	#include <Resource/Palette/SYZ.h>
+};
+static ALIGNED2 const uint8_t pal_sbz1[] = {
+	#include <Resource/Palette/SBZ1.h>
+};
+static ALIGNED2 const uint8_t pal_special[] = {
+	#include <Resource/Palette/Special.h>
+};
+static ALIGNED2 const uint8_t pal_lz_water[] = {
+	#include <Resource/Palette/LZWater.h>
+};
+static ALIGNED2 const uint8_t pal_sbz3[] = {
+	#include <Resource/Palette/SBZ3.h>
+};
+static ALIGNED2 const uint8_t pal_sbz3_water[] = {
+	#include <Resource/Palette/SBZ3Water.h>
+};
+static ALIGNED2 const uint8_t pal_sbz2[] = {
+	#include <Resource/Palette/SBZ2.h>
 };
 static ALIGNED2 const uint8_t pal_sonic_lz[] = {
 	#include <Resource/Palette/SonicLZ.h>
 };
 static ALIGNED2 const uint8_t pal_sonic_sbz[] = {
 	#include <Resource/Palette/SonicSBZ.h>
+};
+static ALIGNED2 const uint8_t pal_ss_results[] = {
+	#include <Resource/Palette/SSResults.h>
+};
+static ALIGNED2 const uint8_t pal_continue[] = {
+	#include <Resource/Palette/Continue.h>
+};
+static ALIGNED2 const uint8_t pal_ending[] = {
+	#include <Resource/Palette/Ending.h>
 };
 
 static struct PalettePointer
@@ -43,11 +88,26 @@ static struct PalettePointer
 	uint16_t *target;
 	size_t colours;
 } palette_pointers[] = {
-	/* PalId_SegaBG   */ {(const uint16_t*)pal_sega_background, &dry_palette[0][0], 0x40},
-	/* PalId_Title    */ {(const uint16_t*)pal_title,           &dry_palette[0][0], 0x40},
-	/* PalId_Sonic    */ {(const uint16_t*)pal_sonic,           &dry_palette[0][0], 0x10},
-	/* PalId_SonicLZ  */ {(const uint16_t*)pal_sonic_lz,        &dry_palette[0][0], 0x10},
-	/* PalId_SonicSBZ */ {(const uint16_t*)pal_sonic_sbz,       &dry_palette[0][0], 0x10},
+	/* PalId_SegaBG    */ {(const uint16_t*)pal_sega_bg,    &dry_palette[0][0], 0x40},
+	/* PalId_Title     */ {(const uint16_t*)pal_title,      &dry_palette[0][0], 0x40},
+	/* PalId_LevelSel  */ {(const uint16_t*)pal_level_sel,  &dry_palette[0][0], 0x40},
+	/* PalId_Sonic     */ {(const uint16_t*)pal_sonic,      &dry_palette[0][0], 0x10},
+	/* PalId_GHZ       */ {(const uint16_t*)pal_ghz,        &dry_palette[1][0], 0x30},
+	/* PalId_LZ        */ {(const uint16_t*)pal_lz,         &dry_palette[1][0], 0x30},
+	/* PalId_MZ        */ {(const uint16_t*)pal_mz,         &dry_palette[1][0], 0x30},
+	/* PalId_SYZ       */ {(const uint16_t*)pal_syz,        &dry_palette[1][0], 0x30},
+	/* PalId_SLZ       */ {(const uint16_t*)pal_slz,        &dry_palette[1][0], 0x30},
+	/* PalId_SBZ1      */ {(const uint16_t*)pal_sbz1,       &dry_palette[1][0], 0x30},
+	/* PalId_Special   */ {(const uint16_t*)pal_special,    &dry_palette[0][0], 0x40},
+	/* PalId_LZWater   */ {(const uint16_t*)pal_lz_water,   &dry_palette[0][0], 0x40},
+	/* PalId_SBZ3      */ {(const uint16_t*)pal_sbz3,       &dry_palette[1][0], 0x30},
+	/* PalId_SBZ3Water */ {(const uint16_t*)pal_sbz3_water, &dry_palette[0][0], 0x40},
+	/* PalId_SBZ2      */ {(const uint16_t*)pal_sbz2,       &dry_palette[1][0], 0x30},
+	/* PalId_SonicLZ   */ {(const uint16_t*)pal_sonic_lz,   &dry_palette[0][0], 0x10},
+	/* PalId_SonicSBZ  */ {(const uint16_t*)pal_sonic_sbz,  &dry_palette[0][0], 0x10},
+	/* PalId_SSResults */ {(const uint16_t*)pal_ss_results, &dry_palette[0][0], 0x40},
+	/* PalId_Continue  */ {(const uint16_t*)pal_continue,   &dry_palette[0][0], 0x20},
+	/* PalId_Ending    */ {(const uint16_t*)pal_ending,     &dry_palette[0][0], 0x40},
 };
 
 //Palette interface

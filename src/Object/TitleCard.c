@@ -88,7 +88,8 @@ void Obj_TitleCard(Object *obj)
 				//Initialize object graphics
 				if (d0 == 7)
 				{
-					if ((d0 += LEVEL_ACT(level_id)) == 3)
+					d0 += LEVEL_ACT(level_id);
+					if (LEVEL_ACT(level_id) == 3)
 						d0--;
 				}
 				

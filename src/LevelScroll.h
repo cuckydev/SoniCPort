@@ -31,4 +31,3 @@ extern int16_t look_shift;
 //Level scroll functions
 void BgScrollSpeed(int16_t x, int16_t y);
 void DeformLayers();
-void LoadTilesAsYouMove_BGOnly();
