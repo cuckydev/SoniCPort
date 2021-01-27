@@ -4,7 +4,7 @@
 #define SCREEN_SCALE 2 //TODO: make screen scale a variable
 
 #define SCREEN_WIDTH  320
-#define SCREEN_HEIGHT 224
+#define SCREEN_HEIGHT 224 //Changing this doesn't work properly yet
 
 #define SCREEN_WIDEADD  (SCREEN_WIDTH - 320)
 #define SCREEN_WIDEADD2 (SCREEN_WIDEADD / 2)
@@ -21,5 +21,5 @@
 #define VRAM_SPRITES 0xF800 //Sprite table
 #define VRAM_HSCROLL 0xFC00 //horizontal scroll table
 
-#define PLANE_WIDTH  64 //NOTE: changing these doesn't work properly yet
+#define PLANE_WIDTH  64 //NOTE: Changing these doesn't work properly yet
 #define PLANE_HEIGHT 32

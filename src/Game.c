@@ -21,9 +21,11 @@ uint16_t credits_num;
 
 uint8_t credits_cheat;
 
-uint8_t jpad_hold2,  jpad_press2; //Joypad 2 state
+uint8_t debug_cheat, debug_mode;
+
+uint8_t jpad2_hold,  jpad2_press; //Joypad 2 state
 uint8_t jpad1_hold1, jpad1_press1; //Joypad 1 state
-uint8_t jpad2_hold,  jpad2_press; //Sonic controls
+uint8_t jpad1_hold2, jpad1_press2; //Sonic controls
 
 uint32_t vbla_count;
 

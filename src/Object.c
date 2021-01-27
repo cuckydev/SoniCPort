@@ -14,6 +14,7 @@ struct SpriteQueue
 } sprite_queue[8];
 
 //Object execution
+void Obj_Sonic(Object *obj);
 void Obj_TitleSonic(Object *obj);
 void Obj_PSB(Object *obj);
 void Obj_TitleCard(Object *obj);
@@ -21,7 +22,7 @@ void Obj_Credits(Object *obj);
 
 static void (*object_func[])(Object*) = {
 	/* ObjId_Null       */ NULL,
-	/* ObjId_Sonic      */ NULL,
+	/* ObjId_Sonic      */ Obj_Sonic,
 	/* ObjId_02         */ NULL,
 	/* ObjId_03         */ NULL,
 	/* ObjId_04         */ NULL,
@@ -170,8 +171,13 @@ void ExecuteObjects()
 	Object *obj = objects;
 	for (int i = 0; i < OBJECTS; i++, obj++)
 	{
-		if (obj->type && object_func[obj->type] != NULL)
-			object_func[obj->type](obj);
+		if (obj->type != 0)
+		{
+			if (object_func[obj->type] != NULL)
+				object_func[obj->type](obj);
+			else
+				DeleteObject(obj);
+		}
 	}
 }
 

@@ -2,6 +2,7 @@
 
 #include <Constants.h>
 #include "Level.h"
+#include "PLC.h"
 
 //Title card configuration
 static const struct TitleCard_Item
@@ -105,7 +106,7 @@ void Obj_TitleCard(Object *obj)
 			}
 		}
 	//Fallthrough
-		case 2:
+		case 2: //Moving to on-screen position
 			//Move
 			if (obj->pos.s.x != scratch->main_x)
 			{
@@ -114,6 +115,40 @@ void Obj_TitleCard(Object *obj)
 				else
 					obj->pos.s.x += 16;
 			}
+			
+			//Draw
+			if (obj->pos.s.x >= 0 && obj->pos.s.x < (0x200 + SCREEN_WIDEADD))
+				DisplaySprite(obj);
+			break;
+		case 4: //Moving off-screen
+		case 6:
+			//Wait for timer to expire
+			if (obj->frame_time)
+			{
+				obj->frame_time--;
+				DisplaySprite(obj);
+				break;
+			}
+			
+			//Delete and/or load level art once off-screen
+			if (!obj->render.f.on_screen || obj->pos.s.x == scratch->final_x)
+			{
+				if (obj->routine == 4)
+				{
+					AddPLC(PlcId_Explode);
+					AddPLC(PlcId_GHZAnimals + LEVEL_ZONE(level_id));
+				}
+				DeleteObject(obj);
+				break;
+			}
+			
+			//Move
+			if (obj->pos.s.x >= scratch->final_x)
+				obj->pos.s.x -= 16;
+			else
+				obj->pos.s.x += 16;
+			
+			//Draw
 			if (obj->pos.s.x >= 0 && obj->pos.s.x < (0x200 + SCREEN_WIDEADD))
 				DisplaySprite(obj);
 			break;

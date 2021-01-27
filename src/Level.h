@@ -72,8 +72,29 @@ extern uint8_t last_lamp;
 
 extern uint16_t restart;
 extern uint16_t pause;
+extern uint8_t time_over;
+
+extern uint16_t frame_count;
+
+extern uint32_t score;
+extern uint32_t time;
+extern uint16_t rings;
+extern uint8_t lives;
+extern uint8_t continues;
 
 extern uint16_t air;
+extern uint8_t last_special;
+
+extern uint8_t lifecount;
+extern uint8_t hud_life;
+extern uint8_t hud_ring;
+extern uint8_t hud_time;
+extern uint8_t hud_score;
+
+extern uint8_t shield;
+extern uint8_t invincibility;
+extern uint8_t shoes;
+extern uint8_t debug_use;
 
 extern int16_t wtr_pos1, wtr_pos2, wtr_pos3;
 extern uint8_t water;

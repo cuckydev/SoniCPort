@@ -17,6 +17,7 @@
 //Japanese credits
 static const uint8_t art_japanese_credits[] = {
 	#include <Resource/Art/JapaneseCredits.h>
+	,0,
 };
 static ALIGNED2 const uint8_t map_japanese_credits[] = {
 	#include <Resource/Tilemap/JapaneseCredits.h>
@@ -25,17 +26,21 @@ static ALIGNED2 const uint8_t map_japanese_credits[] = {
 //Credits font
 static const uint8_t art_credits_font[] = {
 	#include <Resource/Art/CreditsFont.h>
+	,0,
 };
 
 //Title
 static const uint8_t art_title_fg[] = {
 	#include <Resource/Art/TitleFG.h>
+	,0,
 };
 static const uint8_t art_title_sonic[] = {
 	#include <Resource/Art/TitleSonic.h>
+	,0,
 };
 static const uint8_t art_title_tm[] = {
 	#include <Resource/Art/TitleTM.h>
+	,0,
 };
 static ALIGNED2 const uint8_t map_title_fg[] = {
 	#include <Resource/Tilemap/TitleFG.h>

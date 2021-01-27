@@ -9,24 +9,31 @@
 //Level art
 const uint8_t art_ghz1[] = {
 	#include <Resource/Art/GHZ1.h>
+	,0,
 };
 const uint8_t art_ghz2[] = {
 	#include <Resource/Art/GHZ2.h>
+	,0,
 };
 const uint8_t art_lz[] = {
 	#include <Resource/Art/LZ.h>
+	,0,
 };
 const uint8_t art_mz[] = {
 	#include <Resource/Art/MZ.h>
+	,0,
 };
 const uint8_t art_slz[] = {
 	#include <Resource/Art/SLZ.h>
+	,0,
 };
 const uint8_t art_syz[] = {
 	#include <Resource/Art/SYZ.h>
+	,0,
 };
 const uint8_t art_sbz[] = {
 	#include <Resource/Art/SBZ.h>
+	,0,
 };
 
 //PLC lists

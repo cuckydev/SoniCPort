@@ -26,9 +26,11 @@ extern uint16_t credits_num;
 
 extern uint8_t credits_cheat;
 
-extern uint8_t jpad_hold2,  jpad_press2;
-extern uint8_t jpad1_hold1, jpad1_press1;
+extern uint8_t debug_cheat, debug_mode;
+
 extern uint8_t jpad2_hold,  jpad2_press;
+extern uint8_t jpad1_hold1, jpad1_press1;
+extern uint8_t jpad1_hold2, jpad1_press2;
 
 extern uint32_t vbla_count;
 

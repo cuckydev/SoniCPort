@@ -21,6 +21,7 @@
 #else
 	static const uint8_t art_sega[] = {
 		#include <Resource/Art/SegaREV01.h>
+		,0,
 	};
 	static ALIGNED2 const uint8_t map_sega[] = {
 		#include <Resource/Tilemap/SegaREV01.h>

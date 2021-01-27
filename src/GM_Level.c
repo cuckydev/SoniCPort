@@ -19,6 +19,7 @@
 //Title card art
 static const uint8_t art_titlecard[] = {
 	#include <Resource/Art/TitleCard.h>
+	,0,
 };
 
 //Level gamemode
@@ -234,17 +235,77 @@ void GM_Level()
 		LevelDataLoad();
 		LoadTilesFromStart();
 		FloorLog_Unk();
+		ColIndexLoad();
+		
+		//Create player and HUD objects
+		player->type = ObjId_Sonic;
+		
+		//Handle debug mode cheat
+		if (debug_cheat && (jpad1_hold1 & JPAD_A))
+			debug_mode = 1;
+		jpad1_hold2 = 0;
+		jpad1_hold1 = 0;
+		
+		//Load level objects
+		//ObjPosLoad();
+		ExecuteObjects();
+		BuildSprites();
+		
+		//Initialize game state
+		if (!last_lamp)
+		{
+			rings = 0;
+			time = 0;
+			lifecount = 0;
+		}
+		
+		time_over = 0;
+		shield = 0;
+		invincibility = 0;
+		shoes = 0;
+		debug_use = 0;
+		restart = 0;
+		frame_count = 0;
+		
+		//OscillateNumInit();
+		
+		hud_score = true;
+		hud_ring = true;
+		hud_time = true;
+		
+		//TODO: load demo
+		btn_pushtime1 = 0;
+		
+		//Load level's water palette
+		if (LEVEL_ZONE(level_id) == ZoneId_LZ)
+			PalLoad4_Water((LEVEL_ACT(level_id) == 3) ? PalId_LZWater : PalId_SBZ3Water);
+		
+		//Wait for 4 frames
+		for (int i = 0; i < 4; i++)
+		{
+			vbla_routine = 0x08;
+			WaitForVBla();
+		}
 		
 		//Fade into level
 		PaletteFadeIn_At(0x10, 0x30);
 		
+		//Tell title card to move away
+		objects[2].routine += 2;
+		objects[3].routine += 4;
+		objects[4].routine += 4;
+		objects[5].routine += 4;
+		
+		//Enter level loop
 		while (1)
 		{
 			//Run game and load PLCs
 			vbla_routine = 0x08;
 			WaitForVBla();
 			
+			ExecuteObjects();
 			DeformLayers();
+			BuildSprites();
 			RunPLC();
 		}
 	}

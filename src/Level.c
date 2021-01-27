@@ -377,14 +377,30 @@ uint8_t last_lamp;
 
 uint16_t restart;
 uint16_t pause;
+uint8_t time_over;
 
 uint16_t frame_count;
 
 //Player state
+uint32_t score;
+uint32_t time;
+uint16_t rings;
 uint8_t lives;
+uint8_t continues;
+
 uint16_t air;
 uint8_t last_special;
-uint8_t continues;
+
+uint8_t lifecount;
+uint8_t hud_life;
+uint8_t hud_ring;
+uint8_t hud_time;
+uint8_t hud_score;
+
+uint8_t shield;
+uint8_t invincibility;
+uint8_t shoes;
+uint8_t debug_use;
 
 //Water state
 int16_t wtr_pos1, wtr_pos2, wtr_pos3;
