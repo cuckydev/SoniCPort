@@ -141,7 +141,7 @@ void VBlank()
 			//Update Sonic's art
 			if (sonframe_chg)
 			{
-				//TODO: Write Sonic DPLC
+				VDP_WriteVRAM(0xF000, sgfx_buffer, SONIC_DPLC_SIZE);
 				sonframe_chg = false;
 			}
 			
@@ -186,7 +186,7 @@ void VBlank()
 			//Update Sonic's art
 			if (sonframe_chg)
 			{
-				//TODO: Write Sonic DPLC
+				VDP_WriteVRAM(0xF000, sgfx_buffer, SONIC_DPLC_SIZE);
 				sonframe_chg = false;
 			}
 			

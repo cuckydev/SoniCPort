@@ -4,6 +4,8 @@
 #include "Game.h"
 #include "Level.h"
 
+#include <string.h>
+
 //Sonic mappings
 static const uint8_t map_sonic[] = {
 	#include <Resource/Mappings/Sonic.h>
@@ -11,7 +13,9 @@ static const uint8_t map_sonic[] = {
 
 //Sonic globals
 int16_t sonspeed_max, sonspeed_acc, sonspeed_dec;
+
 uint8_t sonframe_num, sonframe_chg;
+uint8_t sgfx_buffer[SONIC_DPLC_SIZE];
 
 uint8_t angle_buffer0;
 uint8_t angle_buffer1;
@@ -279,6 +283,54 @@ void Sonic_Animate(Object *obj)
 	}
 }
 
+//Sonic DPLCs
+static const uint8_t art_sonic[] = {
+	#include <Resource/Art/Sonic.h>
+};
+
+static const uint8_t dplc_sonic[] = {
+	#include <Resource/Mappings/SonicDPLC.h>
+};
+
+void Sonic_LoadGfx(Object *obj)
+{
+	//Check if we're loading a new frame
+	uint8_t frame = obj->frame;
+	if (frame == sonframe_num)
+		return;
+	sonframe_num = frame;
+	
+	//Get DPLC script
+	const uint8_t *dplc_script = dplc_sonic;
+	frame <<= 1;
+	dplc_script += (dplc_script[frame] << 8) | (dplc_script[frame + 1] << 0);
+	
+	//Read number of entries
+	int8_t entries = (*dplc_script++) - 1;
+	if (entries < 0)
+		return;
+	
+	//Start reading data
+	uint8_t *top = sgfx_buffer;
+	sonframe_chg = true;
+	
+	do
+	{
+		//Read entry
+		uint16_t tile = *dplc_script++;
+		uint8_t tiles = tile >> 4;
+		tile = ((tile << 8) | (*dplc_script++)) << 5;
+		
+		const uint8_t *fromp = art_sonic + tile;
+		do
+		{
+			memcpy(top, fromp, 0x20);
+			fromp += 0x20;
+			top += 0x20;
+		} while (--tiles > 0);
+	} while (--entries > 0);
+}
+
 //Sonic object
 void Obj_Sonic(Object *obj)
 {
@@ -355,7 +407,7 @@ void Obj_Sonic(Object *obj)
 			
 			//Copy angle buffers
 			scratch->front_angle = angle_buffer0;
-			scratch->back_angle  = angle_buffer0;
+			scratch->back_angle  = angle_buffer1;
 			
 			//Animate
 			if (tunnel_mode)
@@ -365,6 +417,8 @@ void Obj_Sonic(Object *obj)
 			}
 			Sonic_Animate(obj);
 			
+			//Handle DPLCs
+			Sonic_LoadGfx(obj);
 			break;
 	}
 }
