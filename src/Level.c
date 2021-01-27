@@ -588,5 +588,5 @@ void LevelDataLoad()
 void ColIndexLoad()
 {
 	//Use zone's collision indices
-	
+	coll_index = level_coli[LEVEL_ZONE(level_id)];
 }

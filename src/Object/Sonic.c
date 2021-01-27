@@ -218,6 +218,7 @@ void Sonic_Animate(Object *obj)
 				anim_script = GET_SONIC_ANISCR(SonAnimId_Walk);
 				angle += (angle >> 1);
 			}
+			angle <<= 1;
 			
 			//Get animation delay
 			int16_t anim_spd = 0x800 - abs_spd;

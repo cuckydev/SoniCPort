@@ -42,8 +42,8 @@ static const uint8_t map_titlecard[] = {
 typedef struct
 {
 	uint8_t pad[8];   //0x28-0x2F
-	uint16_t main_x;  //0x30
-	uint16_t final_x; //0x32
+	int16_t main_x;   //0x30
+	int16_t final_x;  //0x32
 } Scratch_TitleCard;
 
 void Obj_TitleCard(Object *obj)

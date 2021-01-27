@@ -371,7 +371,7 @@ void BuildSprites()
 					if (!obj->render.f.assume_height)
 					{
 						int16_t oy = obj->pos.l.y.f.u - *scrpos[1];
-						if ((oy + obj->y_rad) < 0 || (ox - obj->y_rad) >= SCREEN_HEIGHT)
+						if ((oy + obj->y_rad) < 0 || (oy - obj->y_rad) >= SCREEN_HEIGHT)
 							continue;
 						y = 128 + oy; //VDP sprites start at 128
 					}
