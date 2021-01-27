@@ -327,8 +327,8 @@ void Sonic_LoadGfx(Object *obj)
 			memcpy(top, fromp, 0x20);
 			fromp += 0x20;
 			top += 0x20;
-		} while (--tiles > 0);
-	} while (--entries > 0);
+		} while (tiles-- > 0);
+	} while (entries-- > 0);
 }
 
 //Sonic object
