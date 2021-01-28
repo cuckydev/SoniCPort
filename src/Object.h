@@ -160,14 +160,14 @@ typedef union
 {
 	struct
 	{
-		uint8_t on_screen : 1;     //Set if the object's on-screen (see BuildSprites)
-		uint8_t player_loop : 1;   //Set if we're the player object and behind a loop
-		uint8_t raw_mappings : 1;  //`mappings` member points to a single mapping
-		uint8_t assume_height : 1; //Cull height is assumed to be 32
-		uint8_t align_bg : 1;      //Aligned to the background (overrides `align_fg`)
-		uint8_t align_fg : 1;      //Aligned to the foreground
-		uint8_t y_flip : 1;        //Vertically flipped
 		uint8_t x_flip : 1;        //Horizontally flipped
+		uint8_t y_flip : 1;        //Vertically flipped
+		uint8_t align_fg : 1;      //Aligned to the foreground
+		uint8_t align_bg : 1;      //Aligned to the background (overrides `align_fg`)
+		uint8_t assume_height : 1; //Cull height is assumed to be 32
+		uint8_t raw_mappings : 1;  //`mappings` member points to a single mapping
+		uint8_t player_loop : 1;   //Set if we're the player object and behind a loop
+		uint8_t on_screen : 1;     //Set if the object's on-screen (see BuildSprites)
 	} f;
 	uint8_t b;
 } ObjectRender;
@@ -176,13 +176,13 @@ typedef union
 {
 	struct
 	{
-		uint8_t flag7 : 1;        //Object-specific
-		uint8_t flag6 : 1;        //Unused
-		uint8_t player_push : 1;  //Player is pushing us
-		uint8_t flag5 : 1;        //Unused
-		uint8_t player_stand : 1; //Player is standing on us
-		uint8_t y_flip : 1;       //Vertially flipped
 		uint8_t x_flip : 1;       //Horizontally flipped
+		uint8_t y_flip : 1;       //Vertially flipped
+		uint8_t player_stand : 1; //Player is standing on us
+		uint8_t flag5 : 1;        //Unused
+		uint8_t player_push : 1;  //Player is pushing us
+		uint8_t flag6 : 1;        //Unused
+		uint8_t flag7 : 1;        //Object-specific
 	} f;
 	uint8_t b;
 } ObjectStatus;
@@ -191,14 +191,14 @@ typedef union
 {
 	struct
 	{
-		uint8_t flag7 : 1;        //Unused
-		uint8_t underwater : 1;   //Set if we're underwater
-		uint8_t pushing : 1;      //Set if we're pushing
-		uint8_t roll_jump : 1;    //Set when jumping from a roll
-		uint8_t object_stand : 1; //Standing on an object
-		uint8_t in_ball : 1;      //In ball-form
-		uint8_t in_air : 1;       //In mid-air
 		uint8_t x_flip : 1;       //Horizontally flipped
+		uint8_t in_air : 1;       //In mid-air
+		uint8_t in_ball : 1;      //In ball-form
+		uint8_t object_stand : 1; //Standing on an object
+		uint8_t roll_jump : 1;    //Set when jumping from a roll
+		uint8_t pushing : 1;      //Set if we're pushing
+		uint8_t underwater : 1;   //Set if we're underwater
+		uint8_t flag7 : 1;        //Unused
 	} f;
 	uint8_t b;
 } PlayerStatus;

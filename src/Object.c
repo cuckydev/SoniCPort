@@ -480,17 +480,17 @@ void AnimateSprite(Object *obj, const uint8_t *anim_script)
 		}
 		if (++cmd == 0) //0xFD
 		{
-			//Change animation (falls through to the routine increment below)
+			//Change animation
 			obj->anim = anim_script[2 + obj->anim_frame];
 		}
 		if (++cmd == 0) //0xFC
 		{
-			//Increment routine (falls through to the routine secondary code below)
+			//Increment routine
 			obj->routine += 2;
 		}
 		if (++cmd == 0) //0xFB
 		{
-			//Clear secondary routine (falls through to the increment below)
+			//Clear secondary routine
 			obj->routine_sec = 0;
 		}
 		if (++cmd == 0) //0xFA

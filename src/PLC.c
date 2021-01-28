@@ -6,6 +6,10 @@
 
 #include <string.h>
 
+//PLC constants
+#define PLC_SPEED_1 9 //How many tiles are loaded per frame during a 'loading' state
+#define PLC_SPEED_2 3 //How many tiles are loaded per frame while the game's running
+
 //Level art
 const uint8_t art_ghz1[] = {
 	#include <Resource/Art/GHZ1.h>
@@ -408,10 +412,10 @@ void ProcessDPLC()
 {
 	if (plc_buffer_reg18 != 0)
 	{
-		plc_buffer_reg1A = 9; //Process 9 tiles
+		plc_buffer_reg1A = PLC_SPEED_1; //Process PLC_SPEED_1 tiles
 		
 		size_t off = plc_buffer[0].off;
-		plc_buffer[0].off += 9 * 0x20;
+		plc_buffer[0].off += PLC_SPEED_1 * 0x20;
 		
 		ProcessDPLC_Main(off);
 	}
@@ -421,10 +425,10 @@ void ProcessDPLC2()
 {
 	if (plc_buffer_reg18 != 0)
 	{
-		plc_buffer_reg1A = 3; //Process 3 tiles
+		plc_buffer_reg1A = PLC_SPEED_2; //Process PLC_SPEED_2 tiles
 		
 		size_t off = plc_buffer[0].off;
-		plc_buffer[0].off += 3 * 0x20;
+		plc_buffer[0].off += PLC_SPEED_2 * 0x20;
 		
 		ProcessDPLC_Main(off);
 	}

@@ -456,9 +456,9 @@ void VDP_Render()
 		
 		//Get sprite bounding area
 		int top = sprite_y - 128;
+		int bottom = top + ((sprite_height + 1) << 3);
 		if (top < 0)
 			top = 0;
-		int bottom = sprite_y - 128 + ((sprite_height + 1) << 3);
 		if (bottom > SCREEN_HEIGHT)
 			bottom = SCREEN_HEIGHT;
 		

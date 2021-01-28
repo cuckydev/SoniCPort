@@ -166,7 +166,11 @@ void VBlank()
 			//Update level animations and HUD
 			
 			//Process PLCs
-			ProcessDPLC();
+			ProcessDPLC2();
+			
+			//Decrement demo timer
+			if (demo_length)
+				demo_length--;
 			break;
 		case 0x0C:
 			//Read joypad state

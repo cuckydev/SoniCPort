@@ -24,11 +24,11 @@ typedef union
 {
 	struct
 	{
-		uint8_t priority : 1;
-		uint8_t palette : 2;
-		uint8_t y_flip : 1;
-		uint8_t x_flip : 1;
 		uint16_t pattern : 11;
+		uint8_t x_flip : 1;
+		uint8_t y_flip : 1;
+		uint8_t palette : 2;
+		uint8_t priority : 1;
 	} s;
 	uint16_t w;
 } VDP_Tile;
@@ -37,11 +37,11 @@ typedef union
 #define TILE_TO_STRUCT(v)           \
 {                                   \
 	.s = {                          \
-		(uint8_t)(((v) >> 15) & 1), \
-		(uint8_t)(((v) >> 13) & 3), \
-		(uint8_t)(((v) >> 12) & 1), \
-		(uint8_t)(((v) >> 11) & 1), \
 		(uint16_t)((v) & 0x7FF),    \
+		(uint8_t)(((v) >> 11) & 1), \
+		(uint8_t)(((v) >> 12) & 1), \
+		(uint8_t)(((v) >> 13) & 3), \
+		(uint8_t)(((v) >> 15) & 1), \
 	}                               \
 }
 
@@ -49,10 +49,10 @@ typedef union
 {
 	struct
 	{
-		uint8_t pad1 : 4;
-		uint8_t width : 2;
-		uint8_t height : 2;
 		uint8_t link;
+		uint8_t height : 2;
+		uint8_t width : 2;
+		uint8_t pad1 : 4;
 	} s;
 	uint16_t w;
 } VDP_SpriteInfo;
@@ -65,9 +65,9 @@ typedef struct
 	{
 		struct
 		{
-			uint8_t pad : 4;
-			uint8_t width : 2;
 			uint8_t height : 2;
+			uint8_t width : 2;
+			uint8_t pad : 4;
 		} s;
 		uint8_t b;
 	} size;

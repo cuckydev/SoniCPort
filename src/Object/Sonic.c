@@ -332,6 +332,16 @@ void Sonic_LoadGfx(Object *obj)
 	} while (entries-- > 0);
 }
 
+//Sonic movement functions
+bool Sonic_Jump(Object *obj)
+{
+	//Don't jump if ABC isn't pressed
+	if (!(jpad1_press2 & (JPAD_A | JPAD_C | JPAD_B)))
+		return false;
+	
+	return false;
+}
+
 //Sonic object
 void Obj_Sonic(Object *obj)
 {
@@ -391,6 +401,8 @@ void Obj_Sonic(Object *obj)
 				switch ((obj->status.p.f.in_ball << 2) | (obj->status.p.f.in_air << 1))
 				{
 					case 0: //Not in ball, not in air
+						if (Sonic_Jump(obj))
+							break;
 						break;
 					case 2: //Not in ball, in air
 						break;

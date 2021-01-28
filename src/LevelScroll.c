@@ -144,7 +144,13 @@ void Deform_GHZ()
 }
 
 static void (*deform_routines[])() = {
-	Deform_GHZ,
+	/* ZoneId_GHZ  */ Deform_GHZ,
+	/* ZoneId_LZ   */ NULL,
+	/* ZoneId_MZ   */ NULL,
+	/* ZoneId_SLZ  */ NULL,
+	/* ZoneId_SYZ  */ NULL,
+	/* ZoneId_SBZ  */ NULL,
+	/* ZoneId_EndZ */ Deform_GHZ,
 };
 
 //Background scroll speed routines
@@ -170,7 +176,13 @@ void BgScroll_GHZ(int16_t x, int16_t y)
 }
 
 static void (*bgscroll_routines[])(int16_t, int16_t) = {
-	BgScroll_GHZ,
+	/* ZoneId_GHZ  */ BgScroll_GHZ,
+	/* ZoneId_LZ   */ NULL,
+	/* ZoneId_MZ   */ NULL,
+	/* ZoneId_SLZ  */ NULL,
+	/* ZoneId_SYZ  */ NULL,
+	/* ZoneId_SBZ  */ NULL,
+	/* ZoneId_EndZ */ BgScroll_GHZ,
 };
 
 void BgScrollSpeed(int16_t x, int16_t y)
@@ -187,7 +199,8 @@ void BgScrollSpeed(int16_t x, int16_t y)
 	bg3_scrpos_x.f.u = x;
 	
 	//Run zone's background scroll routine
-	bgscroll_routines[level_id >> 8](x, y);
+	if (bgscroll_routines[LEVEL_ZONE(level_id)] != NULL)
+		bgscroll_routines[LEVEL_ZONE(level_id)](x, y);
 }
 
 //Level scroll functions
@@ -272,5 +285,6 @@ void DeformLayers()
 	vid_bg_scrpos_y_dup = bg_scrpos_y.f.u;
 	
 	//Run zone's background deformation routine
-	deform_routines[level_id >> 8]();
+	if (deform_routines[LEVEL_ZONE(level_id)] != NULL)
+		deform_routines[LEVEL_ZONE(level_id)]();
 }

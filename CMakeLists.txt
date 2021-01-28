@@ -186,6 +186,10 @@ set(RESOURCES
 	"CollisionIndex/SLZ"
 	"CollisionIndex/SYZ"
 	"CollisionIndex/SBZ"
+	
+	"Collision/AngleMap"
+	"Collision/HeightMap"
+	"Collision/WidthMap"
 )
 
 target_include_directories(SoniCPort PRIVATE "src")
