@@ -14,6 +14,13 @@
 #define LEVEL_ACT(id)         ((id) & 0x3)
 #define LEVEL_INDEX(id)       ((LEVEL_ZONE(id) << 2) | LEVEL_ACT(id))
 
+//Level bitfield structures
+#define META_SOLID_LRB 0x4000
+#define META_SOLID_TOP 0x2000
+#define META_Y_FLIP    0x1000
+#define META_X_FLIP    0x0800
+#define META_TILE      0x07FF
+
 //Level types
 typedef enum
 {

@@ -28,7 +28,7 @@ void GetBlockData(const uint8_t **meta, const uint8_t **block, int16_t sx, int16
 	x += sx;
 	y += sy;
 	
-	//Get chunk
+	//Get chunk position
 	int16_t cx = x >> 8;
 	int16_t cy = y >> 8;
 	
