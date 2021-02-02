@@ -1,10 +1,33 @@
 #pragma once
 
+#include "Object.h"
+
 #include <stdint.h>
 #include <Types.h>
 
 //Sonic constants
 #define SONIC_DPLC_SIZE 0x2E0
+
+//Sonic scratch structure
+typedef struct
+{
+	uint8_t air;                 //0x28
+	uint8_t pad0[7];             //0x29 - 0x2F
+	uint16_t flash_time;         //0x30
+	uint16_t invincibility_time; //0x32
+	uint16_t shoes_time;         //0x34
+	uint8_t front_angle;         //0x36
+	uint8_t back_angle;          //0x37
+	union
+	{
+		uint8_t floor_clip;
+		int16_t death_y;
+	} x38;                       //0x38
+	uint8_t pad2[2];             //0x3A - 0x3B
+	uint8_t jumping;             //0x3C
+	uint8_t standing_obj;        //0x3D
+	uint16_t control_lock;       //0x3E
+} Scratch_Sonic;
 
 //Sonic globals
 extern int16_t sonspeed_max, sonspeed_acc, sonspeed_dec;
@@ -50,3 +73,7 @@ typedef enum
 	SonAnimId_Float3,
 	SonAnimId_Float4,
 } SonAnimId;
+
+//Sonic functions
+int KillSonic(Object *obj, Object *src);
+void Sonic_ChkRoll(Object *obj);

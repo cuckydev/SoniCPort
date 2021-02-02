@@ -517,3 +517,17 @@ void DeleteObject(Object *obj)
 	//Clear object memory
 	memset(obj, 0, sizeof(Object));
 }
+
+void SpeedToPos(Object *obj)
+{
+	obj->pos.l.x.v += obj->xsp << 8;
+	obj->pos.l.y.v += obj->ysp << 8;
+}
+
+void ObjectFall(Object *obj)
+{
+	obj->pos.l.x.v += obj->xsp << 8;
+	obj->pos.l.y.v += obj->ysp << 8;
+	obj->ysp += 0x38;
+}
+

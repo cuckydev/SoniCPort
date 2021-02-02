@@ -30,25 +30,8 @@ uint8_t sgfx_buffer[SONIC_DPLC_SIZE];
 int16_t track_sonic[0x40][2];
 word_u track_pos;
 
-//Sonic structures
-typedef struct
-{
-	uint8_t air;                 //0x28
-	uint8_t pad0[7];             //0x29 - 0x2F
-	uint16_t flash_time;         //0x30
-	uint16_t invincibility_time; //0x32
-	uint16_t shoes_time;         //0x34
-	uint8_t front_angle;         //0x36
-	uint8_t back_angle;          //0x37
-	uint8_t floor_clip;          //0x38
-	uint8_t pad1[3];             //0x39 - 0x3B
-	uint8_t jumping;             //0x3C
-	uint8_t standing_obj;        //0x3D
-	uint16_t control_lock;       //0x3E
-} Scratch_Sonic;
-
 //General Sonic state stuff
-void Sonic_Display(Object *obj)
+static void Sonic_Display(Object *obj)
 {
 	Scratch_Sonic *scratch = (Scratch_Sonic*)&obj->scratch;
 	
@@ -98,7 +81,7 @@ void Sonic_Display(Object *obj)
 	}
 }
 
-void Sonic_RecordPosition(Object *obj)
+static void Sonic_RecordPosition(Object *obj)
 {
 	//Track current position
 	int16_t *write = &track_sonic[0][0] + (track_pos.v >> 1);
@@ -149,7 +132,7 @@ static void Sonic_AnimateReadFrame(Object *obj, const uint8_t *anim_script)
 	}
 }
 
-void Sonic_Animate(Object *obj)
+static void Sonic_Animate(Object *obj)
 {
 	//Get animation script to use
 	const uint8_t *anim_script = anim_sonic;
@@ -197,8 +180,8 @@ void Sonic_Animate(Object *obj)
 			//Get orienatation
 			uint8_t angle = obj->angle;
 			uint8_t flip = obj->status.p.f.x_flip;
-			if (flip)
-				angle = -angle;
+			if (!flip)
+				angle ^= ~0;
 			if ((angle += 0x10) & 0x80)
 				flip ^= 3;
 			
@@ -300,7 +283,7 @@ static const uint8_t dplc_sonic[] = {
 	#include <Resource/Mappings/SonicDPLC.h>
 };
 
-void Sonic_LoadGfx(Object *obj)
+static void Sonic_LoadGfx(Object *obj)
 {
 	//Check if we're loading a new frame
 	uint8_t frame = obj->frame;
@@ -339,8 +322,144 @@ void Sonic_LoadGfx(Object *obj)
 	} while (entries-- > 0);
 }
 
+//Sonic collision functions
+static void Sonic_ResetOnFloor(Object *obj)
+{
+	Scratch_Sonic *scratch = (Scratch_Sonic*)&obj->scratch;
+	
+	//Set state
+	obj->status.p.f.pushing = false;
+	obj->status.p.f.in_air = false;
+	obj->status.p.f.roll_jump = false;
+	
+	if (obj->status.p.f.in_ball)
+	{
+		obj->status.p.f.in_ball = false;
+		obj->y_rad = SONIC_HEIGHT;
+		obj->x_rad = SONIC_WIDTH;
+		obj->anim = SonAnimId_Walk;
+		obj->pos.l.y.f.u -= SONIC_BALL_SHIFT;
+	}
+	
+	scratch->jumping = false;
+	item_bonus = 0;
+}
+
+static int16_t Sonic_Angle(Object *obj, int16_t dist0, int16_t dist1)
+{
+	//Get angle and distance to use (use closest one)
+	uint8_t res_angle = angle_buffer1;
+	int16_t res_dist = dist1;
+	if (dist1 >= dist0)
+	{
+		res_angle = angle_buffer0;
+		res_dist = dist0;
+	}
+	
+	//Use adjusted angle if hit angle is odd (special angle, run on all sides)
+	if (res_angle & 1)
+		obj->angle = (obj->angle + 0x20) & 0xC0;
+	else
+		obj->angle = res_angle;
+	return res_dist;
+}
+
+static void Sonic_AnglePos(Object *obj)
+{
+	Scratch_Sonic *scratch = (Scratch_Sonic*)&obj->scratch;
+	
+	//Don't do floor collision if standing on an object
+	if (obj->status.p.f.object_stand)
+	{
+		angle_buffer0 = 0;
+		angle_buffer1 = 0;
+		return;
+	}
+	
+	//Set 'no floor' angle
+	angle_buffer0 = 3;
+	angle_buffer1 = 3;
+	
+	//Get symmetrical angle
+	uint8_t angle = obj->angle;
+	if ((angle + 0x20) & 0x80)
+	{
+		if (angle & 0x80)
+			angle--;
+		angle += 0x20;
+	}
+	else
+	{
+		if (angle & 0x80)
+			angle++;
+		angle += 0x1F;
+	}
+	
+	int16_t dist0, dist1, dist;
+	switch (angle & 0xC0)
+	{
+		case 0x00:
+			dist0 = FindFloor(obj, obj->pos.l.x.f.u + obj->x_rad, obj->pos.l.y.f.u + obj->y_rad, META_SOLID_TOP, 0, 0x10, &angle_buffer0);
+			dist1 = FindFloor(obj, obj->pos.l.x.f.u - obj->x_rad, obj->pos.l.y.f.u + obj->y_rad, META_SOLID_TOP, 0, 0x10, &angle_buffer0);
+			if ((dist = Sonic_Angle(obj, dist0, dist1)) != 0)
+			{
+				if (dist < 0)
+				{
+					if (dist >= -14)
+						obj->pos.l.y.f.u += dist;
+				}
+				else
+				{
+					if (dist <= 14)
+					{
+						obj->pos.l.y.f.u += dist;
+					}
+					else if (!scratch->x38.floor_clip)
+					{
+						obj->status.p.f.in_air = true;
+						obj->status.p.f.pushing = false;
+						obj->prev_anim = 1;
+					}
+				}
+			}
+			break;
+	}
+}
+
+//Sonic functions
+int KillSonic(Object *obj, Object *src)
+{
+	Scratch_Sonic *scratch = (Scratch_Sonic*)&obj->scratch;
+	
+	//Check if we can be killed
+	if (debug_use)
+		return -1;
+	
+	//Set state
+	invincibility = false;
+	obj->routine = 6;
+	Sonic_ResetOnFloor(obj);
+	obj->status.p.f.in_air = true;
+	obj->ysp = -0x700;
+	obj->xsp = 0;
+	obj->inertia = 0;
+	scratch->x38.death_y = obj->pos.l.y.f.u;
+	obj->anim = SonAnimId_Death;
+	obj->tile.s.priority = true;
+	
+	//Play death sound
+	//move.w	#sfx_Death,d0	; play normal death sound
+	//cmpi.b	#id_Spikes,(a2)	; check	if you were killed by spikes
+	//bne.s	@sound
+	//move.w	#sfx_HitSpikes,d0 ; play spikes death sound
+	//
+	//@sound:
+	//jsr	(PlaySound_Special).l
+	return -1;
+}
+
 //Sonic movement functions
-bool Sonic_Jump(Object *obj)
+static bool Sonic_Jump(Object *obj)
 {
 	Scratch_Sonic *scratch = (Scratch_Sonic*)&obj->scratch;
 	
@@ -366,17 +485,17 @@ bool Sonic_Jump(Object *obj)
 	obj->status.p.f.in_air = true;
 	obj->status.p.f.pushing = false;
 	scratch->jumping = true;
-	scratch->floor_clip = 0;
+	scratch->x38.floor_clip = 0;
 	
 	//sfx	sfx_Jump,0,0,0	; play jumping sound //TODO
 	
-	obj->x_rad = SONIC_WIDTH; //No idea why this is here
-	obj->y_rad = SONIC_HEIGHT;
+	obj->y_rad = SONIC_HEIGHT; //No idea why this is here
+	obj->x_rad = SONIC_WIDTH;
 	
 	if (!obj->status.p.f.in_ball)
 	{
-		obj->x_rad = SONIC_BALL_WIDTH;
 		obj->y_rad = SONIC_BALL_HEIGHT;
+		obj->x_rad = SONIC_BALL_WIDTH;
 		obj->anim = SonAnimId_Roll;
 		obj->status.p.f.in_ball = true;
 		obj->pos.l.y.f.u += SONIC_BALL_SHIFT;
@@ -385,7 +504,7 @@ bool Sonic_Jump(Object *obj)
 	return true;
 }
 
-void Sonic_SlopeResist(Object *obj)
+static void Sonic_SlopeResist(Object *obj)
 {
 	if (((obj->angle + 0x20) & 0xC0) >= 0x60)
 		return;
@@ -471,7 +590,7 @@ static void Sonic_MoveRight(Object *obj)
 	}
 }
 
-void Sonic_Move(Object *obj)
+static void Sonic_Move(Object *obj)
 {
 	Scratch_Sonic *scratch = (Scratch_Sonic*)&obj->scratch;
 	
@@ -513,7 +632,7 @@ void Sonic_Move(Object *obj)
 				else
 				{
 					//Balance on level
-					if (ObjFloorDist(obj) >= 12)
+					if (ObjFloorDist(obj, obj->pos.l.x.f.u) >= 12)
 					{
 						if (scratch->front_angle == 3)
 						{
@@ -521,7 +640,7 @@ void Sonic_Move(Object *obj)
 							obj->anim = SonAnimId_Balance;
 							goto Sonic_ResetScr;
 						}
-						else if (scratch->back_angle == 3)
+						if (scratch->back_angle == 3)
 						{
 							obj->status.p.f.x_flip = true;
 							obj->anim = SonAnimId_Balance;
@@ -577,6 +696,99 @@ void Sonic_Move(Object *obj)
 	CalcSine(obj->angle, &sin, &cos);
 	obj->xsp = (cos * obj->inertia) >> 8;
 	obj->ysp = (sin * obj->inertia) >> 8;
+	
+	//Handle wall collision
+	if (((obj->angle + 0x40) & 0x80) || !obj->inertia)
+		return;
+	
+	uint8_t add_angle = (obj->inertia < 0) ? 0x40 : -0x40;
+	uint8_t angle = obj->angle + add_angle;
+	int16_t dist = GetDistanceBelowAngle2(obj, angle, NULL);
+	
+	if (dist < 0)
+	{
+		dist <<= 8;
+		switch ((angle + 0x20) & 0xC0)
+		{
+			case 0x00:
+				obj->ysp += dist;
+				break;
+			case 0x40:
+				obj->xsp -= dist;
+				obj->status.p.f.pushing = true;
+				obj->inertia = 0;
+				break;
+			case 0x80:
+				obj->ysp -= dist;
+				break;
+			case 0xC0:
+				obj->xsp += dist;
+				obj->status.p.f.pushing = true;
+				obj->inertia = 0;
+				break;
+		}
+	}
+}
+
+void Sonic_ChkRoll(Object *obj)
+{
+	//Enter roll state
+	if (obj->status.p.f.in_ball)
+		return;
+	obj->status.p.f.in_ball = true;
+	obj->y_rad = SONIC_BALL_HEIGHT;
+	obj->x_rad = SONIC_BALL_WIDTH;
+	obj->anim = SonAnimId_Roll;
+	obj->pos.l.y.f.u += SONIC_BALL_SHIFT;
+	//sfx	sfx_Roll,0,0,0	; play rolling sound //TODO
+	
+	//Set speed (S-tubes)
+	if (!obj->inertia)
+		obj->inertia = 0x200;
+}
+
+static void Sonic_Roll(Object *obj)
+{
+	//Check if we can and are trying to roll
+	if (jump_only || ((obj->inertia < 0) ? -obj->inertia : obj->inertia) < 0x80)
+		return;
+	if ((jpad1_hold2 & (JPAD_LEFT | JPAD_RIGHT)) || !(jpad1_hold2 & JPAD_DOWN))
+		return;
+	Sonic_ChkRoll(obj);
+}
+
+static void Sonic_LevelBound(Object *obj)
+{
+	//Get next X position
+	//This is unsigned, but it shouldn't be
+	uint16_t x = (obj->pos.l.x.v + (obj->xsp << 8)) >> 16;
+	
+	//Prevent us from going off the left or right boundaries
+	int16_t bound;
+	if (x < (bound = limit_left2 + 16) || x > (bound = limit_right2 + (lock_screen ? 290 : 360) + SCREEN_WIDEADD))
+	{
+		obj->pos.l.x.f.u = bound;
+		obj->pos.l.x.f.l = 0;
+		obj->xsp = 0;
+		obj->inertia = 0;
+	} 
+	
+	//Fall off the bottom boundary
+	if (obj->pos.l.y.f.u >= limit_btm2 + SCREEN_HEIGHT)
+	{
+		if (level_id == LEVEL_ID(ZoneId_SBZ, 1) && obj->pos.l.x.f.u >= 0x2000)
+		{
+			//Go to SBZ3 if falling off at the end of SBZ2
+			last_lamp = 0;
+			restart = true;
+			level_id = LEVEL_ID(ZoneId_LZ, 3);
+		}
+		else
+		{
+			//Kill Sonic
+			KillSonic(obj, obj); //The second argument is undefined in the original
+		}
+	}
 }
 
 //Sonic object
@@ -599,8 +811,8 @@ void Obj_Sonic(Object *obj)
 			obj->routine += 2;
 			
 			//Initialize collision size
-			obj->y_rad = SONIC_WIDTH;
-			obj->x_rad = SONIC_HEIGHT;
+			obj->y_rad = SONIC_HEIGHT;
+			obj->x_rad = SONIC_WIDTH;
 			
 			//Set object drawing information
 			obj->mappings = map_sonic;
@@ -642,12 +854,24 @@ void Obj_Sonic(Object *obj)
 							break;
 						Sonic_SlopeResist(obj);
 						Sonic_Move(obj);
+						Sonic_Roll(obj);
+						Sonic_LevelBound(obj);
+						SpeedToPos(obj);
+						Sonic_AnglePos(obj);
 						break;
 					case 2: //Not in ball, in air
+						Sonic_LevelBound(obj);
+						ObjectFall(obj);
+						if (obj->status.p.f.underwater)
+							obj->ysp -= 0x28;
 						break;
 					case 4: //In ball, not in air
 						break;
 					case 6: //In ball, in air
+						Sonic_LevelBound(obj);
+						ObjectFall(obj);
+						if (obj->status.p.f.underwater)
+							obj->ysp -= 0x28;
 						break;
 				}
 			}

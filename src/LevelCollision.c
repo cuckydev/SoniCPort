@@ -314,6 +314,102 @@ int16_t DistanceSwap(int16_t dist0, int16_t dist1, uint8_t *hit_angle, uint8_t a
 	return res_dist;
 }
 
+int16_t GetDistance2_Down(Object *obj, int16_t x, int16_t y, uint8_t *hit_angle)
+{
+	int16_t dist = FindFloor(obj, x, y + 10, META_SOLID_LRB, 0, 0x10, &angle_buffer0);
+	if (hit_angle != NULL)
+	{
+		if (angle_buffer0 & 1) //(special angle, run on all sides)
+			*hit_angle = 0x00;
+		else
+			*hit_angle = angle_buffer0;
+	}
+	return dist;
+}
+
+int16_t GetDistance2_Up(Object *obj, int16_t x, int16_t y, uint8_t *hit_angle)
+{
+	int16_t dist = FindFloor(obj, x, (y - 10) ^ 0xF, META_SOLID_LRB, META_Y_FLIP, -0x10, &angle_buffer0);
+	if (hit_angle != NULL)
+	{
+		if (angle_buffer0 & 1) //(special angle, run on all sides)
+			*hit_angle = 0x80;
+		else
+			*hit_angle = angle_buffer0;
+	}
+	return dist;
+}
+
+int16_t GetDistance2_Left(Object *obj, int16_t x, int16_t y, uint8_t *hit_angle)
+{
+	int16_t dist = FindWall(obj, (x - 10) ^ 0xF, y, META_SOLID_LRB, META_X_FLIP, -0x10, &angle_buffer0);
+	if (hit_angle != NULL)
+	{
+		if (angle_buffer0 & 1) //(special angle, run on all sides)
+			*hit_angle = 0x40;
+		else
+			*hit_angle = angle_buffer0;
+	}
+	return dist;
+}
+
+int16_t GetDistance2_Right(Object *obj, int16_t x, int16_t y, uint8_t *hit_angle)
+{
+	int16_t dist = FindWall(obj, x + 10, y, META_SOLID_LRB, 0, 0x10, &angle_buffer0);
+	if (hit_angle != NULL)
+	{
+		if (angle_buffer0 & 1) //(special angle, run on all sides)
+			*hit_angle = 0xC0;
+		else
+			*hit_angle = angle_buffer0;
+	}
+	return dist;
+}
+
+int16_t GetDistanceBelowAngle2(Object *obj, uint8_t angle, uint8_t *hit_angle)
+{
+	//Get next position
+	int16_t x = (obj->pos.l.x.v + (obj->xsp << 8)) >> 16;
+	int16_t y = (obj->pos.l.y.v + (obj->ysp << 8)) >> 16;
+	
+	//Set angle buffer
+	angle_buffer0 = angle;
+	angle_buffer1 = angle;
+	
+	//Get symmetrical angle
+	uint8_t prev_angle = angle;
+	if ((angle + 0x20) & 0x80)
+	{
+		if (angle & 0x80)
+			angle--;
+		angle += 0x20;
+	}
+	else
+	{
+		if (angle & 0x80)
+			angle++;
+		angle += 0x1F;
+	}
+	
+	switch (angle & 0xC0)
+	{
+		case 0x00:
+			return GetDistance2_Down(obj, x, y, hit_angle);
+		case 0x80:
+			return GetDistance2_Up(obj, x, y, hit_angle);
+		case 0x40:
+			if (!(prev_angle & 0x38))
+				y += 8;
+			return GetDistance2_Left(obj, x, y, hit_angle);
+		case 0xC0:
+			if (!(prev_angle & 0x38))
+				y += 8;
+			return GetDistance2_Right(obj, x, y, hit_angle);
+		default:
+			return 0;
+	}
+}
+
 int16_t GetDistance_Down(Object *obj, uint8_t *hit_angle)
 {
 	int16_t dist0 = FindFloor(obj, obj->pos.l.x.f.u + obj->x_rad, obj->pos.l.y.f.u + obj->y_rad, META_SOLID_TOP, 0, 0x10, &angle_buffer0);
@@ -364,12 +460,7 @@ int16_t GetDistanceBelowAngle(Object *obj, uint8_t angle, uint8_t *hit_angle)
 	}
 }
 
-int16_t ObjFloorDist(Object *obj)
-{
-	return FindFloor(obj, obj->pos.l.x.f.u, obj->pos.l.y.f.u + obj->y_rad, META_SOLID_TOP, 0, 0x10, &angle_buffer0);
-}
-
-int16_t ObjFloorDist2(Object *obj, int16_t x)
+int16_t ObjFloorDist(Object *obj, int16_t x)
 {
 	return FindFloor(obj, x, obj->pos.l.y.f.u + obj->y_rad, META_SOLID_TOP, 0, 0x10, &angle_buffer0);
 }
