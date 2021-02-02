@@ -15,7 +15,10 @@ static const uint8_t width_map[] = {
 	#include <Resource/Collision/WidthMap.h>
 };
 
-//Collision interface
+//Collision angle buffer
+uint8_t angle_buffer0, angle_buffer1;
+
+//Level collision interface
 void FloorLog_Unk()
 {
 	//Some debug function
@@ -286,4 +289,87 @@ int16_t FindWall(Object *obj, int16_t x, int16_t y, uint16_t solid, uint16_t fli
 	
 	//No tile found, check tile below
 	return FindWall2(obj, x + inc, y, solid, flip, angle) + 0x10;
+}
+
+//Object collision functions
+int16_t DistanceSwap(int16_t dist0, int16_t dist1, uint8_t *hit_angle, uint8_t angle)
+{
+	//Get angle and distance to use (use closest one)
+	uint8_t res_angle = angle_buffer1;
+	int16_t res_dist = dist1;
+	if (dist1 >= dist0)
+	{
+		res_angle = angle_buffer0;
+		res_dist = dist0;
+	}
+	
+	//Use given angle if hit angle is odd (special angle, run on all sides)
+	if (hit_angle != NULL)
+	{
+		if (res_angle & 1)
+			*hit_angle = angle;
+		else
+			*hit_angle = res_angle;
+	}
+	return res_dist;
+}
+
+int16_t GetDistance_Down(Object *obj, uint8_t *hit_angle)
+{
+	int16_t dist0 = FindFloor(obj, obj->pos.l.x.f.u + obj->x_rad, obj->pos.l.y.f.u + obj->y_rad, META_SOLID_TOP, 0, 0x10, &angle_buffer0);
+	int16_t dist1 = FindFloor(obj, obj->pos.l.x.f.u - obj->x_rad, obj->pos.l.y.f.u + obj->y_rad, META_SOLID_TOP, 0, 0x10, &angle_buffer1);
+	return DistanceSwap(dist0, dist1, hit_angle, 0x00);
+}
+
+int16_t GetDistance_Left(Object *obj, uint8_t *hit_angle)
+{
+	int16_t dist0 = FindWall(obj, (obj->pos.l.x.f.u - obj->y_rad) ^ 0xF, obj->pos.l.y.f.u - obj->x_rad, META_SOLID_LRB, META_X_FLIP, -0x10, &angle_buffer0);
+	int16_t dist1 = FindWall(obj, (obj->pos.l.x.f.u - obj->y_rad) ^ 0xF, obj->pos.l.y.f.u + obj->x_rad, META_SOLID_LRB, META_X_FLIP, -0x10, &angle_buffer1);
+	return DistanceSwap(dist0, dist1, hit_angle, 0x40);
+}
+
+int16_t GetDistance_Up(Object *obj, uint8_t *hit_angle)
+{
+	int16_t dist0 = FindFloor(obj, obj->pos.l.x.f.u + obj->x_rad, (obj->pos.l.y.f.u - obj->y_rad) ^ 0xF, META_SOLID_LRB, META_Y_FLIP, -0x10, &angle_buffer0);
+	int16_t dist1 = FindFloor(obj, obj->pos.l.x.f.u - obj->x_rad, (obj->pos.l.y.f.u - obj->y_rad) ^ 0xF, META_SOLID_LRB, META_Y_FLIP, -0x10, &angle_buffer1);
+	return DistanceSwap(dist0, dist1, hit_angle, 0x80);
+}
+
+int16_t GetDistance_Right(Object *obj, uint8_t *hit_angle)
+{
+	int16_t dist0 = FindWall(obj, obj->pos.l.x.f.u + obj->y_rad, obj->pos.l.y.f.u - obj->x_rad, META_SOLID_LRB, 0, 0x10, &angle_buffer0);
+	int16_t dist1 = FindWall(obj, obj->pos.l.x.f.u + obj->y_rad, obj->pos.l.y.f.u + obj->x_rad, META_SOLID_LRB, 0, 0x10, &angle_buffer1);
+	return DistanceSwap(dist0, dist1, hit_angle, 0xC0);
+}
+
+int16_t GetDistanceBelowAngle(Object *obj, uint8_t angle, uint8_t *hit_angle)
+{
+	//Set angle buffer
+	angle_buffer0 = angle;
+	angle_buffer1 = angle;
+	
+	//Get distance
+	switch ((angle + 0x20) & 0xC0)
+	{
+		case 0x00:
+			return GetDistance_Down(obj, hit_angle);
+		case 0x40:
+			return GetDistance_Left(obj, hit_angle);
+		case 0x80:
+			return GetDistance_Up(obj, hit_angle);
+		case 0xC0:
+			return GetDistance_Right(obj, hit_angle);
+		default:
+			return 0;
+	}
+}
+
+int16_t ObjFloorDist(Object *obj)
+{
+	return FindFloor(obj, obj->pos.l.x.f.u, obj->pos.l.y.f.u + obj->y_rad, META_SOLID_TOP, 0, 0x10, &angle_buffer0);
+}
+
+int16_t ObjFloorDist2(Object *obj, int16_t x)
+{
+	return FindFloor(obj, x, obj->pos.l.y.f.u + obj->y_rad, META_SOLID_TOP, 0, 0x10, &angle_buffer0);
 }

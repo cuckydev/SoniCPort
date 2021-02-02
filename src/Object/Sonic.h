@@ -12,9 +12,6 @@ extern int16_t sonspeed_max, sonspeed_acc, sonspeed_dec;
 extern uint8_t sonframe_num, sonframe_chg;
 extern uint8_t sgfx_buffer[SONIC_DPLC_SIZE];
 
-extern uint8_t angle_buffer0;
-extern uint8_t angle_buffer1;
-
 extern int16_t track_sonic[0x40][2];
 extern word_u track_pos;
 
