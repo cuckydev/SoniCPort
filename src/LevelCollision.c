@@ -78,10 +78,10 @@ static int16_t FindFloor2(Object *obj, int16_t x, int16_t y, uint16_t solid, uin
 				*angle = angle_map[ctile];
 			ctile <<= 4;
 			
-			uint8_t ind_x = x & 0xF;
+			int16_t ind_x = x;
 			if (tilev & META_X_FLIP)
 			{
-				ind_x ^= 0xF;
+				ind_x ^= ~0;
 				if (angle != NULL)
 					*angle = -*angle;
 			}
@@ -92,8 +92,8 @@ static int16_t FindFloor2(Object *obj, int16_t x, int16_t y, uint16_t solid, uin
 			}
 			
 			//Get height
-			int16_t height = (int8_t)height_map[ctile + ind_x];
-			if ((tilev ^= flip) & META_Y_FLIP)
+			int16_t height = (int8_t)height_map[ctile + (ind_x & 0xF)];
+			if ((tilev ^ flip) & META_Y_FLIP)
 				height = -height;
 			
 			//Handle hit tile
@@ -105,8 +105,9 @@ static int16_t FindFloor2(Object *obj, int16_t x, int16_t y, uint16_t solid, uin
 			else if (height < 0)
 			{
 				//Clip to ceiling?
-				if ((height += (y & 0xF)) < 0)
-					return -height;
+				int16_t distance = y & 0xF;
+				if (height + distance < 0)
+					return distance ^ ~0;
 			}
 		}
 	}
@@ -134,10 +135,10 @@ int16_t FindFloor(Object *obj, int16_t x, int16_t y, uint16_t solid, uint16_t fl
 				*angle = angle_map[ctile];
 			ctile <<= 4;
 			
-			uint8_t ind_x = x & 0xF;
+			int16_t ind_x = x;
 			if (tilev & META_X_FLIP)
 			{
-				ind_x ^= 0xF;
+				ind_x ^= ~0;
 				if (angle != NULL)
 					*angle = -*angle;
 			}
@@ -148,28 +149,21 @@ int16_t FindFloor(Object *obj, int16_t x, int16_t y, uint16_t solid, uint16_t fl
 			}
 			
 			//Get height
-			int16_t height = (int8_t)height_map[ctile + ind_x];
-			if ((tilev ^= flip) & META_Y_FLIP)
+			int16_t height = (int8_t)height_map[ctile + (ind_x & 0xF)];
+			if ((tilev ^ flip) & META_Y_FLIP)
 				height = -height;
 			
 			//Handle hit tile
 			if (height > 0)
 			{
 				if (height != 0x10)
-				{
-					//Clip to floor
 					return 0xF - (height + (y & 0xF));
-				}
 				else
-				{
-					//Check tile above
 					return FindFloor2(obj, x, y - inc, solid, flip, angle) - 0x10;
-				}
 			}
 			else
 			{
-				//Check tile above
-				if ((height += (y & 0xF)) < 0)
+				if (height + (y & 0xF) < 0)
 					return FindFloor2(obj, x, y - inc, solid, flip, angle) - 0x10;
 			}
 		}
@@ -198,10 +192,10 @@ static int16_t FindWall2(Object *obj, int16_t x, int16_t y, uint16_t solid, uint
 				*angle = angle_map[ctile];
 			ctile <<= 4;
 			
-			uint8_t ind_y = y & 0xF;
+			int16_t ind_y = y;
 			if (tilev & META_Y_FLIP)
 			{
-				ind_y ^= 0xF;
+				ind_y ^= ~0;
 				if (angle != NULL)
 					*angle = (-(*angle + 0x40)) - 0x40;
 			}
@@ -212,21 +206,22 @@ static int16_t FindWall2(Object *obj, int16_t x, int16_t y, uint16_t solid, uint
 			}
 			
 			//Get width
-			int16_t width = (int8_t)width_map[ctile + ind_y];
-			if ((tilev ^= flip) & META_X_FLIP)
+			int16_t width = (int8_t)width_map[ctile + (ind_y & 0xF)];
+			if ((tilev ^ flip) & META_X_FLIP)
 				width = -width;
 			
 			//Handle hit tile
 			if (width > 0)
 			{
-				//Clip to wall
+				//Clip to floor
 				return 0xF - (width + (x & 0xF));
 			}
 			else if (width < 0)
 			{
-				//Clip to other wall
-				if ((width += (x & 0xF)) < 0)
-					return -width;
+				//Clip to ceiling?
+				int16_t distance = x & 0xF;
+				if (width + distance < 0)
+					return distance ^ ~0;
 			}
 		}
 	}
@@ -254,10 +249,10 @@ int16_t FindWall(Object *obj, int16_t x, int16_t y, uint16_t solid, uint16_t fli
 				*angle = angle_map[ctile];
 			ctile <<= 4;
 			
-			uint8_t ind_y = y & 0xF;
+			int16_t ind_y = y;
 			if (tilev & META_Y_FLIP)
 			{
-				ind_y ^= 0xF;
+				ind_y ^= ~0;
 				if (angle != NULL)
 					*angle = (-(*angle + 0x40)) - 0x40;
 			}
@@ -268,33 +263,27 @@ int16_t FindWall(Object *obj, int16_t x, int16_t y, uint16_t solid, uint16_t fli
 			}
 			
 			//Get width
-			int16_t width = (int8_t)width_map[ctile + ind_y];
-			if ((tilev ^= flip) & META_X_FLIP)
+			int16_t width = (int8_t)width_map[ctile + (ind_y & 0xF)];
+			if ((tilev ^ flip) & META_X_FLIP)
 				width = -width;
 			
 			//Handle hit tile
 			if (width > 0)
 			{
 				if (width != 0x10)
-				{
-					//Clip to wall
 					return 0xF - (width + (x & 0xF));
-				}
 				else
-				{
-					//Check tile behind
 					return FindWall2(obj, x - inc, y, solid, flip, angle) - 0x10;
-				}
 			}
 			else
 			{
-				//Check tile behind
-				if ((width += (x & 0xF)) < 0)
+				//Check tile above
+				if (width + (x & 0xF) < 0)
 					return FindWall2(obj, x - inc, y, solid, flip, angle) - 0x10;
 			}
 		}
 	}
 	
-	//No tile found, check tile ahead
+	//No tile found, check tile below
 	return FindWall2(obj, x + inc, y, solid, flip, angle) + 0x10;
 }

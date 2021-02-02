@@ -490,12 +490,15 @@ void VDP_Render()
 	{
 		//Draw up to horizontal interrupt
 		size_t y = 0;
-		for (; y < (size_t)vdp_hint_pos && y < SCREEN_HEIGHT; y++, scache++, hscroll += 2, to += SCREEN_PITCH, tom += SCREEN_PITCH)
-			VDP_DrawScanline(y, to, tom, scache, hscroll);
-		
-		//Send horizontal interrupt
-		vdp_hint();
-		VDP_RefreshPalette();
+		while (y < (size_t)vdp_hint_pos && y < SCREEN_HEIGHT)
+		{
+			for (; y < (size_t)vdp_hint_pos && y < SCREEN_HEIGHT; y++, scache++, hscroll += 2, to += SCREEN_PITCH, tom += SCREEN_PITCH)
+				VDP_DrawScanline(y, to, tom, scache, hscroll);
+			
+			//Send horizontal interrupt
+			vdp_hint();
+			VDP_RefreshPalette();
+		}
 		
 		//Draw rest of screen
 		for (; y < SCREEN_HEIGHT; y++, scache++, hscroll += 2, to += SCREEN_PITCH, tom += SCREEN_PITCH)

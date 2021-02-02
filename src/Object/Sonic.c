@@ -401,14 +401,6 @@ void Obj_Sonic(Object *obj)
 				switch ((obj->status.p.f.in_ball << 2) | (obj->status.p.f.in_air << 1))
 				{
 					case 0: //Not in ball, not in air
-						if (jpad1_hold2 & JPAD_LEFT)
-							obj->pos.l.x.f.u -= FindWall(obj, (obj->pos.l.x.f.u - obj->x_rad) ^ 0xF, obj->pos.l.y.f.u, META_SOLID_LRB, META_X_FLIP, -0x10, NULL);
-						if (jpad1_hold2 & JPAD_RIGHT)
-							obj->pos.l.x.f.u += FindWall(obj, obj->pos.l.x.f.u + obj->x_rad, obj->pos.l.y.f.u, META_SOLID_LRB, 0, 0x10, NULL);
-						if (jpad1_hold2 & JPAD_UP)
-							obj->pos.l.y.f.u -= FindFloor(obj, obj->pos.l.x.f.u, (obj->pos.l.y.f.u - obj->y_rad) ^ 0xF, META_SOLID_LRB, META_Y_FLIP, -0x10, NULL);
-						if (jpad1_hold2 & JPAD_DOWN)
-							obj->pos.l.y.f.u += FindFloor(obj, obj->pos.l.x.f.u, obj->pos.l.y.f.u + obj->y_rad, META_SOLID_TOP, 0, 0x10, NULL);
 						if (Sonic_Jump(obj))
 							break;
 						break;
