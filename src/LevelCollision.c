@@ -292,12 +292,12 @@ int16_t FindWall(Object *obj, int16_t x, int16_t y, uint16_t solid, uint16_t fli
 }
 
 //Object collision functions
-int16_t DistanceSwap(int16_t dist0, int16_t dist1, uint8_t *hit_angle, uint8_t angle)
+static int16_t DistanceSwap(int16_t dist0, int16_t dist1, uint8_t *hit_angle, uint8_t angle)
 {
 	//Get angle and distance to use (use closest one)
 	uint8_t res_angle = angle_buffer1;
 	int16_t res_dist = dist1;
-	if (dist1 >= dist0)
+	if (dist1 > dist0)
 	{
 		res_angle = angle_buffer0;
 		res_dist = dist0;

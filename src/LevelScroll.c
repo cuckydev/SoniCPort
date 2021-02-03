@@ -5,7 +5,9 @@
 #include "LevelDraw.h"
 #include "Game.h"
 
-//Level scroll state (TODO: clean this UP)
+#include "Object/Sonic.h"
+
+//Level scroll state
 uint8_t nobgscroll, bgscrollvert;
 
 uint16_t fg_scroll_flags,     bg1_scroll_flags,     bg2_scroll_flags,     bg3_scroll_flags;
@@ -143,13 +145,22 @@ void Deform_GHZ()
 	}
 }
 
+void Deform_Fallback()
+{
+	int16_t fg_x = -scrpos_x.f.u;
+	int16_t bg_x = -bg_scrpos_x.f.u;
+	int16_t *bufp = &hscroll_buffer[0][0];
+	for (int i = 0; i < SCREEN_HEIGHT; i++)
+	{ *bufp++ = fg_x; *bufp++ = bg_x; }
+}
+
 static void (*deform_routines[])() = {
 	/* ZoneId_GHZ  */ Deform_GHZ,
-	/* ZoneId_LZ   */ NULL,
-	/* ZoneId_MZ   */ NULL,
-	/* ZoneId_SLZ  */ NULL,
-	/* ZoneId_SYZ  */ NULL,
-	/* ZoneId_SBZ  */ NULL,
+	/* ZoneId_LZ   */ Deform_Fallback,
+	/* ZoneId_MZ   */ Deform_Fallback,
+	/* ZoneId_SLZ  */ Deform_Fallback,
+	/* ZoneId_SYZ  */ Deform_Fallback,
+	/* ZoneId_SBZ  */ Deform_Fallback,
 	/* ZoneId_EndZ */ Deform_GHZ,
 };
 
@@ -261,7 +272,136 @@ void ScrollHoriz()
 
 void ScrollVertical()
 {
+	//This function is insane
+	dword_s scroll;
 	
+	//Get focus Y position
+	int16_t y = player->pos.l.y.f.u - scrpos_y.f.u;
+	if (player->status.p.f.in_ball)
+		y -= SONIC_BALL_SHIFT;
+	
+	//Handle scrolling differently if we're in the air
+	if (player->status.p.f.in_air)
+	{
+		y += 32 - look_shift;
+		if (y < 0 || (y -= 64) >= 0)
+		{
+			scroll.f.l = 0x1000;
+			if (y > 16)
+				goto ScrollDown;
+			if (y < -16)
+				goto ScrollUp;
+		}
+		else if (!bgscrollvert)
+		{
+			scrshift_y = 0;
+			return;
+		}
+	}
+	else
+	{
+		y -= look_shift;
+		if (y != 0)
+		{
+			if (look_shift == (96 + SCREEN_TALLADD2))
+			{
+				//Get scrolling speed
+				scroll.f.l = (player->inertia < 0) ? -player->inertia : player->inertia;
+				if (scroll.f.l < 0x800)
+				{
+					scroll.f.l = 0x600;
+					if (y > 6)
+						goto ScrollDown;
+					if (y < -6)
+						goto ScrollUp;
+				}
+				else
+				{
+					scroll.f.l = 0x1000;
+					if (y > 16)
+						goto ScrollDown;
+					if (y < -16)
+						goto ScrollUp;
+				}
+			}
+			else
+			{
+				scroll.f.l = 0x200;
+				if (y > 2)
+					goto ScrollDown;
+				if (y < -2)
+					goto ScrollUp;
+			}
+		}
+		else if (!bgscrollvert)
+		{
+			scrshift_y = 0;
+			return;
+		}
+	}
+	
+	bgscrollvert = false;
+	scroll.f.u = scrpos_y.f.u + y;
+	scroll.f.l = 0;
+	if (y >= 0)
+		goto LimitBottom;
+	else
+		goto LimitTop;
+	
+	ScrollUp:;
+	scroll.v = scrpos_y.v - (scroll.f.l << 8);
+	
+	LimitTop:;
+	if (scroll.f.u <= limit_top2)
+	{
+		if (scroll.f.u <= -0x100)
+		{
+			scroll.f.u &= 0x7FF;
+			player->pos.l.y.f.u &= 0x7FF;
+			scrpos_y.f.u &= 0x7FF;
+			bg_scrpos_y.f.u &= 0x3FF;
+		}
+		else
+		{
+			scroll.f.u = limit_top2;
+		}
+	}
+	goto SetScroll;
+	
+	ScrollDown:;
+	scroll.v = scrpos_y.v + (scroll.f.l << 8);
+	
+	LimitBottom:;
+	if (scroll.f.u >= limit_btm2)
+	{
+		if ((scroll.f.u -= 0x800) >= 0)
+		{
+			player->pos.l.y.f.u &= 0x7FF;
+			scrpos_y.f.u -= 0x800;
+			bg_scrpos_y.f.u &= 0x3FF;
+		}
+		else
+		{
+			scroll.f.u = limit_btm2;
+		}
+	}
+	
+	SetScroll:;
+	//Scroll position
+	int16_t prev_y = scrpos_y.f.u;
+	scrshift_y = (scroll.v - scrpos_y.v) >> 8;
+	scrpos_y.v = scroll.v;
+	
+	//Handle scrolling flags
+	uint8_t no_scroll = (scrpos_y.f.u & 0x10) ^ fg_yblock;
+	if (no_scroll)
+		return;
+	fg_yblock ^= 0x10;
+	
+	if (scrpos_y.f.u < prev_y)
+		fg_scroll_flags |= SCROLL_FLAG_UP;
+	else
+		fg_scroll_flags |= SCROLL_FLAG_DOWN;
 }
 
 void DeformLayers()

@@ -6,6 +6,12 @@
 #include <Types.h>
 
 //Sonic constants
+#define SONIC_WIDTH       9
+#define SONIC_HEIGHT      19
+#define SONIC_BALL_WIDTH  7
+#define SONIC_BALL_HEIGHT 14
+#define SONIC_BALL_SHIFT  5
+
 #define SONIC_DPLC_SIZE 0x2E0
 
 //Sonic scratch structure

@@ -9,13 +9,6 @@
 
 #include <string.h>
 
-//Sonic constants
-#define SONIC_WIDTH       9
-#define SONIC_HEIGHT      19
-#define SONIC_BALL_WIDTH  7
-#define SONIC_BALL_HEIGHT 14
-#define SONIC_BALL_SHIFT  5
-
 //Sonic mappings
 static const uint8_t map_sonic[] = {
 	#include <Resource/Mappings/Sonic.h>
@@ -197,9 +190,7 @@ static void Sonic_Animate(Object *obj)
 			angle = (angle >> 4) & 6;
 			
 			//Get absolute speed
-			int16_t abs_spd = obj->inertia;
-			if (abs_spd < 0)
-				abs_spd = -abs_spd;
+			uint16_t abs_spd = (obj->inertia < 0) ? -obj->inertia : obj->inertia;
 			
 			//Get script to use
 			anim_script = GET_SONIC_ANISCR(SonAnimId_Run);
@@ -224,9 +215,7 @@ static void Sonic_Animate(Object *obj)
 		{
 			//Rolling
 			//Get absolute speed
-			int16_t abs_spd = obj->inertia;
-			if (abs_spd < 0)
-				abs_spd = -abs_spd;
+			uint16_t abs_spd = (obj->inertia < 0) ? -obj->inertia : obj->inertia;
 			
 			//Get script to use
 			anim_script = GET_SONIC_ANISCR(SonAnimId_Roll2);
@@ -251,9 +240,7 @@ static void Sonic_Animate(Object *obj)
 			Anim_Pushing:;
 			//Pushing
 			//Get absolute speed
-			int16_t abs_spd = obj->inertia;
-			if (abs_spd < 0)
-				abs_spd = -abs_spd;
+			uint16_t abs_spd = (obj->inertia < 0) ? -obj->inertia : obj->inertia;
 			
 			//Get animation delay
 			int16_t anim_spd = 0x800 - abs_spd;
@@ -350,7 +337,7 @@ static int16_t Sonic_Angle(Object *obj, int16_t dist0, int16_t dist1)
 	//Get angle and distance to use (use closest one)
 	uint8_t res_angle = angle_buffer1;
 	int16_t res_dist = dist1;
-	if (dist1 >= dist0)
+	if (dist1 > dist0)
 	{
 		res_angle = angle_buffer0;
 		res_dist = dist0;
@@ -400,7 +387,7 @@ static void Sonic_AnglePos(Object *obj)
 	{
 		case 0x00:
 			dist0 = FindFloor(obj, obj->pos.l.x.f.u + obj->x_rad, obj->pos.l.y.f.u + obj->y_rad, META_SOLID_TOP, 0, 0x10, &angle_buffer0);
-			dist1 = FindFloor(obj, obj->pos.l.x.f.u - obj->x_rad, obj->pos.l.y.f.u + obj->y_rad, META_SOLID_TOP, 0, 0x10, &angle_buffer0);
+			dist1 = FindFloor(obj, obj->pos.l.x.f.u - obj->x_rad, obj->pos.l.y.f.u + obj->y_rad, META_SOLID_TOP, 0, 0x10, &angle_buffer1);
 			if ((dist = Sonic_Angle(obj, dist0, dist1)) != 0)
 			{
 				if (dist < 0)
@@ -423,12 +410,88 @@ static void Sonic_AnglePos(Object *obj)
 				}
 			}
 			break;
+		case 0x40:
+			dist0 = FindWall(obj, (obj->pos.l.x.f.u - obj->y_rad) ^ 0xF, obj->pos.l.y.f.u - obj->x_rad, META_SOLID_TOP, META_X_FLIP, -0x10, &angle_buffer0);
+			dist1 = FindWall(obj, (obj->pos.l.x.f.u - obj->y_rad) ^ 0xF, obj->pos.l.y.f.u + obj->x_rad, META_SOLID_TOP, META_X_FLIP, -0x10, &angle_buffer1);
+			if ((dist = Sonic_Angle(obj, dist0, dist1)) != 0)
+			{
+				if (dist < 0)
+				{
+					if (dist >= -14)
+						obj->pos.l.x.f.u -= dist;
+				}
+				else
+				{
+					if (dist <= 14)
+					{
+						obj->pos.l.x.f.u -= dist;
+					}
+					else if (!scratch->x38.floor_clip)
+					{
+						obj->status.p.f.in_air = true;
+						obj->status.p.f.pushing = false;
+						obj->prev_anim = 1;
+					}
+				}
+			}
+			break;
+		case 0x80:
+			dist0 = FindFloor(obj, obj->pos.l.x.f.u - obj->x_rad, (obj->pos.l.y.f.u - obj->y_rad) ^ 0xF, META_SOLID_TOP, META_Y_FLIP, -0x10, &angle_buffer0);
+			dist1 = FindFloor(obj, obj->pos.l.x.f.u + obj->x_rad, (obj->pos.l.y.f.u - obj->y_rad) ^ 0xF, META_SOLID_TOP, META_Y_FLIP, -0x10, &angle_buffer1);
+			if ((dist = Sonic_Angle(obj, dist0, dist1)) != 0)
+			{
+				if (dist < 0)
+				{
+					if (dist >= -14)
+						obj->pos.l.y.f.u -= dist;
+				}
+				else
+				{
+					if (dist <= 14)
+					{
+						obj->pos.l.y.f.u -= dist;
+					}
+					else if (!scratch->x38.floor_clip)
+					{
+						obj->status.p.f.in_air = true;
+						obj->status.p.f.pushing = false;
+						obj->prev_anim = 1;
+					}
+				}
+			}
+			break;
+		case 0xC0:
+			dist0 = FindWall(obj, obj->pos.l.x.f.u + obj->y_rad, obj->pos.l.y.f.u + obj->x_rad, META_SOLID_TOP, 0, 0x10, &angle_buffer0);
+			dist1 = FindWall(obj, obj->pos.l.x.f.u + obj->y_rad, obj->pos.l.y.f.u - obj->x_rad, META_SOLID_TOP, 0, 0x10, &angle_buffer1);
+			if ((dist = Sonic_Angle(obj, dist0, dist1)) != 0)
+			{
+				if (dist < 0)
+				{
+					if (dist >= -14)
+						obj->pos.l.x.f.u += dist;
+				}
+				else
+				{
+					if (dist <= 14)
+					{
+						obj->pos.l.x.f.u += dist;
+					}
+					else if (!scratch->x38.floor_clip)
+					{
+						obj->status.p.f.in_air = true;
+						obj->status.p.f.pushing = false;
+						obj->prev_anim = 1;
+					}
+				}
+			}
+			break;
 	}
 }
 
 //Sonic functions
 int KillSonic(Object *obj, Object *src)
 {
+	(void)src;
 	Scratch_Sonic *scratch = (Scratch_Sonic*)&obj->scratch;
 	
 	//Check if we can be killed
@@ -655,27 +718,27 @@ static void Sonic_Move(Object *obj)
 					obj->anim = SonAnimId_LookUp;
 					if (look_shift != (200 + SCREEN_TALLADD2))
 						look_shift += 2;
-					goto loc_12FC2;
+					goto DoFriction;
 				}
 				if (jpad1_hold2 & JPAD_DOWN)
 				{
 					obj->anim = SonAnimId_Duck;
 					if (look_shift != (8 + SCREEN_TALLADD2))
 						look_shift -= 2;
-					goto loc_12FC2;
+					goto DoFriction;
 				}
 			}
 		}
 		
 		//Reset camera to neutral position
 		Sonic_ResetScr:;
-		if (look_shift < (192 + SCREEN_TALLADD2))
+		if (look_shift < (96 + SCREEN_TALLADD2))
 			look_shift += 2;
-		else if (look_shift > (192 + SCREEN_TALLADD2))
+		else if (look_shift > (96 + SCREEN_TALLADD2))
 			look_shift -= 2;
-		loc_12FC2:;
 		
 		//Friction
+		DoFriction:;
 		if (!(jpad1_hold2 & (JPAD_LEFT | JPAD_RIGHT)))
 		{
 			if (obj->inertia > 0)
@@ -791,6 +854,173 @@ static void Sonic_LevelBound(Object *obj)
 	}
 }
 
+static void Sonic_SlopeRepel(Object *obj)
+{
+	Scratch_Sonic *scratch = (Scratch_Sonic*)&obj->scratch;
+	
+	//Check if we can fall off a slope
+	if (scratch->x38.floor_clip)
+		return;
+	
+	if (!scratch->control_lock)
+	{
+		//Check if the slope is steep enough
+		if ((obj->angle + 0x20) & 0xC0)
+		{
+			//Fall off if we're going too slow
+			if ((obj->inertia < 0) ? -obj->inertia : obj->inertia < 0x280)
+			{
+				obj->inertia = 0;
+				obj->status.p.f.in_air = true;
+				scratch->control_lock = 30;
+			}
+		}
+	}
+	else
+	{
+		//Decrement control lock
+		scratch->control_lock--;
+	}
+}
+
+static void Sonic_RollRepel(Object *obj)
+{
+	if (((obj->angle + 0x20) & 0xC0) >= 0x60)
+		return;
+	
+	int16_t force = (GetSin(obj->angle) * 0x50) >> 8;
+	if (obj->inertia > 0)
+	{
+		if (force < 0)
+			force >>= 2;
+		obj->inertia += force;
+	}
+	else if (obj->inertia < 0)
+	{
+		if (force >= 0)
+			force >>= 2;
+		obj->inertia += force;
+	}
+}
+
+static void Sonic_RollLeft(Object *obj)
+{
+	int16_t inertia = obj->inertia;
+	if (inertia <= 0)
+	{
+		//Set animation
+		obj->status.p.f.x_flip = true;
+		obj->anim = SonAnimId_Roll;
+	}
+	else
+	{
+		//Decelerate
+		if ((inertia -= sonspeed_dec >> 2) < 0)
+			inertia = -0x80;
+		obj->inertia = inertia;
+	}
+}
+
+static void Sonic_RollRight(Object *obj)
+{
+	int16_t inertia = obj->inertia;
+	if (inertia >= 0)
+	{
+		//Set animation
+		obj->status.p.f.x_flip = false;
+		obj->anim = SonAnimId_Roll;
+	}
+	else
+	{
+		//Decelerate
+		if ((inertia += sonspeed_dec >> 2) >= 0)
+			inertia = 0x80;
+		obj->inertia = inertia;
+	}
+}
+
+static void Sonic_RollSpeed(Object *obj)
+{
+	Scratch_Sonic *scratch = (Scratch_Sonic*)&obj->scratch;
+	
+	if (!jump_only)
+	{
+		if (!scratch->control_lock)
+		{
+			//Move left and right according to held direction
+			if (jpad1_hold2 & JPAD_LEFT)
+				Sonic_RollLeft(obj);
+			if (jpad1_hold2 & JPAD_RIGHT)
+				Sonic_RollRight(obj);
+		}
+		
+		//Friction
+		if (obj->inertia > 0)
+		{
+			if ((obj->inertia -= (sonspeed_acc >> 1)) < 0)
+				obj->inertia = 0;
+		}
+		else
+		{
+			if ((obj->inertia += (sonspeed_acc >> 1)) >= 0)
+				obj->inertia = 0;
+		}
+		
+		//Uncurl when we've come to a stop
+		if (obj->inertia == 0)
+		{
+			obj->status.p.f.in_ball = false;
+			obj->y_rad = SONIC_HEIGHT;
+			obj->x_rad = SONIC_WIDTH;
+			obj->anim = SonAnimId_Wait;
+			obj->pos.l.y.f.u -= SONIC_BALL_SHIFT;
+		}
+	}
+	
+	//Calculate global speed from inertia
+	int16_t sin, cos;
+	CalcSine(obj->angle, &sin, &cos);
+	obj->ysp = (sin * obj->inertia) >> 8;
+	cos = (cos * obj->inertia) >> 8;
+	if (cos > 0x1000) //Global X speed is limited to 0x1000 both ways.
+		cos = 0x1000; //This causes the speed to desync from inertia
+	if (cos < -0x1000) //at high speeds.
+		cos = -0x1000; //Is this here because of the broken camera?
+	obj->xsp = cos;
+	
+	//Handle wall collision
+	if (((obj->angle + 0x40) & 0x80) || !obj->inertia)
+		return;
+	
+	uint8_t add_angle = (obj->inertia < 0) ? 0x40 : -0x40;
+	uint8_t angle = obj->angle + add_angle;
+	int16_t dist = GetDistanceBelowAngle2(obj, angle, NULL);
+	
+	if (dist < 0)
+	{
+		dist <<= 8;
+		switch ((angle + 0x20) & 0xC0)
+		{
+			case 0x00:
+				obj->ysp += dist;
+				break;
+			case 0x40:
+				obj->xsp -= dist;
+				obj->status.p.f.pushing = true;
+				obj->inertia = 0;
+				break;
+			case 0x80:
+				obj->ysp -= dist;
+				break;
+			case 0xC0:
+				obj->xsp += dist;
+				obj->status.p.f.pushing = true;
+				obj->inertia = 0;
+				break;
+		}
+	}
+}
+
 //Sonic object
 void Obj_Sonic(Object *obj)
 {
@@ -858,14 +1088,23 @@ void Obj_Sonic(Object *obj)
 						Sonic_LevelBound(obj);
 						SpeedToPos(obj);
 						Sonic_AnglePos(obj);
+						Sonic_SlopeRepel(obj);
 						break;
 					case 2: //Not in ball, in air
+						if (Sonic_Jump(obj))
+							break;
 						Sonic_LevelBound(obj);
 						ObjectFall(obj);
 						if (obj->status.p.f.underwater)
 							obj->ysp -= 0x28;
 						break;
 					case 4: //In ball, not in air
+						Sonic_RollRepel(obj);
+						Sonic_RollSpeed(obj);
+						Sonic_LevelBound(obj);
+						SpeedToPos(obj);
+						Sonic_AnglePos(obj);
+						Sonic_SlopeRepel(obj);
 						break;
 					case 6: //In ball, in air
 						Sonic_LevelBound(obj);

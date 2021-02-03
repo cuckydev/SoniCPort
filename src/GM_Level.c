@@ -25,6 +25,7 @@ static const uint8_t art_titlecard[] = {
 //Level gamemode
 void GM_Level()
 {
+	level_id = LEVEL_ID(ZoneId_SLZ, 2);
 	//Set 'title card' flag
 	gamemode |= 0x80;
 	
@@ -104,7 +105,7 @@ void GM_Level()
 	bg1_scroll_flags = 0;
 	bg2_scroll_flags = 0;
 	bg3_scroll_flags = 0;
-	bgscrollvert = 0;
+	bgscrollvert = false;
 	sonspeed_max = 0;
 	sonspeed_acc = 0;
 	sonspeed_dec = 0;
