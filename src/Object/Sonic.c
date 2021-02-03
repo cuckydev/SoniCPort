@@ -23,6 +23,8 @@ uint8_t sgfx_buffer[SONIC_DPLC_SIZE];
 int16_t track_sonic[0x40][2];
 word_u track_pos;
 
+uint8_t dbg_ang0, dbg_ang1, dbg_ang2, dbg_ang3; //$FFEC-$FFEF
+
 //General Sonic state stuff
 static void Sonic_Display(Object *obj)
 {
@@ -397,11 +399,11 @@ static void Sonic_AnglePos(Object *obj)
 				}
 				else
 				{
-					if (dist <= 14)
+					if (dist <= 14 || scratch->x38.floor_clip)
 					{
 						obj->pos.l.y.f.u += dist;
 					}
-					else if (!scratch->x38.floor_clip)
+					else
 					{
 						obj->status.p.f.in_air = true;
 						obj->status.p.f.pushing = false;
@@ -422,11 +424,11 @@ static void Sonic_AnglePos(Object *obj)
 				}
 				else
 				{
-					if (dist <= 14)
+					if (dist <= 14 || scratch->x38.floor_clip)
 					{
 						obj->pos.l.x.f.u -= dist;
 					}
-					else if (!scratch->x38.floor_clip)
+					else
 					{
 						obj->status.p.f.in_air = true;
 						obj->status.p.f.pushing = false;
@@ -447,11 +449,11 @@ static void Sonic_AnglePos(Object *obj)
 				}
 				else
 				{
-					if (dist <= 14)
+					if (dist <= 14 || scratch->x38.floor_clip)
 					{
 						obj->pos.l.y.f.u -= dist;
 					}
-					else if (!scratch->x38.floor_clip)
+					else
 					{
 						obj->status.p.f.in_air = true;
 						obj->status.p.f.pushing = false;
@@ -472,7 +474,7 @@ static void Sonic_AnglePos(Object *obj)
 				}
 				else
 				{
-					if (dist <= 14)
+					if (dist <= 14 || scratch->x38.floor_clip)
 					{
 						obj->pos.l.x.f.u += dist;
 					}
@@ -482,6 +484,181 @@ static void Sonic_AnglePos(Object *obj)
 						obj->status.p.f.pushing = false;
 						obj->prev_anim = 1;
 					}
+				}
+			}
+			break;
+	}
+}
+
+static void Sonic_Floor(Object *obj)
+{
+	//Get angle we're moving in
+	//There's some weird logging stuff done here
+	//Maybe testing if the CalcAngle is yielding desirable results?
+	uint8_t angle = CalcAngle(obj->xsp, obj->ysp);
+	dbg_ang0 = angle;
+	angle -= 0x20;
+	dbg_ang1 = angle;
+	angle &= 0xC0;
+	dbg_ang2 = angle;
+	
+	int16_t dist0, dist1, clip;
+	uint8_t hit_angle;
+	switch (angle)
+	{
+		case 0x00: //Moving down
+			//Collide with walls
+			if ((dist0 = GetDistance2_Left(obj, obj->pos.l.x.f.u, obj->pos.l.y.f.u, NULL)) < 0)
+			{
+				obj->pos.l.x.f.u -= dist0;
+				obj->xsp = 0;
+			}
+			if ((dist0 = GetDistance2_Right(obj, obj->pos.l.x.f.u, obj->pos.l.y.f.u, NULL)) < 0)
+			{
+				obj->pos.l.x.f.u += dist0;
+				obj->xsp = 0;
+			}
+			
+			//Collide with floor
+			GetDistance_Down(obj, &dist0, &dist1, &hit_angle);
+			dbg_ang3 = dist1; //...What?
+			
+			clip = -((obj->ysp >> 8) + 8);
+			if (dist1 < 0 && (dist0 >= clip || dist1 >= clip))
+			{
+				//Set state
+				obj->pos.l.y.f.u += dist1;
+				obj->angle = hit_angle;
+				Sonic_ResetOnFloor(obj);
+				obj->anim = SonAnimId_Walk;
+				
+				//Get inertia
+				if ((hit_angle + 0x20) & 0x40)
+				{
+					//If floor is greater than 45 degrees, use our full vertical velocity (capped at 0xFC0)
+					obj->xsp = 0;
+					if (obj->ysp > 0xFC0)
+						obj->ysp = 0xFC0;
+					obj->inertia = (hit_angle & 0x80) ? -obj->ysp : obj->ysp;
+				}
+				else if ((hit_angle + 0x10) & 0x20)
+				{
+					//If floor is greater than 22.5 degrees, use our halved vertical velocity
+					obj->ysp /= 2;
+					obj->inertia = (hit_angle & 0x80) ? -obj->ysp : obj->ysp;
+				}
+				else
+				{
+					//If floor is less than 22.5 degrees, use our horizontal velocity
+					obj->ysp = 0;
+					obj->inertia = obj->xsp;
+				}
+			}
+			break;
+		case 0x40: //Moving left
+			//Collide with walls
+			if ((dist0 = GetDistance2_Left(obj, obj->pos.l.x.f.u, obj->pos.l.y.f.u, NULL)) < 0)
+			{
+				obj->pos.l.x.f.u -= dist0;
+				obj->xsp = 0;
+				obj->inertia = obj->ysp;
+				break; //Original returns here?
+			}
+			
+			//Collide with ceiling
+			GetDistance_Up(obj, NULL, &dist1, &hit_angle);
+			if (dist1 < 0)
+			{
+				obj->pos.l.y.f.u -= dist1;
+				if (obj->ysp < 0)
+					obj->ysp = 0;
+				break; //Again...
+			}
+			
+			//Collide with floor
+			if (obj->ysp >= 0)
+			{
+				GetDistance_Down(obj, NULL, &dist1, &hit_angle);
+				if (dist1 < 0)
+				{
+					//Set state
+					obj->pos.l.y.f.u += dist1;
+					obj->angle = hit_angle;
+					Sonic_ResetOnFloor(obj);
+					obj->anim = SonAnimId_Walk;
+					
+					//Get inertia
+					obj->ysp = 0;
+					obj->inertia = obj->xsp;
+				}
+			}
+			break;
+		case 0x80: //Moving up
+			//Collide with walls
+			if ((dist0 = GetDistance2_Left(obj, obj->pos.l.x.f.u, obj->pos.l.y.f.u, NULL)) < 0)
+			{
+				obj->pos.l.x.f.u -= dist0;
+				obj->xsp = 0;
+			}
+			if ((dist0 = GetDistance2_Right(obj, obj->pos.l.x.f.u, obj->pos.l.y.f.u, NULL)) < 0)
+			{
+				obj->pos.l.x.f.u += dist0;
+				obj->xsp = 0;
+			}
+			
+			//Collide with ceiling
+			GetDistance_Up(obj, NULL, &dist1, &hit_angle);
+			if (dist1 < 0)
+			{
+				obj->pos.l.y.f.u -= dist1;
+				if (!((hit_angle + 0x20) & 0x40))
+				{
+					//Kill speed
+					if (obj->ysp < 0)
+						obj->ysp = 0;
+				}
+				else
+				{
+					//Land on ceiling
+					obj->angle = hit_angle;
+					Sonic_ResetOnFloor(obj);
+					obj->inertia = (hit_angle & 0x80) ? -obj->ysp : obj->ysp;
+				}
+			}
+			break;
+		case 0xC0: //Moving right
+			//Collide with walls
+			if ((dist0 = GetDistance2_Right(obj, obj->pos.l.x.f.u, obj->pos.l.y.f.u, NULL)) < 0)
+			{
+				obj->pos.l.x.f.u += dist0;
+				obj->xsp = 0;
+			}
+			
+			//Collide with ceiling
+			GetDistance_Up(obj, NULL, &dist1, &hit_angle);
+			if (dist1 < 0)
+			{
+				obj->pos.l.y.f.u -= dist1;
+				if (obj->ysp < 0)
+					obj->ysp = 0;
+				break; //Again...
+			}
+			
+			//Collide with floor
+			if (obj->ysp >= 0)
+			{
+				GetDistance_Down(obj, NULL, &dist1, &hit_angle);
+				if (dist1 < 0)
+				{
+					//Set state
+					obj->pos.l.y.f.u += dist1;
+					obj->angle = hit_angle;
+					Sonic_ResetOnFloor(obj);
+					obj->anim = SonAnimId_Walk;
+					
+					//Get inertia
+					obj->ysp = 0;
+					obj->inertia = obj->xsp;
 				}
 			}
 			break;
@@ -531,7 +708,9 @@ static bool Sonic_Jump(Object *obj)
 		return false;
 	
 	//Check if we have enough room to jump
-	if (GetDistanceBelowAngle(obj, obj->angle + 0x80, NULL) < 6)
+	int16_t dist;
+	GetDistanceBelowAngle(obj, obj->angle + 0x80, NULL, &dist, NULL);
+	if (dist < 6)
 		return false;
 	
 	//Get jump speed
@@ -563,13 +742,16 @@ static bool Sonic_Jump(Object *obj)
 		obj->status.p.f.in_ball = true;
 		obj->pos.l.y.f.u += SONIC_BALL_SHIFT;
 	}
-	
+	else
+	{
+		obj->status.p.f.roll_jump = true;
+	}
 	return true;
 }
 
 static void Sonic_SlopeResist(Object *obj)
 {
-	if (((obj->angle + 0x20) & 0xC0) >= 0x60)
+	if (((obj->angle + 0x60) & 0xFF) >= 0xC0)
 		return;
 	
 	int16_t force = (GetSin(obj->angle) * 0x20) >> 8;
@@ -868,7 +1050,7 @@ static void Sonic_SlopeRepel(Object *obj)
 		if ((obj->angle + 0x20) & 0xC0)
 		{
 			//Fall off if we're going too slow
-			if ((obj->inertia < 0) ? -obj->inertia : obj->inertia < 0x280)
+			if (((obj->inertia < 0) ? -obj->inertia : obj->inertia) < 0x280)
 			{
 				obj->inertia = 0;
 				obj->status.p.f.in_air = true;
@@ -885,7 +1067,7 @@ static void Sonic_SlopeRepel(Object *obj)
 
 static void Sonic_RollRepel(Object *obj)
 {
-	if (((obj->angle + 0x20) & 0xC0) >= 0x60)
+	if (((obj->angle + 0x60) & 0xFF) >= 0xC0)
 		return;
 	
 	int16_t force = (GetSin(obj->angle) * 0x50) >> 8;
@@ -1021,6 +1203,99 @@ static void Sonic_RollSpeed(Object *obj)
 	}
 }
 
+static void Sonic_JumpHeight(Object *obj)
+{
+	Scratch_Sonic *scratch = (Scratch_Sonic*)&obj->scratch;
+	
+	if (scratch->jumping)
+	{
+		//Get minimum jump speed and apply if ABC isn't held
+		int16_t spd = obj->status.p.f.underwater ? -0x200 : -0x400;
+		if (obj->ysp < spd && !(jpad1_hold2 & (JPAD_A | JPAD_C | JPAD_B)))
+			obj->ysp = spd;
+	}
+	else
+	{
+		//Cap upwards speed
+		if (obj->ysp < -0xFC0)
+			obj->ysp = -0xFC0;
+	}
+}
+
+static void Sonic_JumpDirection(Object *obj)
+{
+	//Handle acceleration
+	if (!obj->status.p.f.roll_jump)
+	{
+		int16_t xsp = obj->xsp;
+		
+		//Accelerate left
+		if (jpad1_hold2 & JPAD_LEFT)
+		{
+			obj->status.p.f.x_flip = true;
+			if ((xsp -= (sonspeed_acc << 1)) <= -sonspeed_max)
+				xsp = -sonspeed_max;
+		}
+		
+		//Accelerate right
+		if (jpad1_hold2 & JPAD_RIGHT)
+		{
+			obj->status.p.f.x_flip = false;
+			if ((xsp += (sonspeed_acc << 1)) >= sonspeed_max)
+				xsp = sonspeed_max;
+		}
+		
+		//Apply acceleration
+		obj->xsp = xsp;
+	}
+	
+	//Reset screen shift
+	if (look_shift < (96 + SCREEN_TALLADD2))
+		look_shift += 2;
+	else if (look_shift > (96 + SCREEN_TALLADD2))
+		look_shift -= 2;
+	
+	//Handle air drag
+	if ((uint16_t)obj->ysp >= (uint16_t)-0x400)
+	{
+		int16_t xsp = obj->xsp;
+		int16_t drag = xsp >> 5;
+		if (drag > 0) //Do I really have to say anything?
+		{
+			if ((xsp -= drag) < 0)
+				xsp = 0;
+			obj->xsp = xsp;
+		}
+		else if (drag < 0)
+		{
+			if ((xsp -= drag) >= 0)
+				xsp = 0;
+			obj->xsp = xsp;
+		}
+	}
+}
+
+static void Sonic_JumpAngle(Object *obj)
+{
+	//Reset angle towards 0
+	uint8_t angle = obj->angle;
+	if (angle == 0)
+		return;
+	
+	if (!(angle & 0x80))
+	{
+		if ((angle -= 2) & 0x80)
+			angle = 0;
+	}
+	else
+	{
+		if (!((angle += 2) & 0x80))
+			angle = 0;
+	}
+	
+	obj->angle = angle;
+}
+
 //Sonic object
 void Obj_Sonic(Object *obj)
 {
@@ -1091,14 +1366,18 @@ void Obj_Sonic(Object *obj)
 						Sonic_SlopeRepel(obj);
 						break;
 					case 2: //Not in ball, in air
-						if (Sonic_Jump(obj))
-							break;
+						Sonic_JumpHeight(obj);
+						Sonic_JumpDirection(obj);
 						Sonic_LevelBound(obj);
 						ObjectFall(obj);
 						if (obj->status.p.f.underwater)
 							obj->ysp -= 0x28;
+						Sonic_JumpAngle(obj);
+						Sonic_Floor(obj);
 						break;
 					case 4: //In ball, not in air
+						if (Sonic_Jump(obj))
+							break;
 						Sonic_RollRepel(obj);
 						Sonic_RollSpeed(obj);
 						Sonic_LevelBound(obj);
@@ -1107,10 +1386,14 @@ void Obj_Sonic(Object *obj)
 						Sonic_SlopeRepel(obj);
 						break;
 					case 6: //In ball, in air
+						Sonic_JumpHeight(obj);
+						Sonic_JumpDirection(obj);
 						Sonic_LevelBound(obj);
 						ObjectFall(obj);
 						if (obj->status.p.f.underwater)
 							obj->ysp -= 0x28;
+						Sonic_JumpAngle(obj);
+						Sonic_Floor(obj);
 						break;
 				}
 			}

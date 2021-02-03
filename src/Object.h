@@ -226,7 +226,7 @@ typedef struct
 	int16_t xsp;          //Horizontal speed
 	int16_t ysp;          //Vertical speed
 	int16_t inertia;      //Speed rotated by angle
-	uint8_t x_rad, y_rad; //Object radius
+	int8_t x_rad, y_rad;  //Object radius
 	uint8_t priority;     //Sprite priority (0-7, 0 drawn in front of 7)
 	uint8_t width_pixels; //Culling and platform width of sprite
 	uint8_t frame;        //Mapping frame

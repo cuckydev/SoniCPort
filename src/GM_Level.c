@@ -25,7 +25,7 @@ static const uint8_t art_titlecard[] = {
 //Level gamemode
 void GM_Level()
 {
-	level_id = LEVEL_ID(ZoneId_SLZ, 2);
+	level_id = LEVEL_ID(ZoneId_SYZ, 1);
 	//Set 'title card' flag
 	gamemode |= 0x80;
 	

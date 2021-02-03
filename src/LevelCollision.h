@@ -18,10 +18,10 @@ int16_t GetDistance2_Up(Object *obj, int16_t x, int16_t y, uint8_t *hit_angle);
 int16_t GetDistance2_Right(Object *obj, int16_t x, int16_t y, uint8_t *hit_angle);
 int16_t GetDistanceBelowAngle2(Object *obj, uint8_t angle, uint8_t *hit_angle);
 
-int16_t GetDistance_Down(Object *obj, uint8_t *hit_angle);
-int16_t GetDistance_Left(Object *obj, uint8_t *hit_angle);
-int16_t GetDistance_Up(Object *obj, uint8_t *hit_angle);
-int16_t GetDistance_Right(Object *obj, uint8_t *hit_angle);
-int16_t GetDistanceBelowAngle(Object *obj, uint8_t angle, uint8_t *hit_angle);
+void GetDistance_Down(Object *obj, int16_t *dist0, int16_t *dist1, uint8_t *hit_angle);
+void GetDistance_Left(Object *obj, int16_t *dist0, int16_t *dist1, uint8_t *hit_angle);
+void GetDistance_Up(Object *obj, int16_t *dist0, int16_t *dist1, uint8_t *hit_angle);
+void GetDistance_Right(Object *obj, int16_t *dist0, int16_t *dist1, uint8_t *hit_angle);
+void GetDistanceBelowAngle(Object *obj, uint8_t angle, int16_t *dist0, int16_t *dist1, uint8_t *hit_angle);
 
 int16_t ObjFloorDist(Object *obj, int16_t x);

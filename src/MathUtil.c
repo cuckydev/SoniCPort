@@ -47,7 +47,7 @@ static const int16_t sine_table[] =
 	  0xFB,   0xFC,   0xFD,   0xFE,   0xFE,   0xFF,   0xFF,   0xFF
 };
 
-static const int16_t atan_table[] =
+static const uint8_t atan_table[] =
 {
 	0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x01,
 	0x01, 0x01, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
@@ -103,31 +103,22 @@ int16_t GetCos(uint8_t angle)
 	return sine_table[angle + 0x40];
 }
 
-uint8_t GetAtan(int16_t x, int16_t y)
+uint16_t CalcAngle(int16_t x, int16_t y)
 {
-	//If x and y is 0, return 90 degrees, then get our absolute x and y
-	if (x == 0 && y == 0)
+	//If x and y is 0, return 90 degrees
+	if ((x | y) == 0)
 		return 0x40;
 	
-	int16_t abs_x = x;
-	if (abs_x < 0)
-		abs_x = -abs_x;
-	int16_t abs_y = y;
-	if (abs_y < 0)
-		abs_y = -abs_y;
+	//Get absolute X and Y
+	int16_t abs_x = (x < 0) ? -x : x;
+	int16_t abs_y = (y < 0) ? -y : y;
 	
 	//Get our absolute angle
 	uint8_t angle;
-	if (abs_y < abs_x)
-	{
-		abs_y <<= 8;
-		angle = atan_table[abs_y /= abs_x];
-	}
+	if (abs_x > abs_y)
+		angle = atan_table[(abs_y << 8) / abs_x];
 	else
-	{
-		abs_x <<= 8;
-		angle = 0x40 - atan_table[abs_x /= abs_y];
-	}
+		angle = 0x40 - atan_table[(abs_x << 8) / abs_y];
 	
 	//Invertion if negative
 	if (x < 0)
