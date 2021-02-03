@@ -8,17 +8,14 @@
 #include <stdlib.h>
 
 //Palette state
-uint16_t pal_chgspeed;
+int16_t pal_chgspeed;
 
 uint16_t dry_palette[4][16];
 uint16_t dry_palette_dup[4][16];
 uint16_t wet_palette[4][16];
 uint16_t wet_palette_dup[4][16];
 
-static struct
-{
-	uint8_t ind, len;
-} palette_fade;
+PaletteFade palette_fade;
 
 //Palettes
 static ALIGNED2 const uint8_t pal_sega_bg[] = {

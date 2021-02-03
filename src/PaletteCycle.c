@@ -2,6 +2,7 @@
 
 #include "Video.h"
 #include "Palette.h"
+#include "Level.h"
 
 //Palette cycle state
 int16_t pcyc_num, pcyc_time;
@@ -16,6 +17,9 @@ static ALIGNED2 const uint8_t pal_sega2[] = {
 };
 static ALIGNED2 const uint8_t pal_titlecycle[] = {
 	#include <Resource/Palette/TitleCycle.h>
+};
+static ALIGNED2 const uint8_t pal_ghzcycle[] = {
+	#include <Resource/Palette/GHZCycle.h>
 };
 
 //Palette cycle routines
@@ -102,7 +106,7 @@ int PCycle_Sega()
 	}
 }
 
-void PCycle_Water(const uint8_t *palette)
+static void PCycle_Water(const uint8_t *palette)
 {
 	//Wait for cycle timer
 	if (--pcyc_time >= 0)
@@ -127,5 +131,22 @@ void PCycle_Title()
 
 void PCycle_GHZ()
 {
-	//PCycle_Water(pal_ghzcycle);
+	PCycle_Water(pal_ghzcycle);
+}
+
+static void (*pcycle_routines[ZoneId_Num])() = {
+	/* ZoneId_GHZ  */ PCycle_GHZ,
+	/* ZoneId_LZ   */ NULL,
+	/* ZoneId_MZ   */ NULL,
+	/* ZoneId_SLZ  */ NULL,
+	/* ZoneId_SYZ  */ NULL,
+	/* ZoneId_SBZ  */ NULL,
+	/* ZoneId_EndZ */ PCycle_GHZ,
+};
+
+//Palette cycle function
+void PaletteCycle()
+{
+	if (pcycle_routines[LEVEL_ZONE(level_id)] != NULL)
+		pcycle_routines[LEVEL_ZONE(level_id)]();
 }

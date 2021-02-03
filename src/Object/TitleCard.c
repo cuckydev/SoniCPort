@@ -16,8 +16,8 @@ static const struct TitleCard_Item
 	{0x00E0 + SCREEN_TALLADD2, 0x02, 0x0A},
 };
 
-#define TO_ADD   (SCREEN_WIDEADD2 & ~0xF)
-#define FROM_ADD (SCREEN_WIDEADD & ~0xF)
+#define TO_ADD   SCREEN_WIDEADD2
+#define FROM_ADD (TO_ADD + ((SCREEN_WIDEADD2 + 0xF) & ~0xF))
 #define FROM_SUB ((0x10 - TO_ADD) & 0xF)
 
 static const struct TitleCard_Config
@@ -102,19 +102,16 @@ void Obj_TitleCard(Object *obj)
 				a1->width_pixels = 0;
 				a1->render.b = 0;
 				a1->priority = 0;
-				a1->frame_time = 60;
+				a1->frame_time.b = 60;
 			}
 		}
 	//Fallthrough
 		case 2: //Moving to on-screen position
 			//Move
-			if (obj->pos.s.x != scratch->main_x)
-			{
-				if (obj->pos.s.x >= scratch->main_x)
-					obj->pos.s.x -= 16;
-				else
-					obj->pos.s.x += 16;
-			}
+			if (obj->pos.s.x > scratch->main_x)
+				obj->pos.s.x -= 16;
+			else if (obj->pos.s.x < scratch->main_x)
+				obj->pos.s.x += 16;
 			
 			//Draw
 			if (obj->pos.s.x >= 0 && obj->pos.s.x < (0x200 + SCREEN_WIDEADD))
@@ -123,9 +120,9 @@ void Obj_TitleCard(Object *obj)
 		case 4: //Moving off-screen
 		case 6:
 			//Wait for timer to expire
-			if (obj->frame_time)
+			if (obj->frame_time.b)
 			{
-				obj->frame_time--;
+				obj->frame_time.b--;
 				DisplaySprite(obj);
 				break;
 			}

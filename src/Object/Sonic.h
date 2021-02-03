@@ -29,7 +29,7 @@ typedef struct
 		uint8_t floor_clip;
 		int16_t death_y;
 	} x38;                       //0x38
-	uint8_t pad2[2];             //0x3A - 0x3B
+	int16_t death_timer;         //0x3A
 	uint8_t jumping;             //0x3C
 	uint8_t standing_obj;        //0x3D
 	uint16_t control_lock;       //0x3E
@@ -82,4 +82,3 @@ typedef enum
 
 //Sonic functions
 int KillSonic(Object *obj, Object *src);
-void Sonic_ChkRoll(Object *obj);

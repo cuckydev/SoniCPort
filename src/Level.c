@@ -388,14 +388,16 @@ uint16_t rings;
 uint8_t lives;
 uint8_t continues;
 
+uint32_t score_life;
+
 uint16_t air;
 uint8_t last_special;
 
-uint8_t lifecount;
-uint8_t hud_life;
-uint8_t hud_ring;
-uint8_t hud_time;
-uint8_t hud_score;
+uint8_t life_num;
+uint8_t life_count;
+uint8_t ring_count;
+uint8_t time_count;
+uint8_t score_count;
 
 uint8_t shield;
 uint8_t invincibility;

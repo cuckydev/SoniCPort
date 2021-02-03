@@ -10,3 +10,4 @@ extern uint16_t pcyc_buffer[0x18];
 int PCycle_Sega();
 void PCycle_Title();
 void PCycle_GHZ();
+void PaletteCycle();

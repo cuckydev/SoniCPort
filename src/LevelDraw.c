@@ -29,17 +29,8 @@ void GetBlockData(const uint8_t **meta, const uint8_t **block, int16_t sx, int16
 	y += sy;
 	
 	//Get chunk position
-	int16_t cx = x >> 8;
-	int16_t cy = y >> 8;
-	
-	if (cx < 0 || cy < 0 || cx >= 0x40 || cy >= 8)
-	{
-		*meta = level_map256;
-		*block = level_map16;
-		return;
-	}
-	
-	//Get chunk
+	int16_t cx = (x >> 8) & 0x3F;
+	int16_t cy = (y >> 8) & 0x7;
 	uint8_t chunk = layout[(cy << 7) + cx] & 0x7F;
 	if (chunk == 0)
 	{

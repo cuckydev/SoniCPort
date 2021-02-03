@@ -27,12 +27,12 @@ void Obj_TitleSonic(Object *obj)
 			obj->priority = 1;
 			
 			//Initialize state
-			obj->frame_time = 29;
+			obj->frame_time.b = 29;
 			AnimateSprite(obj, anim_titlesonic);
 	//Fallthrough
 		case 2: //Waiting to appear
 			//Wait for timer to clear
-			if ((--obj->frame_time) >= 0)
+			if ((--obj->frame_time.b) >= 0)
 				return;
 			
 			//Increment routine

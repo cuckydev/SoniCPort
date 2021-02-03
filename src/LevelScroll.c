@@ -154,7 +154,7 @@ void Deform_Fallback()
 	{ *bufp++ = fg_x; *bufp++ = bg_x; }
 }
 
-static void (*deform_routines[])() = {
+static void (*deform_routines[ZoneId_Num])() = {
 	/* ZoneId_GHZ  */ Deform_GHZ,
 	/* ZoneId_LZ   */ Deform_Fallback,
 	/* ZoneId_MZ   */ Deform_Fallback,
@@ -186,7 +186,7 @@ void BgScroll_GHZ(int16_t x, int16_t y)
 	#endif
 }
 
-static void (*bgscroll_routines[])(int16_t, int16_t) = {
+static void (*bgscroll_routines[ZoneId_Num])(int16_t, int16_t) = {
 	/* ZoneId_GHZ  */ BgScroll_GHZ,
 	/* ZoneId_LZ   */ NULL,
 	/* ZoneId_MZ   */ NULL,

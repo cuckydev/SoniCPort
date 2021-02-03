@@ -6,6 +6,7 @@
 #include "LevelScroll.h"
 #include "LevelCollision.h"
 #include "MathUtil.h"
+#include "PLC.h"
 
 #include <string.h>
 
@@ -139,7 +140,7 @@ static void Sonic_Animate(Object *obj)
 		//Reset animation state
 		obj->prev_anim = anim;
 		obj->anim_frame = 0;
-		obj->frame_time = 0;
+		obj->frame_time.b = 0;
 	}
 	
 	//Get animation script to use
@@ -155,9 +156,9 @@ static void Sonic_Animate(Object *obj)
 		obj->render.f.y_flip = false;
 		
 		//Wait for current animation frame to end
-		if (--obj->frame_time >= 0)
+		if (--obj->frame_time.b >= 0)
 			return;
-		obj->frame_time = anim_wait;
+		obj->frame_time.b = anim_wait;
 		
 		//Read animation
 		Sonic_AnimateReadFrame(obj, anim_script);
@@ -165,7 +166,7 @@ static void Sonic_Animate(Object *obj)
 	else
 	{
 		//Wait for current animation frame to end
-		if (--obj->frame_time >= 0)
+		if (--obj->frame_time.b >= 0)
 			return;
 		
 		//Special animation (walking, rolling, running, etc.)
@@ -207,7 +208,7 @@ static void Sonic_Animate(Object *obj)
 			int16_t anim_spd = 0x800 - abs_spd;
 			if (anim_spd < 0)
 				anim_spd = 0;
-			obj->frame_time = anim_spd >> 8;
+			obj->frame_time.b = anim_spd >> 8;
 			
 			//Read animation
 			Sonic_AnimateReadFrame(obj, anim_script);
@@ -228,7 +229,7 @@ static void Sonic_Animate(Object *obj)
 			int16_t anim_spd = 0x400 - abs_spd;
 			if (anim_spd < 0)
 				anim_spd = 0;
-			obj->frame_time = anim_spd >> 8;
+			obj->frame_time.b = anim_spd >> 8;
 			
 			//Set render flip
 			obj->render.f.x_flip = obj->status.p.f.x_flip;
@@ -248,7 +249,7 @@ static void Sonic_Animate(Object *obj)
 			int16_t anim_spd = 0x800 - abs_spd;
 			if (anim_spd < 0)
 				anim_spd = 0;
-			obj->frame_time = anim_spd >> 6;
+			obj->frame_time.b = anim_spd >> 6;
 			
 			//Get script to use
 			anim_script = GET_SONIC_ANISCR(SonAnimId_Push);
@@ -975,7 +976,7 @@ static void Sonic_Move(Object *obj)
 	}
 }
 
-void Sonic_ChkRoll(Object *obj)
+static void Sonic_ChkRoll(Object *obj)
 {
 	//Enter roll state
 	if (obj->status.p.f.in_ball)
@@ -1296,6 +1297,119 @@ static void Sonic_JumpAngle(Object *obj)
 	obj->angle = angle;
 }
 
+static void Sonic_Loops(Object *obj)
+{
+	//Make sure we're in SLZ or GHZ
+	if (LEVEL_ZONE(level_id) != ZoneId_SLZ && LEVEL_ZONE(level_id) != ZoneId_GHZ)
+		return;
+	
+	//Get chunk we're on
+	int16_t cx = (obj->pos.l.x.f.u >> 8) & 0x3F;
+	int16_t cy = (obj->pos.l.y.f.u >> 8) & 0x7;
+	uint8_t chunk = level_layout[cy][0][cx];
+	
+	//Handle S-tubes
+	if (chunk == level_schunks[1][0] || chunk == level_schunks[1][1])
+	{
+		Sonic_ChkRoll(obj);
+		return;
+	}
+	
+	//Handle loops
+	if (chunk == level_schunks[0][0])
+	{
+		CheckLoop:;
+		//Return to high plane if to the left
+		if ((uint8_t)obj->pos.l.x.f.u < 0x2C)
+		{
+			obj->render.f.player_loop = false;
+			return;
+		}
+		
+		//Go to low plane if to the right
+		if ((uint8_t)obj->pos.l.x.f.u >= 0xE0)
+		{
+			obj->render.f.player_loop = true;
+			return;
+		}
+		
+		//Check our angle
+		if (!obj->render.f.player_loop)
+		{
+			if (obj->angle && obj->angle < 0x80)
+				obj->render.f.player_loop = true;
+		}
+		else
+		{
+			if (obj->angle > 0x80)
+				obj->render.f.player_loop = false;
+		}
+	}
+	else if (chunk == level_schunks[0][1])
+	{
+		//Return to high plane if in mid-air
+		if (!obj->status.p.f.in_air)
+			goto CheckLoop;
+		obj->render.f.player_loop = false;
+	}
+	else
+	{
+		//Return to high plane
+		obj->render.f.player_loop = false;
+	}
+}
+
+//Other functions
+static void GameOver(Object *obj)
+{
+	Scratch_Sonic *scratch = (Scratch_Sonic*)&obj->scratch;
+	
+	//Have we fallen below the screen?
+	if ((limit_btm2 + 256 + SCREEN_TALLADD) >= obj->pos.l.y.f.u)
+		return;
+	
+	//Enter respawn state
+	obj->ysp = -0x38; //???
+	obj->routine += 2;
+	time_count = false;
+	
+	//Check if we've game over'ed
+	if (--lives == 0)
+	{
+		//Set death timer
+		scratch->death_timer = 0;
+		
+		//Load 'GAME OVER' objects
+		objects[2].type = ObjId_GameOverCard; //GAME
+		objects[3].type = ObjId_GameOverCard; //OVER
+		objects[3].frame = 1;
+		
+		time_over = false;
+		//music	bgm_GameOver,0,0,0	; play game over music //TODO
+		AddPLC(PlcId_GameOver);
+	}
+	else
+	{
+		//Set death timer
+		scratch->death_timer = 60;
+		
+		//Check if we've time over'ed
+		if (time_over)
+		{
+			//Set death timer
+			scratch->death_timer = 0;
+			
+			//Load 'TIME OVER' objects
+			objects[2].type = ObjId_GameOverCard; //TIME
+			objects[3].type = ObjId_GameOverCard; //OVER
+			objects[3].frame = 1;
+			
+			//music	bgm_GameOver,0,0,0	; play game over music //TODO
+			AddPLC(PlcId_GameOver);
+		}
+	}
+}
+
 //Sonic object
 void Obj_Sonic(Object *obj)
 {
@@ -1333,7 +1447,7 @@ void Obj_Sonic(Object *obj)
 			sonspeed_acc = 0xC;
 			sonspeed_dec = 0x80;
 	//Fallthrough
-		case 2:
+		case 2: //Regular movement
 			//Enter debug mode
 			if (debug_cheat && (jpad1_press1 & JPAD_B))
 			{
@@ -1415,8 +1529,33 @@ void Obj_Sonic(Object *obj)
 			}
 			Sonic_Animate(obj);
 			
+			//Handle loops
+			Sonic_Loops(obj);
+			
 			//Handle DPLCs
 			Sonic_LoadGfx(obj);
+			break;
+		case 4: //Hurt
+			break;
+		case 6: //Dead
+			//Check for respawning and fall
+			GameOver(obj);
+			ObjectFall(obj);
+			
+			//Handle general player state stuff
+			Sonic_RecordPosition(obj);
+			
+			//Animate
+			Sonic_Animate(obj);
+			
+			//Handle DPLCs and draw sprite
+			Sonic_LoadGfx(obj);
+			DisplaySprite(obj);
+			break;
+		case 8: //Dead, respawning
+			//Handle death timer
+			if (scratch->death_timer && --scratch->death_timer == 0)
+				restart = true;
 			break;
 	}
 }

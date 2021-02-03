@@ -65,6 +65,7 @@ add_executable(SoniCPort WIN32
 	"src/Object/TitleSonic.c"
 	"src/Object/PSB.c"
 	"src/Object/TitleCard.c"
+	"src/Object/GameOverCard.c"
 	"src/Object/Credits.c"
 	
 	# Backend
@@ -87,6 +88,7 @@ set(RESOURCES
 	"Art/TitleSonic"
 	"Art/TitleTM"
 	"Art/TitleCard"
+	"Art/GameOver"
 	"Art/CreditsFont"
 	"Art/GHZ1"
 	"Art/GHZ2"
@@ -122,6 +124,7 @@ set(RESOURCES
 	"Palette/Continue"
 	"Palette/Ending"
 	"Palette/TitleCycle"
+	"Palette/GHZCycle"
 	
 	"Animation/Sonic"
 	"Animation/TitleSonic"
@@ -132,6 +135,7 @@ set(RESOURCES
 	"Mappings/TitleSonic"
 	"Mappings/PSB"
 	"Mappings/TitleCard"
+	"Mappings/GameOver"
 	"Mappings/Credits"
 	
 	"Layout/GHZ1"

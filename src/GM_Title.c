@@ -7,6 +7,7 @@
 #include "Level.h"
 #include "LevelDraw.h"
 #include "LevelScroll.h"
+#include "SpecialStage.h"
 #include "PLC.h"
 #include "Nemesis.h"
 
@@ -45,6 +46,29 @@ static const uint8_t art_title_tm[] = {
 static ALIGNED2 const uint8_t map_title_fg[] = {
 	#include <Resource/Tilemap/TitleFG.h>
 };
+
+//Level stuff
+static void PlayLevel()
+{
+	gamemode = GameMode_Level;
+	lives = 3;
+	rings = 0;
+	time = 0;
+	score = 0;
+	last_special = 0;
+	emeralds = 0;
+	memset(emerald_list, 0, sizeof(emerald_list));
+	continues = 0;
+	#ifndef SCP_REV00
+		score_life = 5000;
+	#endif
+	//sfx	bgm_Fade,0,1,1 ; fade out music //TODO
+}
+
+static void Tit_ChkLevSel()
+{
+	PlayLevel();
+}
 
 //Title gamemode
 void GM_Title()
@@ -152,7 +176,7 @@ void GM_Title()
 	PaletteFadeIn();
 	
 	//Loop
-	while (1)
+	do
 	{
 		//Render frame
 		vbla_routine = 0x04;
@@ -177,19 +201,56 @@ void GM_Title()
 		
 		//TODO: Check for level select cheat
 		
-		//Check if start is pressed
-		if (jpad1_press1 & JPAD_START)
-		{
-			gamemode = GameMode_Level;
-			return;
-		}
-		
 		//Check if the title's over
 		if (!demo_length)
 		{
-			//Start a demo TODO
-			gamemode = GameMode_Level;//GameMode_Demo;
+			//Run the title screen for 30 frames
+			demo_length = 30;
+			
+			do
+			{
+				//Render frame
+				vbla_routine = 0x04;
+				WaitForVBla();
+				
+				//Run game and load PLCs
+				DeformLayers();
+				PaletteCycle(); //Code earlier calls PCycle_Title?
+				RunPLC();
+				
+				//Move Sonic object
+				if ((player->pos.l.x.f.u += 2) >= 0x1C00)
+				{
+					gamemode = GameMode_Sega;
+					return;
+				}
+				
+				//Check if start is pressed
+				if (jpad1_press1 & JPAD_START)
+				{
+					Tit_ChkLevSel();
+					return;
+				}
+			} while (demo_length);
+			
+			//Load demo
+			//sfx	bgm_Fade,0,1,1 ; fade out music //TODO
+			
+			//TODO
+			
+			//Enter demo gamemode
+			demo = 1;
+			gamemode = GameMode_Demo;
+			lives = 3;
+			rings = 0;
+			time = 0;
+			score = 0;
+			#ifndef SCP_REV00
+				score_life = 5000;
+			#endif
 			return;
 		}
-	}
+	} while (!(jpad1_press1 & JPAD_START));
+	
+	Tit_ChkLevSel();
 }

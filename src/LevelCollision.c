@@ -26,14 +26,9 @@ void FloorLog_Unk()
 
 const uint8_t *FindNearestTile(Object *obj, int16_t x, int16_t y)
 {
-	//Get chunk position
-	int16_t cx = x >> 8;
-	int16_t cy = y >> 8;
-	
-	if (cx < 0 || cy < 0 || cx >= 0x40 || cy >= 8)
-		return level_map256;
-	
 	//Get chunk
+	int16_t cx = (x >> 8) & 0x3F;
+	int16_t cy = (y >> 8) & 0x7;
 	uint8_t chunk = level_layout[cy][0][cx];
 	if (chunk == 0)
 		return level_map256;
@@ -51,7 +46,7 @@ const uint8_t *FindNearestTile(Object *obj, int16_t x, int16_t y)
 		chunk &= 0x7F;
 		if (obj->render.f.player_loop)
 		{
-			if (chunk == 0x29)
+			if (++chunk == 0x29)
 				chunk = 0x51;
 		}
 		
