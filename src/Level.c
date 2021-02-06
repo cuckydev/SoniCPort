@@ -366,10 +366,10 @@ uint16_t level_id;
 
 uint8_t dle_routine;
 
-int16_t limit_left1, limit_right1, limit_top1, limit_btm1;
-int16_t limit_left2, limit_right2, limit_top2, limit_btm2;
-int16_t limit_left3;
-int16_t limit_top_db, limit_btm_db;
+uint16_t limit_left1, limit_right1, limit_top1, limit_btm1;
+uint16_t limit_left2, limit_right2, limit_top2, limit_btm2;
+uint16_t limit_left3;
+uint16_t limit_top_db, limit_btm_db;
 
 LevelAnim level_anim[6];
 
@@ -422,7 +422,6 @@ Object objects[OBJECTS];
 Object *const player = objects;
 Object *const level_objects = objects + RESERVED_OBJECTS;
 
-uint8_t btn_pushtime1, btn_pushtime2;
 int16_t obj31_ypos;
 uint8_t boss_status;
 uint8_t lock_screen;
@@ -591,4 +590,49 @@ void ColIndexLoad()
 {
 	//Use zone's collision indices
 	coll_index = level_coli[LEVEL_ZONE(level_id)];
+}
+
+//Dynamic level events
+void DynamicLevelEvents()
+{
+	//Update target scroll limits
+	switch (LEVEL_ZONE(level_id))
+	{
+		case ZoneId_GHZ:
+			switch (LEVEL_ACT(level_id))
+			{
+				case 0: //Act 1
+					if ((uint16_t)scrpos_x.f.u >= (0x1780 - SCREEN_WIDEADD2))
+						limit_btm1 = 0x400 - SCREEN_TALLADD;
+					else
+						limit_btm1 = 0x300 - SCREEN_TALLADD;
+					break;
+				case 1: //Act 2
+					break;
+				case 2: //Act 3
+					break;
+			}
+			break;
+		default:
+			break;
+	}
+	
+	//Update scroll limits
+	int16_t scroll_diff = limit_btm1 - limit_btm2;
+	int16_t spd = 2;
+	
+	if (scroll_diff < 0)
+	{
+		if ((uint16_t)scrpos_y.f.u > limit_btm1)
+			limit_btm2 = scrpos_y.f.u & ~1;
+		limit_btm2 -= spd;
+		bgscrollvert = true;
+	}
+	else if (scroll_diff > 0)
+	{
+		if (((uint16_t)scrpos_y.f.u + 8) >= limit_btm2 && player->status.p.f.in_air)
+			spd *= 4;
+		limit_btm2 += spd;
+		bgscrollvert = true;
+	}
 }

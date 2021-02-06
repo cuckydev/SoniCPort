@@ -15,6 +15,17 @@
 
 #include <string.h>
 
+//Title screen state
+uint8_t demo_num;
+
+//Title screen demo list
+static const uint16_t title_demos[] = {
+	LEVEL_ID(ZoneId_GHZ, 0),
+	LEVEL_ID(ZoneId_MZ,  0),
+	LEVEL_ID(ZoneId_SYZ, 0),
+	LEVEL_ID(6, 0), //Special stage
+};
+
 //Japanese credits
 static const uint8_t art_japanese_credits[] = {
 	#include <Resource/Art/JapaneseCredits.h>
@@ -119,6 +130,7 @@ void GM_Title()
 	
 	//Reset game state
 	last_lamp = 0;
+	debug_use = false;
 	demo = 0;
 	
 	//Load GHZ
@@ -204,7 +216,7 @@ void GM_Title()
 		//Check if the title's over
 		if (!demo_length)
 		{
-			//Run the title screen for 30 frames
+			//Run the title screen but with reduced code for 30 frames
 			demo_length = 30;
 			
 			do
@@ -215,7 +227,7 @@ void GM_Title()
 				
 				//Run game and load PLCs
 				DeformLayers();
-				PaletteCycle(); //Code earlier calls PCycle_Title?
+				PaletteCycle(); //Wrong palette cycle
 				RunPLC();
 				
 				//Move Sonic object
@@ -226,7 +238,7 @@ void GM_Title()
 				}
 				
 				//Check if start is pressed
-				if (jpad1_press1 & JPAD_START)
+				if (jpad1_press1 &= JPAD_START)
 				{
 					Tit_ChkLevSel();
 					return;
@@ -236,11 +248,26 @@ void GM_Title()
 			//Load demo
 			//sfx	bgm_Fade,0,1,1 ; fade out music //TODO
 			
-			//TODO
+			level_id = title_demos[demo_num & 7];
+			if (++demo_num >= 4)
+				demo_num = 0;
 			
 			//Enter demo gamemode
 			demo = 1;
-			gamemode = GameMode_Demo;
+			if (level_id != 0x600)
+			{
+				//Regular level
+				gamemode = GameMode_Demo;
+			}
+			else
+			{
+				//Special stage
+				gamemode = GameMode_Special;
+				level_id = 0;
+				last_special = 0;
+			}
+			
+			//Set game state
 			lives = 3;
 			rings = 0;
 			time = 0;
@@ -250,7 +277,7 @@ void GM_Title()
 			#endif
 			return;
 		}
-	} while (!(jpad1_press1 & JPAD_START));
+	} while (!(jpad1_press1 &= JPAD_START));
 	
 	Tit_ChkLevSel();
 }

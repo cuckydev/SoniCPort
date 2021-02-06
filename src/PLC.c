@@ -40,6 +40,11 @@ const uint8_t art_sbz[] = {
 	,0,
 };
 
+//Object art
+const uint8_t art_game_over[] = {
+	#include <Resource/Art/GameOver.h>
+};
+
 //PLC lists
 typedef struct
 {
@@ -78,10 +83,9 @@ static const PLCList PLC_Explode = {
 };
 
 static const PLCList PLC_GameOver = {
-	0,
+	1,
 	(const PLC[]){
-		{NULL, 0}, //ISO C forbids empty initializer braces
-		//plcm	Nem_GameOver, $ABC0	; game/time over
+		{art_game_over, 0xABC0},
 	}
 };
 

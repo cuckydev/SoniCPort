@@ -165,37 +165,6 @@ static void (*deform_routines[ZoneId_Num])() = {
 };
 
 //Background scroll speed routines
-void BgScroll_GHZ(int16_t x, int16_t y)
-{
-	(void)x;
-	(void)y;
-	#ifdef SCP_REV00
-		Deform_GHZ();
-	#else
-		//Reset background positions
-		bg_scrpos_x.v = 0;
-		bg_scrpos_y.v = 0;
-		bg2_scrpos_y.v = 0;
-		bg3_scrpos_y.v = 0;
-		
-		//Reset cloud scrolling
-		int32_t *scroll = (int32_t*)bgscroll_buffer;
-		scroll[0] = 0;
-		scroll[1] = 0;
-		scroll[2] = 0;
-	#endif
-}
-
-static void (*bgscroll_routines[ZoneId_Num])(int16_t, int16_t) = {
-	/* ZoneId_GHZ  */ BgScroll_GHZ,
-	/* ZoneId_LZ   */ NULL,
-	/* ZoneId_MZ   */ NULL,
-	/* ZoneId_SLZ  */ NULL,
-	/* ZoneId_SYZ  */ NULL,
-	/* ZoneId_SBZ  */ NULL,
-	/* ZoneId_EndZ */ BgScroll_GHZ,
-};
-
 void BgScrollSpeed(int16_t x, int16_t y)
 {
 	//Don't run if spawning from a checkpoint
@@ -210,8 +179,29 @@ void BgScrollSpeed(int16_t x, int16_t y)
 	bg3_scrpos_x.f.u = x;
 	
 	//Run zone's background scroll routine
-	if (bgscroll_routines[LEVEL_ZONE(level_id)] != NULL)
-		bgscroll_routines[LEVEL_ZONE(level_id)](x, y);
+	switch (LEVEL_ZONE(level_id))
+	{
+		case ZoneId_GHZ:
+		case ZoneId_EndZ:
+			#ifdef SCP_REV00
+				Deform_GHZ();
+			#else
+				//Reset background positions
+				bg_scrpos_x.v = 0;
+				bg_scrpos_y.v = 0;
+				bg2_scrpos_y.v = 0;
+				bg3_scrpos_y.v = 0;
+				
+				//Reset cloud scrolling
+				int32_t *scroll = (int32_t*)bgscroll_buffer;
+				scroll[0] = 0;
+				scroll[1] = 0;
+				scroll[2] = 0;
+			#endif
+			break;
+		default:
+			break;
+	}
 }
 
 //Level scroll functions
@@ -297,6 +287,11 @@ void ScrollVertical()
 			scrshift_y = 0;
 			return;
 		}
+		else
+		{
+			y = 0;
+			bgscrollvert = false;
+		}
 	}
 	else
 	{
@@ -338,11 +333,15 @@ void ScrollVertical()
 			scrshift_y = 0;
 			return;
 		}
+		else
+		{
+			y = 0;
+			bgscrollvert = false;
+		}
 	}
 	
-	bgscrollvert = false;
+	scroll.v = 0;
 	scroll.f.u = scrpos_y.f.u + y;
-	scroll.f.l = 0;
 	if (y >= 0)
 		goto LimitBottom;
 	else
@@ -419,6 +418,7 @@ void DeformLayers()
 	//Scroll camera
 	ScrollHoriz();
 	ScrollVertical();
+	DynamicLevelEvents();
 	
 	//Copy screen Y position
 	vid_scrpos_y_dup = scrpos_y.f.u;

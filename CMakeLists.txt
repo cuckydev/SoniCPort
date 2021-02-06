@@ -33,6 +33,8 @@ add_executable(SoniCPort WIN32
 	"src/MathUtil.h"
 	"src/Game.c"
 	"src/Game.h"
+	"src/Demo.c"
+	"src/Demo.h"
 	"src/Video.c"
 	"src/Video.h"
 	"src/Palette.c"
@@ -194,6 +196,19 @@ set(RESOURCES
 	"Collision/AngleMap"
 	"Collision/HeightMap"
 	"Collision/WidthMap"
+	
+	"Demo/IntroGHZ"
+	"Demo/IntroMZ"
+	"Demo/IntroSYZ"
+	"Demo/IntroSS"
+	"Demo/EndingGHZ1"
+	"Demo/EndingMZ"
+	"Demo/EndingSYZ"
+	"Demo/EndingLZ"
+	"Demo/EndingSLZ"
+	"Demo/EndingSBZ1"
+	"Demo/EndingSBZ2"
+	"Demo/EndingGHZ2"
 )
 
 target_include_directories(SoniCPort PRIVATE "src")

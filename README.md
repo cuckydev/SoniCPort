@@ -27,6 +27,7 @@ Name | Function
 `-DBACKEND=SDL2` | Use the SDL2 backend (default)
 `-DREV01=ON` | Compile a REV01 ROM
 `-DJAPANESE=ON` | Compile a Japanese ROM
+`-DFIX_BUGS=ON` | Fix bugs that are blatant screw-ups that may harm performance (not gameplay bugs)
 `-DLTO=ON` | Enable link-time optimisation
 `-DPKG_CONFIG_STATIC_LIBS=ON` | On platforms with pkg-config, static-link the dependencies (good for Windows builds, so you don't need to bundle DLL files)
 `-DMSVC_LINK_STATIC_RUNTIME=ON` | Link the static MSVC runtime library, to reduce the number of required DLL files (Visual Studio only)

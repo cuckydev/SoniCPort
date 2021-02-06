@@ -68,10 +68,10 @@ extern uint16_t level_id;
 
 extern uint8_t dle_routine;
 
-extern int16_t limit_left1, limit_right1, limit_top1, limit_btm1;
-extern int16_t limit_left2, limit_right2, limit_top2, limit_btm2;
-extern int16_t limit_left3;
-extern int16_t limit_top_db, limit_btm_db;
+extern uint16_t limit_left1, limit_right1, limit_top1, limit_btm1;
+extern uint16_t limit_left2, limit_right2, limit_top2, limit_btm2;
+extern uint16_t limit_left3;
+extern uint16_t limit_top_db, limit_btm_db;
 
 extern LevelAnim level_anim[6];
 
@@ -120,7 +120,6 @@ extern Object objects[OBJECTS];
 extern Object *const player;
 extern Object *const level_objects;
 
-extern uint8_t btn_pushtime1, btn_pushtime2;
 extern int16_t obj31_ypos;
 extern uint8_t boss_status;
 extern uint8_t lock_screen;
@@ -157,3 +156,4 @@ void LoadMap256(ZoneId zone);
 void LevelSizeLoad();
 void LevelDataLoad();
 void ColIndexLoad();
+void DynamicLevelEvents();

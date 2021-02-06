@@ -13,6 +13,7 @@
 #include "PaletteCycle.h"
 #include "Nemesis.h"
 #include "PLC.h"
+#include "Demo.h"
 
 #include <string.h>
 
@@ -212,7 +213,7 @@ void GM_Level()
 		//Start title card
 		objects[2].type = ObjId_TitleCard;
 		
-		while (1)
+		do
 		{
 			//Run game and load PLCs
 			vbla_routine = 0x0C;
@@ -220,175 +221,180 @@ void GM_Level()
 			ExecuteObjects();
 			BuildSprites();
 			RunPLC();
-			
-			//Break if title card is over and PLCs have loaded
-			if (objects[4].pos.s.x != objects[4].scratch.u16[4])
-				continue;
-			if (plc_buffer[0].art != NULL)
-				continue;
-			break;
-		}
+		} while (objects[4].pos.s.x != objects[4].scratch.u16[4] || plc_buffer[0].art != NULL);
+	}
+	
+	//Load level
+	PalLoad1(PalId_Sonic);
+	LevelSizeLoad();
+	DeformLayers();
+	fg_scroll_flags |= SCROLL_FLAG_LEFT;
+	LevelDataLoad();
+	LoadTilesFromStart();
+	FloorLog_Unk();
+	ColIndexLoad();
+	
+	//Create player and HUD objects
+	player->type = ObjId_Sonic;
+	
+	//Handle debug mode cheat
+	if (debug_cheat && (jpad1_hold1 & JPAD_A))
+		debug_mode = 1;
+	jpad1_hold2 = 0;
+	jpad1_hold1 = 0;
+	
+	//Load level objects
+	//ObjPosLoad();
+	ExecuteObjects();
+	BuildSprites();
+	
+	//Initialize game state
+	if (!last_lamp)
+	{
+		rings = 0;
+		time = 0;
+		life_num = 0;
+	}
+	
+	time_over = false;
+	shield = false;
+	invincibility = false;
+	shoes = false;
+	debug_use = false;
+	restart = false;
+	frame_count = 0;
+	
+	//OscillateNumInit();
+	
+	score_count = true;
+	ring_count = true;
+	time_count = true;
+	
+	//Initialize demo
+	btn_pushtime1 = 0;
+	
+	const uint8_t *demo_data;
+	if (demo < 0)
+		demo_data = ending_demo_ptr[credits_num - 1];
+	else
+		demo_data = intro_demo_ptr[LEVEL_ZONE(level_id)];
+	btn_pushtime2 = demo_data[1] - 1;
+	if (demo < 0)
+		demo_length = (credits_num == 4) ? 510 : 540; //Credits length
+	else
+		demo_length = 1800; //Demo length
+	
+	//Load level's water palette
+	if (LEVEL_ZONE(level_id) == ZoneId_LZ)
+		PalLoad4_Water((LEVEL_ACT(level_id) == 3) ? PalId_LZWater : PalId_SBZ3Water);
+	
+	//Wait for 4 frames
+	for (int i = 0; i < 4; i++)
+	{
+		vbla_routine = 0x08;
+		WaitForVBla();
+	}
+	
+	//Fade into level
+	PaletteFadeIn_At(0x10, 0x30);
+	
+	//Tell title card to move away
+	objects[2].routine += 2;
+	objects[3].routine += 4;
+	objects[4].routine += 4;
+	objects[5].routine += 4;
+	
+	//Load missing art in credits demos
+	if (demo < 0)
+	{
+		AddPLC(PlcId_Explode);
+		AddPLC(PlcId_GHZAnimals + LEVEL_ZONE(level_id));
+	}
+	
+	//Enter level loop
+	gamemode &= 0x7F;
+	while (1)
+	{
+		//Run frame
+		vbla_routine = 0x08;
+		WaitForVBla();
+		frame_count++;
 		
-		//Load level
-		PalLoad1(PalId_Sonic);
-		LevelSizeLoad();
-		DeformLayers();
-		fg_scroll_flags |= SCROLL_FLAG_LEFT;
-		LevelDataLoad();
-		LoadTilesFromStart();
-		FloorLog_Unk();
-		ColIndexLoad();
+		MoveSonicInDemo();
+		//LZWaterFeatures();
 		
-		//Create player and HUD objects
-		player->type = ObjId_Sonic;
-		
-		//Handle debug mode cheat
-		if (debug_cheat && (jpad1_hold1 & JPAD_A))
-			debug_mode = 1;
-		jpad1_hold2 = 0;
-		jpad1_hold1 = 0;
-		
-		//Load level objects
-		//ObjPosLoad();
+		//Run game
 		ExecuteObjects();
+		#ifndef SCP_REV00
+			//Restart level gamemode if restart flag set
+			if (restart)
+				goto GM_Level_Branch;
+		#endif
+		
+		//Setup video and load PLCs
+		if (debug_use || player->routine < 6)
+			DeformLayers();
 		BuildSprites();
+		//ObjPosLoad(); //TODO
+		PaletteCycle();
+		RunPLC();
 		
-		//Initialize game state
-		if (!last_lamp)
+		//Check if level loop should end
+		if (gamemode != GameMode_Demo)
 		{
-			rings = 0;
-			time = 0;
-			life_num = 0;
-		}
-		
-		time_over = false;
-		shield = false;
-		invincibility = false;
-		shoes = false;
-		debug_use = false;
-		restart = false;
-		frame_count = 0;
-		
-		//OscillateNumInit();
-		
-		score_count = true;
-		ring_count = true;
-		time_count = true;
-		
-		//Load demo
-		btn_pushtime1 = 0;
-		demo_length = 1800;
-		
-		//TODO
-		
-		//Load level's water palette
-		if (LEVEL_ZONE(level_id) == ZoneId_LZ)
-			PalLoad4_Water((LEVEL_ACT(level_id) == 3) ? PalId_LZWater : PalId_SBZ3Water);
-		
-		//Wait for 4 frames
-		for (int i = 0; i < 4; i++)
-		{
-			vbla_routine = 0x08;
-			WaitForVBla();
-		}
-		
-		//Fade into level
-		PaletteFadeIn_At(0x10, 0x30);
-		
-		//Tell title card to move away
-		objects[2].routine += 2;
-		objects[3].routine += 4;
-		objects[4].routine += 4;
-		objects[5].routine += 4;
-		
-		//Load missing art in credits demos
-		if (demo < 0)
-		{
-			AddPLC(PlcId_Explode);
-			AddPLC(PlcId_GHZAnimals + LEVEL_ZONE(level_id));
-		}
-		
-		//Enter level loop
-		gamemode &= 0x7F;
-		while (1)
-		{
-			//Run frame
-			vbla_routine = 0x08;
-			WaitForVBla();
-			frame_count++;
-			
-			//MoveSonicInDemo();
-			//LZWaterFeatures();
-			
-			//Run game
-			ExecuteObjects();
-			#ifndef SCP_REV00
+			#ifdef SCP_REV00
 				//Restart level gamemode if restart flag set
 				if (restart)
 					goto GM_Level_Branch;
 			#endif
 			
-			//Setup video and load PLCs
-			if (debug_use || player->routine < 6)
-				DeformLayers();
-			BuildSprites();
-			RunPLC();
-			
-			//Check if level loop should end
-			if (gamemode != GameMode_Demo)
+			//Break if exited the level gamemode
+			if (gamemode != GameMode_Level)
+				break;
+		}
+		else
+		{
+			//Begin to fade if restart flag set or demo ended
+			if (restart || !demo_length)
 			{
-				#ifdef SCP_REV00
-					//Restart level gamemode if restart flag set
-					if (restart)
-						goto GM_Level_Branch;
-				#endif
+				//Get next game mode
+				if (gamemode == GameMode_Demo) //I HATE YOU
+					gamemode = (demo < 0) ? GameMode_Credits : GameMode_Sega;
 				
-				//Break if exited the level gamemode
-				if (gamemode != GameMode_Level)
-					break;
-			}
-			else
-			{
-				//Begin to fade if restart flag set or demo ended
-				if (restart || !demo_length)
+				//Prepare fade
+				demo_length = 60;
+				palette_fade.ind = 0;
+				palette_fade.len = 0x40;
+				pal_chgspeed = 0;
+				
+				//Fade loop
+				do
 				{
-					//Get next game mode
-					if (gamemode == GameMode_Demo) //I HATE YOU
-						gamemode = (demo < 0) ? GameMode_Credits : GameMode_Sega;
+					//Run frame
+					vbla_routine = 0x08;
+					WaitForVBla();
 					
-					//Prepare fade
-					demo_length = 60;
-					palette_fade.ind = 0;
-					palette_fade.len = 0x40;
-					pal_chgspeed = 0;
+					MoveSonicInDemo();
 					
-					//Fade loop
-					do
+					//Run game
+					ExecuteObjects();
+					BuildSprites();
+					//ObjPosLoad(); //TODO
+					
+					//Fade
+					if (--pal_chgspeed < 0)
 					{
-						//Run frame
-						vbla_routine = 0x08;
-						WaitForVBla();
-						
-						//Run game
-						ExecuteObjects();
-						BuildSprites();
-						//ObjPosLoad(); //TODO
-						
-						//Fade
-						if (--pal_chgspeed < 0)
-						{
-							pal_chgspeed = 2;
-							FadeOut_ToBlack();
-						}
-					} while (demo_length);
-					break;
-				}
-				else if (gamemode != GameMode_Demo) //Condition never met
-				{
-					//Go to SEGA game mode
-					gamemode = GameMode_Sega;
-					break;
-				}
+						pal_chgspeed = 2;
+						FadeOut_ToBlack();
+					}
+				} while (demo_length);
+				break;
+			}
+			else if (gamemode != GameMode_Demo) //Condition never met
+			{
+				//Go to SEGA game mode
+				gamemode = GameMode_Sega;
+				break;
 			}
 		}
 	}

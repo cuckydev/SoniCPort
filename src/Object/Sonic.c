@@ -1402,7 +1402,8 @@ static void GameOver(Object *obj)
 			//Load 'TIME OVER' objects
 			objects[2].type = ObjId_GameOverCard; //TIME
 			objects[3].type = ObjId_GameOverCard; //OVER
-			objects[3].frame = 1;
+			objects[2].frame = 2;
+			objects[3].frame = 3;
 			
 			//music	bgm_GameOver,0,0,0	; play game over music //TODO
 			AddPLC(PlcId_GameOver);
