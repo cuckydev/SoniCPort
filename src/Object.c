@@ -510,7 +510,7 @@ void AnimateSprite(Object *obj, const uint8_t *anim_script)
 void DisplaySprite(Object *obj)
 {
 	//Get queue to use
-	struct SpriteQueue *queue = &sprite_queue[obj->priority];
+	struct SpriteQueue *queue = &sprite_queue[obj->priority & 7];
 	
 	//Push to queue
 	if (queue->size >= (sizeof(queue->obj) / sizeof(Object*)))
@@ -537,4 +537,3 @@ void ObjectFall(Object *obj)
 	obj->pos.l.y.v += obj->ysp << 8;
 	obj->ysp += 0x38;
 }
-

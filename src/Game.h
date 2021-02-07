@@ -15,6 +15,9 @@ typedef enum
 	GameMode_Continue,
 	GameMode_Ending,
 	GameMode_Credits,
+#ifdef SCP_SPLASH
+	GameMode_SSRG,
+#endif
 } GameMode;
 
 //Game state

@@ -16,7 +16,7 @@ void Obj_TitleSonic(Object *obj)
 			//Increment routine and initialize position
 			obj->routine += 2;
 			
-			obj->pos.s.x = 0xF0 + (PLANE_WIDEADD << 2);
+			obj->pos.s.x = 0xF0 + (PLANE_WIDEADD * 4);
 			obj->pos.s.y = 0xDE;
 			
 			//Set object drawing information

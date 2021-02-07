@@ -120,6 +120,9 @@ extern Object objects[OBJECTS];
 extern Object *const player;
 extern Object *const level_objects;
 
+extern uint16_t opl_routine, opl_screen;
+extern uint8_t opl_data[0x10];
+
 extern int16_t obj31_ypos;
 extern uint8_t boss_status;
 extern uint8_t lock_screen;
@@ -145,9 +148,6 @@ extern LevelAnim sprite_anim[4];
 
 extern Oscillatory oscillatory;
 
-extern uint16_t opl_routine, opl_screen;
-extern uint8_t opl_data[0x10];
-
 //Level functions
 void LoadLevelMaps();
 void LoadLevelLayout();
@@ -157,3 +157,4 @@ void LevelSizeLoad();
 void LevelDataLoad();
 void ColIndexLoad();
 void DynamicLevelEvents();
+void ObjPosLoad();

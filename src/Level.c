@@ -422,6 +422,9 @@ Object objects[OBJECTS];
 Object *const player = objects;
 Object *const level_objects = objects + RESERVED_OBJECTS;
 
+uint16_t opl_routine, opl_screen;
+uint8_t opl_data[0x10];
+
 int16_t obj31_ypos;
 uint8_t boss_status;
 uint8_t lock_screen;
@@ -446,9 +449,6 @@ uint8_t f_switch[0x10];
 LevelAnim sprite_anim[4];
 
 Oscillatory oscillatory;
-
-uint16_t opl_routine, opl_screen;
-uint8_t opl_data[0x10];
 
 //Level loading
 void LoadLevelMaps()
@@ -635,4 +635,9 @@ void DynamicLevelEvents()
 		limit_btm2 += spd;
 		bgscrollvert = true;
 	}
+}
+
+void ObjPosLoad()
+{
+	
 }

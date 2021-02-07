@@ -228,7 +228,7 @@ void GM_Level()
 	PalLoad1(PalId_Sonic);
 	LevelSizeLoad();
 	DeformLayers();
-	fg_scroll_flags |= SCROLL_FLAG_LEFT;
+	fg_scroll_flags |= SCROLL_FLAG_LEFT; //OK
 	LevelDataLoad();
 	LoadTilesFromStart();
 	FloorLog_Unk();
@@ -241,10 +241,12 @@ void GM_Level()
 	if (debug_cheat && (jpad1_hold1 & JPAD_A))
 		debug_mode = 1;
 	jpad1_hold2 = 0;
+	jpad1_press2 = 0;
 	jpad1_hold1 = 0;
+	jpad1_press1 = 0;
 	
 	//Load level objects
-	//ObjPosLoad();
+	ObjPosLoad();
 	ExecuteObjects();
 	BuildSprites();
 	
@@ -335,7 +337,7 @@ void GM_Level()
 		if (debug_use || player->routine < 6)
 			DeformLayers();
 		BuildSprites();
-		//ObjPosLoad(); //TODO
+		ObjPosLoad();
 		PaletteCycle();
 		RunPLC();
 		
@@ -379,7 +381,7 @@ void GM_Level()
 					//Run game
 					ExecuteObjects();
 					BuildSprites();
-					//ObjPosLoad(); //TODO
+					ObjPosLoad();
 					
 					//Fade
 					if (--pal_chgspeed < 0)

@@ -15,7 +15,7 @@ void Obj_PSB(Object *obj)
 		case 0: //Initialization
 			//Increment routine and set position
 			obj->routine += 2;
-			obj->pos.s.x = 0xD0 + (PLANE_WIDEADD << 2);
+			obj->pos.s.x = 0xD0 + (PLANE_WIDEADD * 4);
 			obj->pos.s.y = 0x130;
 			
 			//Set object drawing information
@@ -33,7 +33,7 @@ void Obj_PSB(Object *obj)
 					obj->tile.w = 0;
 					obj->tile.s.palette = 1;
 					obj->tile.s.pattern = 0x510;
-					obj->pos.s.x = 0x170 + (PLANE_WIDEADD << 2);
+					obj->pos.s.x = 0x170 + (PLANE_WIDEADD * 4);
 					obj->pos.s.y = 0xF8;
 				}
 				else if (obj->frame == 2)

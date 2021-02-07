@@ -7,6 +7,7 @@ set(BACKEND "SDL2" CACHE STRING "Which backend to use (SDL2)")
 option(REV01 "Compile REV01 ROM" ON)
 option(JAPANESE "Compile Japanese ROM" OFF)
 option(FIX_BUGS "Fix bugs (completely screwed up code, not gameplay bugs)" OFF)
+option(SPLASH "Enable the SSRG splash screen (for my own demo releases)" OFF)
 
 option(SANITIZE "Enable sanitization" OFF)
 option(LTO "Enable link-time optimization" OFF)
@@ -237,6 +238,24 @@ endif()
 # Sanitization
 if(SANITIZE)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Og -ggdb3 -fsanitize=address")
+endif()
+
+# Splash
+if(SPLASH)
+	target_compile_definitions(SoniCPort PRIVATE SCP_SPLASH)
+	target_sources(SoniCPort PRIVATE
+		"src/GM_SSRG.c"
+		"src/GM_SSRG.h"
+	)
+	list(APPEND RESOURCES
+		"SSRG/ArtLink"
+		"SSRG/ArtMain"
+		"SSRG/ArtSonic"
+		"SSRG/ArtSquare"
+		"SSRG/MapLink"
+		"SSRG/MapMain"
+		"SSRG/MapSquare"
+	)
 endif()
 
 # Strip release builds

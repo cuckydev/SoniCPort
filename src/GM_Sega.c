@@ -87,5 +87,9 @@ void GM_Sega()
 	} while (!(jpad1_press1 & JPAD_START));
 	
 	//Start title gamemode
-	gamemode = GameMode_Title;
+	#ifdef SCP_SPLASH
+		gamemode = GameMode_SSRG;
+	#else
+		gamemode = GameMode_Title;
+	#endif
 }

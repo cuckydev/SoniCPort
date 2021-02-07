@@ -11,6 +11,9 @@
 #include "GM_Sega.h"
 #include "GM_Title.h"
 #include "GM_Level.h"
+#ifdef SCP_SPLASH
+	#include "GM_SSRG.h"
+#endif
 
 //Game
 uint8_t gamemode; //MSB acts as a title card flag
@@ -69,6 +72,11 @@ void EntryPoint()
 			case GameMode_Demo:
 				GM_Level();
 				break;
+		#ifdef SCP_SPLASH
+			case GameMode_SSRG:
+				GM_SSRG();
+				break;
+		#endif
 			default:
 				VDPSetupGame();
 				gamemode = GameMode_Sega;
@@ -88,6 +96,9 @@ void WriteVRAMBuffers()
 		VDP_WriteCRAM(0, &wet_palette[0][0], 0x40);
 	else
 		VDP_WriteCRAM(0, &dry_palette[0][0], 0x40);
+	//srand(0);
+	//for (int i = 0; i < 0x40; i++)
+	//	VDP_FillCRAM(i, rand() & 0xEEE, 1);
 	
 	//Copy buffers
 	VDP_WriteVRAM(VRAM_SPRITES, (const uint8_t*)sprite_buffer, sizeof(sprite_buffer));

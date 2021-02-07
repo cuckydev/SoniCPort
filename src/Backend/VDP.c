@@ -249,7 +249,7 @@ uint8_t *VDP_GetPatternAddress(size_t pattern)
 	#ifdef VDP_SANITY
 	if (pattern >= (VRAM_SIZE >> 5))
 	{
-		printf("VDP_GetPatternAddress: Out-of-bounds");
+		puts("VDP_GetPatternAddress: Out-of-bounds");
 		return vdp_vram;
 	}
 	#endif
