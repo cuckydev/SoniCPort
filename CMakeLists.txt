@@ -126,6 +126,8 @@ set(RESOURCES
 	"Palette/SSResults"
 	"Palette/Continue"
 	"Palette/Ending"
+	"Palette/Sega1"
+	"Palette/Sega2"
 	"Palette/TitleCycle"
 	"Palette/GHZCycle"
 	

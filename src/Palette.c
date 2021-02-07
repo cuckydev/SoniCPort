@@ -19,7 +19,7 @@ PaletteFade palette_fade;
 
 //Palettes
 static ALIGNED2 const uint8_t pal_sega_bg[] = {
-	#include <Resource/Palette/SegaBackground.h>
+	#include <Resource/Palette/SegaBG.h>
 };
 static ALIGNED2 const uint8_t pal_title[] = {
 	#include <Resource/Palette/Title.h>
