@@ -215,6 +215,7 @@ set(RESOURCES
 )
 
 target_include_directories(SoniCPort PRIVATE "src")
+target_include_directories(SoniCPort PRIVATE "lib")
 
 ##################
 # Compiler flags #

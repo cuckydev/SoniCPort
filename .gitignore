@@ -4,3 +4,8 @@
 
 # Exclude converted resources
 /src/Resource/
+
+# Exclude submodule libraries
+libs/build*/
+libs/download
+libs/install

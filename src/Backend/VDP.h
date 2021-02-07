@@ -33,7 +33,6 @@ typedef union
 	uint16_t w;
 } VDP_Tile;
 
-//TODO: figure out how to just convert to .w?
 #define TILE_TO_STRUCT(v)           \
 {                                   \
 	.s = {                          \
