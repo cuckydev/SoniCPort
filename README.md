@@ -13,7 +13,9 @@ Sonic the Hedgehog (1991, Sega Genesis / MegaDrive) C Port
 This project uses CMake, allowing it to be built with a range of compilers.
 
 Switch to the terminal and `cd` into this folder.
+
 Before doing anything else, you must download the libvgm sub-module.
+
 Install the sub-module with:
 ```
 git submodule update --init
