@@ -225,7 +225,7 @@ static struct VDP_SpriteCache
 	uint16_t pixels;
 } vdp_sprite_cache[SCREEN_HEIGHT];
 
-uint32_t VDP_GetColour(size_t index)
+static inline uint32_t VDP_GetColour(size_t index)
 {
 	#ifdef VDP_SANITY
 	if (index >= COLOURS)
@@ -244,7 +244,7 @@ uint32_t VDP_GetColour(size_t index)
 	return (col_level[r] << 24) | (col_level[g] << 16) | (col_level[b] << 8) | 0xFF;
 }
 
-uint8_t *VDP_GetPatternAddress(size_t pattern)
+static inline uint8_t *VDP_GetPatternAddress(size_t pattern)
 {
 	#ifdef VDP_SANITY
 	if (pattern >= (VRAM_SIZE >> 5))
@@ -295,7 +295,7 @@ uint8_t *VDP_GetPatternAddress(size_t pattern)
 	from--;                                      \
 }
 
-void VDP_DrawPlaneRow(uint32_t *to, uint8_t *tom, const VDP_Tile *plane, int16_t x, int16_t y)
+static inline void VDP_DrawPlaneRow(uint32_t *to, uint8_t *tom, const VDP_Tile *plane, int16_t x, int16_t y)
 {
 	//Get plane tile to use
 	size_t px = (x >> 3) % vdp_plane_w;
@@ -342,7 +342,7 @@ void VDP_DrawPlaneRow(uint32_t *to, uint8_t *tom, const VDP_Tile *plane, int16_t
 	}
 }
 
-void VDP_DrawSpriteRow(uint32_t *to, uint8_t *tom, const VDP_Sprite *sprite, int16_t y)
+static inline void VDP_DrawSpriteRow(uint32_t *to, uint8_t *tom, const VDP_Sprite *sprite, int16_t y)
 {
 	//Get sprite information
 	uint8_t and = sprite->tile.s.priority ? VDP_MASK_SPRITE : (VDP_MASK_PLANEPRI | VDP_MASK_SPRITE);

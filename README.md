@@ -6,14 +6,20 @@ Sonic the Hedgehog (1991, Sega Genesis / MegaDrive) C Port
 
 * SDL2 (if `COMPILE_SDL2` is set to ON)
 * pkg-config (for builds that require static-linkage)
+* libvgm (sub-module)
 
 ## Building
 
 This project uses CMake, allowing it to be built with a range of compilers.
 
 Switch to the terminal and `cd` into this folder.
-After that, generate the files for your build system with:
+Before doing anything else, you must download the libvgm sub-module.
+Install the sub-module with:
+```
+git submodule update --init
+```
 
+After that, generate the files for your build system with:
 ```
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 ```
@@ -41,7 +47,9 @@ cmake --build build --config Release
 ```
 
 ## Disclaimer
+
 This project is not endorsed by SEGA or Sonic Team.
 
 ## Credits
+
 Sonic Retro - Sonic 1 Disassembly
