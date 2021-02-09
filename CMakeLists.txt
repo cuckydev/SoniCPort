@@ -215,7 +215,6 @@ set(RESOURCES
 )
 
 target_include_directories(SoniCPort PRIVATE "src")
-target_include_directories(SoniCPort PRIVATE "lib")
 
 ##################
 # Compiler flags #
@@ -442,3 +441,4 @@ foreach(FILENAME IN LISTS RESOURCES)
 		)
 	target_sources(SoniCPort PRIVATE "${OUT_DIR}/${FILENAME}.h")
 endforeach()
+
