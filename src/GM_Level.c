@@ -117,7 +117,10 @@ void GM_Level()
 	
 	opl_routine = 0;
 	opl_screen = 0;
-	memset(opl_data, 0, sizeof(opl_data));
+	opl_ptr0 = NULL;
+	opl_ptr4 = NULL;
+	opl_ptr8 = NULL;
+	opl_ptrC = NULL;
 	
 	ss_angle = 0;
 	ss_rotate = 0;

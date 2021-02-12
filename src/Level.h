@@ -3,11 +3,6 @@
 #include "Object.h"
 #include "PLC.h"
 
-//Level constants
-#define RESERVED_OBJECTS 0x20
-#define LEVEL_OBJECTS    0x60
-#define OBJECTS          (RESERVED_OBJECTS + LEVEL_OBJECTS)
-
 //Level macros
 #define LEVEL_ID(zone, level) (((zone) << 8) | (level))
 #define LEVEL_ZONE(id)        ((id) >> 8)
@@ -120,8 +115,16 @@ extern Object objects[OBJECTS];
 extern Object *const player;
 extern Object *const level_objects;
 
-extern uint16_t opl_routine, opl_screen;
-extern uint8_t opl_data[0x10];
+extern uint16_t opl_routine;
+extern int16_t opl_screen;
+extern const uint8_t *opl_ptr0;
+extern const uint8_t *opl_ptr4;
+extern const uint8_t *opl_ptr8;
+extern const uint8_t *opl_ptrC;
+
+extern uint8_t objstate_left;
+extern uint8_t objstate_right;
+extern uint8_t objstate[0x100];
 
 extern int16_t obj31_ypos;
 extern uint8_t boss_status;

@@ -34,3 +34,10 @@
 
 //Helper macros
 #define POSITIVE_MOD(x, y) (((x) % (y) + (y)) % (y))
+
+//Resource include
+#ifdef SCP_REV00
+	#define RES_REV(x) <Resource/x##REV00.h>
+#else
+	#define RES_REV(x) <Resource/x##REV01.h>
+#endif

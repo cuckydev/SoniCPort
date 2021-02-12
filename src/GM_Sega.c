@@ -11,22 +11,13 @@
 #include <Backend/VDP.h>
 
 //SEGA art
-#ifdef SCP_REV00
-	static const uint8_t art_sega[] = {
-		#include <Resource/Art/SegaREV00.h>
-	};
-	static ALIGNED2 const uint8_t map_sega[] = {
-		#include <Resource/Tilemap/SegaREV00.h>
-	};
-#else
-	static const uint8_t art_sega[] = {
-		#include <Resource/Art/SegaREV01.h>
-		,0,
-	};
-	static ALIGNED2 const uint8_t map_sega[] = {
-		#include <Resource/Tilemap/SegaREV01.h>
-	};
-#endif
+static const uint8_t art_sega[] = {
+	#include RES_REV(Art/Sega)
+	,0,
+};
+static ALIGNED2 const uint8_t map_sega[] = {
+	#include RES_REV(Tilemap/Sega)
+};
 
 //SEGA gamemode
 void GM_Sega()

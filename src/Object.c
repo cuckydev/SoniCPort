@@ -9,16 +9,24 @@
 //Object draw queue
 struct SpriteQueue
 {
-	uint8_t size;
+	uint32_t size;
 	Object *obj[0x3F];
 } sprite_queue[8];
 
-//Object execution
-#ifndef SCP_FIX_BUGS
-	#define Obj_Null ObjectFall //Thats right, all null objects point to ObjectFall
-#else
-	#define Obj_Null DeleteObject //Which is so ridiculously stupid, it has to be a mistake
-#endif
+//Object indices
+//#ifndef SCP_FIX_BUGS
+//	#define Obj_Null ObjectFall //Thats right, all null objects point to ObjectFall
+//#else
+	void Obj_Null(Object *obj)
+	{
+		if (obj->respawn_index)
+			objstate[obj->respawn_index] &= 0x7F;
+		DeleteObject(obj);
+	}
+//#endif
+//Don't re-enable this until all objects are implemented
+//...Trust me
+
 void Obj_Sonic(Object *obj);
 void Obj_TitleSonic(Object *obj);
 void Obj_PSB(Object *obj);
@@ -170,6 +178,25 @@ static void (*object_func[])(Object*) = {
 	/* ObjId_8C           */ Obj_Null,
 };
 
+//Object functions
+Object *FindFreeObj()
+{
+	Object *obj = level_objects;
+	for (int i = 0; i < LEVEL_OBJECTS; i++, obj++)
+		if (obj->type == ObjId_Null)
+			return obj;
+	return NULL; //Original would return the address at the end of object space, I believe
+}
+
+
+Object *FindNextFreeObj(Object *obj)
+{
+	for (; (obj - objects) < OBJECTS; obj++)
+		if (obj->type == ObjId_Null)
+			return obj;
+	return NULL; //Original would return the address at the end of object space, I believe
+}
+
 void ExecuteObjects()
 {
 	//TODO: checks Sonic's routine
@@ -178,12 +205,7 @@ void ExecuteObjects()
 	for (int i = 0; i < OBJECTS; i++, obj++)
 	{
 		if (obj->type != 0)
-		{
-			if (object_func[obj->type] != NULL)
-				object_func[obj->type](obj);
-			else
-				DeleteObject(obj);
-		}
+			object_func[obj->type](obj);
 	}
 }
 

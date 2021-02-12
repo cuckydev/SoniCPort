@@ -6,6 +6,11 @@
 #include <Types.h>
 #include <Backend/VDP.h>
 
+//Object constants
+#define RESERVED_OBJECTS 0x20
+#define LEVEL_OBJECTS    0x60
+#define OBJECTS          (RESERVED_OBJECTS + LEVEL_OBJECTS)
+
 //Object IDs
 typedef enum
 {
@@ -262,6 +267,8 @@ typedef struct
 } Object;
 
 //Object functions
+Object *FindFreeObj();
+Object *FindNextFreeObj(Object *obj);
 void ExecuteObjects();
 void BuildSprites();
 void AnimateSprite(Object *obj, const uint8_t *anim_script);

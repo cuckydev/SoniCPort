@@ -76,15 +76,9 @@ static const uint8_t layout_syz2[] = {
 static const uint8_t layout_syz3[] = {
 	#include <Resource/Layout/SYZ3.h>
 };
-#ifdef SCP_REV00
-	static const uint8_t layout_syzbg[] = {
-		#include <Resource/Layout/SYZBGREV00.h>
-	};
-#else
-	static const uint8_t layout_syzbg[] = {
-		#include <Resource/Layout/SYZBGREV01.h>
-	};
-#endif
+static const uint8_t layout_syzbg[] = {
+	#include RES_REV(Layout/SYZBG)
+};
 static const uint8_t layout_sbz1[] = {
 	#include <Resource/Layout/SBZ1.h>
 };
@@ -111,30 +105,18 @@ static const uint8_t map256_ghz[] = {
 static const uint8_t map256_lz[] = {
 	#include <Resource/Map256/LZ.h>
 };
-#ifdef SCP_REV00
-	static const uint8_t map256_mz[] = {
-		#include <Resource/Map256/MZREV00.h>
-	};
-#else
-	static const uint8_t map256_mz[] = {
-		#include <Resource/Map256/MZREV01.h>
-	};
-#endif
+static const uint8_t map256_mz[] = {
+	#include RES_REV(Map256/MZ)
+};
 static const uint8_t map256_slz[] = {
 	#include <Resource/Map256/SLZ.h>
 };
 static const uint8_t map256_syz[] = {
 	#include <Resource/Map256/SYZ.h>
 };
-#ifdef SCP_REV00
-	static const uint8_t map256_sbz[] = {
-		#include <Resource/Map256/SBZREV00.h>
-	};
-#else
-	static const uint8_t map256_sbz[] = {
-		#include <Resource/Map256/SBZREV01.h>
-	};
-#endif
+static const uint8_t map256_sbz[] = {
+	#include RES_REV(Map256/SBZ)
+};
 
 //16x16 mappings
 static const uint8_t map16_ghz[] = {
@@ -174,6 +156,104 @@ static const uint8_t coli_syz[] = {
 };
 static const uint8_t coli_sbz[] = {
 	#include <Resource/CollisionIndex/SBZ.h>
+};
+
+//Object positions
+static const uint8_t obj_ghz1[] = {
+	#include <Resource/ObjectLayout/GHZ1.h>
+};
+static const uint8_t obj_ghz2[] = {
+	#include <Resource/ObjectLayout/GHZ2.h>
+};
+static const uint8_t obj_ghz3[] = {
+	#include RES_REV(ObjectLayout/GHZ3)
+};
+static const uint8_t obj_lz1[] = {
+	#include RES_REV(ObjectLayout/LZ1)
+};
+static const uint8_t obj_lz1pf1[] = {
+	#include <Resource/ObjectLayout/LZ1PF1.h>
+};
+static const uint8_t obj_lz1pf2[] = {
+	#include <Resource/ObjectLayout/LZ1PF2.h>
+};
+static const uint8_t obj_lz2[] = {
+	#include <Resource/ObjectLayout/LZ2.h>
+};
+static const uint8_t obj_lz2pf1[] = {
+	#include <Resource/ObjectLayout/LZ2PF1.h>
+};
+static const uint8_t obj_lz2pf2[] = {
+	#include <Resource/ObjectLayout/LZ2PF2.h>
+};
+static const uint8_t obj_lz3[] = {
+	#include RES_REV(ObjectLayout/LZ3)
+};
+static const uint8_t obj_lz3pf1[] = {
+	#include <Resource/ObjectLayout/LZ3PF1.h>
+};
+static const uint8_t obj_lz3pf2[] = {
+	#include <Resource/ObjectLayout/LZ3PF2.h>
+};
+static const uint8_t obj_mz1[] = {
+	#include RES_REV(ObjectLayout/MZ1)
+};
+static const uint8_t obj_mz2[] = {
+	#include <Resource/ObjectLayout/MZ2.h>
+};
+static const uint8_t obj_mz3[] = {
+	#include <Resource/ObjectLayout/MZ3.h>
+};
+static const uint8_t obj_slz1[] = {
+	#include <Resource/ObjectLayout/SLZ1.h>
+};
+static const uint8_t obj_slz2[] = {
+	#include <Resource/ObjectLayout/SLZ2.h>
+};
+static const uint8_t obj_slz3[] = {
+	#include <Resource/ObjectLayout/SLZ3.h>
+};
+static const uint8_t obj_syz1[] = {
+	#include <Resource/ObjectLayout/SYZ1.h>
+};
+static const uint8_t obj_syz2[] = {
+	#include <Resource/ObjectLayout/SYZ2.h>
+};
+static const uint8_t obj_syz3[] = {
+	#include RES_REV(ObjectLayout/SYZ3)
+};
+static const uint8_t obj_sbz1[] = {
+	#include RES_REV(ObjectLayout/SBZ1)
+};
+static const uint8_t obj_sbz1pf1[] = {
+	#include <Resource/ObjectLayout/SBZ1PF1.h>
+};
+static const uint8_t obj_sbz1pf2[] = {
+	#include <Resource/ObjectLayout/SBZ1PF2.h>
+};
+static const uint8_t obj_sbz1pf3[] = {
+	#include <Resource/ObjectLayout/SBZ1PF3.h>
+};
+static const uint8_t obj_sbz1pf4[] = {
+	#include <Resource/ObjectLayout/SBZ1PF4.h>
+};
+static const uint8_t obj_sbz1pf5[] = {
+	#include <Resource/ObjectLayout/SBZ1PF5.h>
+};
+static const uint8_t obj_sbz1pf6[] = {
+	#include <Resource/ObjectLayout/SBZ1PF6.h>
+};
+static const uint8_t obj_sbz2[] = {
+	#include <Resource/ObjectLayout/SBZ2.h>
+};
+static const uint8_t obj_sbz3[] = {
+	#include <Resource/ObjectLayout/SBZ3.h>
+};
+static const uint8_t obj_fz[] = {
+	#include <Resource/ObjectLayout/FZ.h>
+};
+static const uint8_t obj_ending[] = {
+	#include <Resource/ObjectLayout/Ending.h>
 };
 
 //Level definitions
@@ -361,6 +441,54 @@ const uint8_t *level_coli[ZoneId_Num - 1] = {
 	coli_sbz,
 };
 
+//Level object layouts
+static const uint8_t obj_null[] = {0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00};
+
+const uint8_t *level_obj[ZoneId_Num][4][2] = {
+	{ //ZoneId_GHZ
+		{obj_ghz1, obj_null},
+		{obj_ghz2, obj_null},
+		{obj_ghz3, obj_null},
+		{obj_ghz1, obj_null},
+	},
+	{ //ZoneId_LZ
+		{obj_lz1,  obj_null},
+		{obj_lz2,  obj_null},
+		{obj_lz3,  obj_null},
+		{obj_sbz3, obj_null},
+	},
+	{ //ZoneId_MZ
+		{obj_mz1, obj_null},
+		{obj_mz2, obj_null},
+		{obj_mz3, obj_null},
+		{obj_mz1, obj_null},
+	},
+	{ //ZoneId_SLZ
+		{obj_slz1, obj_null},
+		{obj_slz2, obj_null},
+		{obj_slz3, obj_null},
+		{obj_slz1, obj_null},
+	},
+	{ //ZoneId_SYZ
+		{obj_syz1, obj_null},
+		{obj_syz2, obj_null},
+		{obj_syz3, obj_null},
+		{obj_syz1, obj_null},
+	},
+	{ //ZoneId_SBZ
+		{obj_sbz1, obj_null},
+		{obj_sbz2, obj_null},
+		{obj_fz,   obj_null},
+		{obj_sbz1, obj_null},
+	},
+	{ //ZoneId_EndZ
+		{obj_ending, obj_null},
+		{obj_ending, obj_null},
+		{obj_ending, obj_null},
+		{obj_ending, obj_null},
+	}
+};
+
 //Level state
 uint16_t level_id;
 
@@ -422,8 +550,16 @@ Object objects[OBJECTS];
 Object *const player = objects;
 Object *const level_objects = objects + RESERVED_OBJECTS;
 
-uint16_t opl_routine, opl_screen;
-uint8_t opl_data[0x10];
+uint16_t opl_routine;
+int16_t opl_screen;
+const uint8_t *opl_ptr0;
+const uint8_t *opl_ptr4;
+const uint8_t *opl_ptr8;
+const uint8_t *opl_ptrC;
+
+uint8_t objstate_left;
+uint8_t objstate_right;
+uint8_t objstate[0x100];
 
 int16_t obj31_ypos;
 uint8_t boss_status;
@@ -637,7 +773,181 @@ void DynamicLevelEvents()
 	}
 }
 
+//Level object loading
+#define LOAD_WIDTH (((SCREEN_WIDTH + 0x80) & ~0x7F) + 0x100) //I dunno
+
+static bool ChkLoadObj(uint8_t index, const uint8_t **entry)
+{
+	//Handle object state
+	if ((*entry)[4] & 0x80)
+	{
+		if (objstate[index] & 0x80)
+		{
+			//Object already loaded
+			*entry += 6;
+			return false;
+		}
+		else
+		{
+			//Object loaded, set flag
+			objstate[index] |= 0x80;
+		}
+	}
+	
+	//Load object
+	Object *obj = FindFreeObj();
+	if (obj == NULL)
+		return true; //Result from FindFreeObj, not d0
+	
+	obj->pos.l.x.f.u = (*(*entry)++ << 8) | (*(*entry)++ << 0);
+	
+	uint16_t w1 = (*(*entry)++ << 8) | (*(*entry)++ << 0);
+	obj->pos.l.y.f.u = w1 & 0xFFF;
+	obj->render.b = 0;
+	obj->status.o.b = 0;
+	obj->render.f.x_flip = obj->status.o.f.x_flip = w1 >> 13;
+	obj->render.f.y_flip = obj->status.o.f.y_flip = w1 >> 14;
+	
+	uint8_t b4 = *(*entry)++;
+	if (b4 & 0x80)
+		obj->respawn_index = index;
+	obj->type = b4 & 0x7F;
+	
+	obj->scratch.u8[0] = *(*entry)++; //Subtype
+	
+	return false;
+}
+
 void ObjPosLoad()
 {
+	const uint8_t *entry;
 	
+	switch (opl_routine)
+	{
+		case 0: //Initialization
+		{
+			//Increment routine
+			opl_routine += 2;
+			
+			//Initialize state
+			opl_ptr0 = level_obj[LEVEL_ZONE(level_id)][LEVEL_ACT(level_id)][0];
+			opl_ptr4 = level_obj[LEVEL_ZONE(level_id)][LEVEL_ACT(level_id)][0];
+			opl_ptr8 = level_obj[LEVEL_ZONE(level_id)][LEVEL_ACT(level_id)][1];
+			opl_ptrC = level_obj[LEVEL_ZONE(level_id)][LEVEL_ACT(level_id)][1];
+			
+			objstate_left = 1;
+			objstate_right = 1;
+			memset(objstate, 0, sizeof(objstate));
+			
+			//Load immediately on-screen objects
+			int16_t load_x = (scrpos_x.f.u - 0x80) & ~0x7F;
+			if (load_x < 0)
+				load_x = 0;
+			
+			entry = opl_ptr0;
+			while (load_x > ((entry[0] << 8) | (entry[1] << 0)))
+			{
+				if (entry[4] & 0x80)
+					objstate_right++;
+				entry += 6;
+			}
+			opl_ptr0 = entry;
+			
+			entry = opl_ptr4;
+			if ((load_x -= 0x80) >= 0)
+			{
+				while (load_x > ((entry[0] << 8) | (entry[1] << 0)))
+				{
+					if (entry[4] & 0x80)
+						objstate_left++;
+					entry += 6;
+				}
+			}
+			opl_ptr4 = entry;
+			
+			opl_screen = -1;
+		}
+	//Fallthrough
+		case 2: //Main
+		{
+			//Check if screen has scrolled and load objects
+			uint8_t index = 0;
+			
+			int16_t load_x = scrpos_x.f.u & ~0x7F;
+			
+			if (load_x < opl_screen)
+			{
+				//Moving left
+				opl_screen = load_x;
+				
+				//Load objects
+				entry = opl_ptr4;
+				if ((load_x -= 0x80) >= 0)
+				{
+					while (load_x < (int16_t)((entry[-6] << 8) | (entry[-5] << 0)))
+					{
+						entry -= 6;
+						if (entry[4] & 0x80)
+							index = objstate_left--;
+						
+						//Load object
+						if (!ChkLoadObj(index, &entry))
+						{
+							entry -= 6;
+						}
+						else
+						{
+							if (entry[4] & 0x80)
+								objstate_left++;
+							entry += 6;
+							break;
+						}
+					}
+				}
+				opl_ptr4 = entry;
+				
+				//Move right pointer
+				entry = opl_ptr0;
+				load_x += 0x80 + LOAD_WIDTH;
+				while (load_x <= ((entry[-6] << 8) | (entry[-5] << 0)))
+				{
+					if (entry[-2] & 0x80)
+						objstate_right--;
+					entry -= 6;
+				}
+				opl_ptr0 = entry;
+			}
+			else if (load_x > opl_screen)
+			{
+				//Moving right
+				opl_screen = load_x;
+				
+				//Load objects
+				entry = opl_ptr0;
+				load_x += LOAD_WIDTH;
+				while (load_x > ((entry[0] << 8) | (entry[1] << 0)))
+				{
+					if (entry[4] & 0x80)
+						index = objstate_right++;
+					
+					//Load object
+					if (ChkLoadObj(index, &entry))
+						break;
+				}
+				opl_ptr0 = entry;
+				
+				//Move left pointer
+				entry = opl_ptr4;
+				load_x -= 0x80 + LOAD_WIDTH;
+				while (load_x > ((entry[0] << 8) | (entry[1] << 0)))
+				{
+					if (entry[4] & 0x80)
+						objstate_left++;
+					entry += 6;
+				}
+				opl_ptr4 = entry;
+			}
+			break;
+		}
+	}
 }
