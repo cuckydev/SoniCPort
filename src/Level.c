@@ -586,6 +586,29 @@ LevelAnim sprite_anim[4];
 
 Oscillatory oscillatory;
 
+//Game functions
+void AddPoints(uint16_t points)
+{
+	#ifdef SCP_REV00
+		//TODO
+	#else
+		//Increase score
+		if ((score += points) >= 999999)
+			score = 999999;
+		
+		//Check if we should be rewarded an extra life
+		if (score >= score_life)
+		{
+			score_life += 5000;
+			#ifndef SCP_JP
+				lives++;
+				life_count++;
+				//music	bgm_ExtraLife,1,0,0 //TODO
+			#endif
+		}
+	#endif
+}
+
 //Level loading
 void LoadLevelMaps()
 {
@@ -888,7 +911,7 @@ void ObjPosLoad()
 					{
 						entry -= 6;
 						if (entry[4] & 0x80)
-							index = objstate_left--;
+							index = --objstate_left;
 						
 						//Load object
 						if (!ChkLoadObj(index, &entry))

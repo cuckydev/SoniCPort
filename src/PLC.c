@@ -41,6 +41,9 @@ const uint8_t art_sbz[] = {
 };
 
 //Object art
+static const uint8_t art_explosion[] = {
+	#include <Resource/Art/Explosion.h>
+};
 static const uint8_t art_game_over[] = {
 	#include <Resource/Art/GameOver.h>
 };
@@ -123,10 +126,9 @@ static const PLCList PLC_Main2 = {
 };
 
 static const PLCList PLC_Explode = {
-	0,
+	1,
 	(const PLC[]){
-		{NULL, 0}, //ISO C forbids empty initializer braces
-		//plcm	Nem_Explode, $B400	; explosion
+		{art_explosion, 0xB400},
 	}
 };
 

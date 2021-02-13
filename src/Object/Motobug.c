@@ -44,7 +44,7 @@ void Obj_Motobug(Object *obj)
 				//Initialize collision
 				obj->y_rad = 14;
 				obj->x_rad = 8;
-				obj->col_type = 0xC;
+				obj->col_type = 0x0C;
 				
 				//Fall before enabling
 				ObjectFall(obj);
@@ -87,7 +87,7 @@ void Obj_Motobug(Object *obj)
 					SpeedToPos(obj);
 					floor_dist = ObjFloorDist(obj, obj->pos.l.x.f.u);
 					
-					if (floor_dist >= -8 && floor_dist < 14)
+					if (floor_dist >= -8 && floor_dist < 12)
 					{
 						//Clip
 						obj->pos.l.y.f.u += floor_dist;
@@ -120,6 +120,8 @@ void Obj_Motobug(Object *obj)
 					}
 					break;
 			}
+			
+			//Animate, draw, and unload when off-screen
 			AnimateSprite(obj, anim_motobug);
 			RememberState(obj);
 			break;

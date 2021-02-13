@@ -151,6 +151,9 @@ extern LevelAnim sprite_anim[4];
 
 extern Oscillatory oscillatory;
 
+//Game functions
+void AddPoints(uint16_t points);
+
 //Level functions
 void LoadLevelMaps();
 void LoadLevelLayout();

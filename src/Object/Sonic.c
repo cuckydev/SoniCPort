@@ -24,7 +24,7 @@ uint8_t sgfx_buffer[SONIC_DPLC_SIZE];
 int16_t track_sonic[0x40][2];
 word_u track_pos;
 
-uint8_t dbg_ang0, dbg_ang1, dbg_ang2, dbg_ang3; //$FFEC-$FFEF
+uint8_t dbg_ang0, dbg_ang1, dbg_ang2, dbg_ang3; //0xFFEC-0xFFEF
 
 //General Sonic state stuff
 static void Sonic_Display(Object *obj)
@@ -666,7 +666,227 @@ static void Sonic_Floor(Object *obj)
 	}
 }
 
+//Object collision
+static const uint8_t obj_sizes[][2] = {
+	{ 0x0,  0x0},
+	{0x14, 0x14},
+	{ 0xC, 0x14},
+	{0x14,  0xC},
+	{ 0x4, 0x10},
+	{ 0xC, 0x12},
+	{0x10, 0x10},
+	{ 0x6,  0x6},
+	{0x18,  0xC},
+	{ 0xC, 0x10},
+	{0x10,  0xC},
+	{ 0x8,  0x8},
+	{0x14, 0x10},
+	{0x14,  0x8},
+	{ 0xE,  0xE},
+	{0x18, 0x18},
+	{0x28, 0x10},
+	{0x10, 0x18},
+	{ 0x8, 0x10},
+	{0x20, 0x70},
+	{0x40, 0x20},
+	{0x80, 0x20},
+	{0x20, 0x20},
+	{ 0x8,  0x8},
+	{ 0x4,  0x4},
+	{0x20,  0x8},
+	{ 0xC,  0xC},
+	{ 0x8,  0x4},
+	{0x18,  0x4},
+	{0x28,  0x4},
+	{ 0x4,  0x8},
+	{ 0x4, 0x18},
+	{ 0x4, 0x28},
+	{ 0x4, 0x20},
+	{0x18, 0x18},
+	{ 0xC, 0x18},
+	{0x48,  0x8},
+};
+
+static int React_ChkHurt(Object *obj, Object *hit)
+{
+	Scratch_Sonic *scratch = (Scratch_Sonic*)&obj->scratch;
+	
+	//Check for invincibility or invulnerability
+	if (invincibility)
+		return -1;
+	if (scratch->flash_time)
+		return -1;
+	
+	//Hurt Sonic
+	return HurtSonic(obj, hit);
+}
+
+static int React_Enemy(Object *obj, Object *hit)
+{
+	//Check if we can hurt the enemy
+	if (!(invincibility || obj->anim == SonAnimId_Roll))
+		return React_ChkHurt(obj, hit);
+	
+	//Check if enemy is a boss
+	if (hit->col_property)
+	{
+		//Hit boss
+		obj->xsp = -obj->xsp >> 1;
+		obj->ysp = -obj->ysp >> 1;
+		hit->col_type = 0;
+		if (!(--hit->col_property))
+			hit->status.o.f.flag7 = true;
+		return 0; //d0 not set
+	}
+	else
+	{
+		//Mark enemy touch flag
+		hit->status.o.f.flag7 = true;
+		
+		//Increment bonus
+		uint8_t bonus = item_bonus;
+		item_bonus += 2;
+		
+		//Handle score bonus
+		if (bonus >= 6)
+			bonus = bonus;
+		hit->scratch.u16[0xB] = bonus;
+		
+		static const uint16_t points[] = {10, 20, 50, 100};
+		uint16_t point_bonus = points[bonus >> 1];
+		if (item_bonus >= 32) //16 enemies destroyed
+		{
+			point_bonus = 1000;
+			hit->scratch.u16[0xB] = 10;
+		}
+		
+		AddPoints(point_bonus);
+		
+		//Explode object and bounce
+		hit->type = ObjId_Explosion;
+		hit->routine = 0;
+		
+		if (obj->ysp >= 0)
+		{
+			if (obj->pos.l.y.f.u < hit->pos.l.y.f.u)
+				obj->ysp = -obj->ysp;
+			else
+				obj->ysp -= 0x100;
+			return (uint16_t)obj->pos.l.y.f.u; //d0 is set to obj->pos.l.y.f.u
+		}
+		else
+		{
+			obj->ysp += 0x100;
+			return 0; //d0 not set
+		}
+	}
+}
+
+static int ReactToItem(Object *obj)
+{
+	//Get collision area
+	int16_t width, height;
+	int16_t x = obj->pos.l.x.f.u - 8;
+	int16_t y = obj->pos.l.y.f.u - (height = (uint8_t)(obj->y_rad - 3));
+	
+	if (obj->frame == 0x39) //Ducking
+	{
+		//Smaller hitbox when ducking
+		y += 12;
+		height = 10;
+	}
+	width = 16;
+	height <<= 1;
+	
+	//Iterate through level objects
+	Object *hit = level_objects;
+	for (int i = 0; i < LEVEL_OBJECTS; i++, hit++)
+	{
+		//Check if object is collidable
+		if (!(hit->render.f.on_screen && hit->col_type))
+			continue;
+		
+		//Get object's size
+		const uint8_t *sizep = obj_sizes[hit->col_type & 0x3F];
+		uint8_t hit_width = *sizep++;
+		uint8_t hit_height = *sizep++;
+		
+		//Check if we're touching (TODO: may be inaccurate)
+		int16_t x_diff = x - (hit->pos.l.x.f.u - hit_width);
+		int16_t y_diff = y - (hit->pos.l.y.f.u - hit_height);
+		
+		if (x_diff >= -width && x_diff <= hit_width * 2 && y_diff >= -height && y_diff <= hit_height * 2)
+		{
+			//Made contact
+			switch (hit->col_type & 0xC0)
+			{
+				case 0x00: //Enemy
+					return React_Enemy(obj, hit);
+				case 0xC0: //Special
+					break;
+				case 0x80: //Hurt
+					return React_ChkHurt(obj, hit);
+				case 0x40: //Other
+					break;
+			}
+		}
+	}
+	return 0;
+}
+
 //Sonic functions
+int HurtSonic(Object *obj, Object *src)
+{
+	Scratch_Sonic *scratch = (Scratch_Sonic*)&obj->scratch;
+	
+	//Lose rings and shield
+	if (!shield)
+	{
+		if (rings)
+		{
+			//Spawn lost rings object
+			Object *rings = FindFreeObj();
+			if (rings != NULL)
+			{
+				rings->type = ObjId_RingLoss;
+				rings->pos.l.x.f.u = obj->pos.l.x.f.u;
+				rings->pos.l.y.f.u = obj->pos.l.y.f.u;
+			}
+		}
+		else
+		{
+			//Die
+			return KillSonic(obj, src);
+		}
+	}
+	shield = 0;
+	
+	//Set Sonic state
+	obj->routine = 4;
+	Sonic_ResetOnFloor(obj);
+	obj->status.p.f.in_air = true;
+	
+	obj->xsp = obj->status.p.f.underwater ? -0x100 : -0x200;
+	obj->ysp = obj->status.p.f.underwater ? -0x200 : -0x400;
+	if (obj->pos.l.x.f.u >= src->pos.l.x.f.u)
+		obj->xsp = -obj->xsp;
+	obj->inertia = 0;
+	
+	obj->anim = SonAnimId_Hurt;
+	scratch->flash_time = 120;
+	
+	//move.w	#sfx_Death,d0	; load normal damage sound
+	//cmpi.b	#id_Spikes,(a2)	; was damage caused by spikes?
+	//bne.s	@sound		; if not, branch
+	//cmpi.b	#id_Harpoon,(a2) ; was damage caused by LZ harpoon?
+	//bne.s	@sound		; if not, branch
+	//move.w	#sfx_HitSpikes,d0 ; load spikes damage sound
+	//
+	//@sound:
+	//jsr	(PlaySound_Special).l //TODO
+	return -1;
+}
+
 int KillSonic(Object *obj, Object *src)
 {
 	(void)src;
@@ -1530,7 +1750,9 @@ void Obj_Sonic(Object *obj)
 			}
 			Sonic_Animate(obj);
 			
-			//Handle loops
+			//Handle object and loop interaction
+			if (!(lock_multi & 0x80))
+				ReactToItem(obj);
 			Sonic_Loops(obj);
 			
 			//Handle DPLCs

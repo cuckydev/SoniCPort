@@ -48,13 +48,13 @@ typedef enum
 	ObjId_1F,           //1F
 	ObjId_20,           //20
 	ObjId_21,           //21
-	ObjId_22,           //22
-	ObjId_23,           //23
-	ObjId_24,           //24
+	ObjId_BuzzBomber,   //22
+	ObjId_BuzzMissile,  //23
+	ObjId_BuzzExplode,  //24
 	ObjId_25,           //25
 	ObjId_26,           //26
-	ObjId_27,           //27
-	ObjId_28,           //28
+	ObjId_Explosion,    //27
+	ObjId_Animal,       //28
 	ObjId_29,           //29
 	ObjId_2A,           //2A
 	ObjId_2B,           //2B
@@ -69,7 +69,7 @@ typedef enum
 	ObjId_TitleCard,    //34
 	ObjId_35,           //35
 	ObjId_36,           //36
-	ObjId_37,           //37
+	ObjId_RingLoss,     //37
 	ObjId_38,           //38
 	ObjId_GameOverCard, //39
 	ObjId_3A,           //3A

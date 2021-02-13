@@ -30,6 +30,10 @@ struct SpriteQueue
 void Obj_Sonic(Object *obj);
 void Obj_TitleSonic(Object *obj);
 void Obj_PSB(Object *obj);
+void Obj_BuzzBomber(Object *obj);
+void Obj_BuzzMissile(Object *obj);
+void Obj_BuzzExplode(Object *obj);
+void Obj_Explosion(Object *obj);
 void Obj_TitleCard(Object *obj);
 void Obj_GameOverCard(Object *obj);
 void Obj_Motobug(Object *obj);
@@ -70,13 +74,13 @@ static void (*object_func[])(Object*) = {
 	/* ObjId_1F           */ Obj_Null,
 	/* ObjId_20           */ Obj_Null,
 	/* ObjId_21           */ Obj_Null,
-	/* ObjId_22           */ Obj_Null,
-	/* ObjId_23           */ Obj_Null,
-	/* ObjId_24           */ Obj_Null,
+	/* ObjId_BuzzBomber   */ Obj_BuzzBomber,
+	/* ObjId_BuzzMissile  */ Obj_BuzzMissile,
+	/* ObjId_BuzzExplode  */ Obj_BuzzExplode,
 	/* ObjId_25           */ Obj_Null,
 	/* ObjId_26           */ Obj_Null,
-	/* ObjId_27           */ Obj_Null,
-	/* ObjId_28           */ Obj_Null,
+	/* ObjId_Explosion    */ Obj_Explosion,
+	/* ObjId_Animal       */ Obj_Null,
 	/* ObjId_29           */ Obj_Null,
 	/* ObjId_2A           */ Obj_Null,
 	/* ObjId_2B           */ Obj_Null,
@@ -91,7 +95,7 @@ static void (*object_func[])(Object*) = {
 	/* ObjId_TitleCard    */ Obj_TitleCard,
 	/* ObjId_35           */ Obj_Null,
 	/* ObjId_36           */ Obj_Null,
-	/* ObjId_37           */ Obj_Null,
+	/* ObjId_RingLoss     */ Obj_Null,
 	/* ObjId_38           */ Obj_Null,
 	/* ObjId_GameOverCard */ Obj_GameOverCard,
 	/* ObjId_3A           */ Obj_Null,
@@ -200,13 +204,28 @@ Object *FindNextFreeObj(Object *obj)
 
 void ExecuteObjects()
 {
-	//TODO: checks Sonic's routine
-	//Run all objects
-	Object *obj = objects;
-	for (int i = 0; i < OBJECTS; i++, obj++)
+	Object *obj;
+	
+	if (player->routine < 6)
 	{
-		if (obj->type != 0)
-			object_func[obj->type](obj);
+		//Run all objects
+		obj = objects;
+		for (int i = 0; i < OBJECTS; i++, obj++)
+			if (obj->type)
+				object_func[obj->type](obj);
+	}
+	else
+	{
+		//Run reserved objects
+		obj = objects;
+		for (int i = 0; i < RESERVED_OBJECTS; i++, obj++)
+			if (obj->type)
+				object_func[obj->type](obj);
+		
+		//Draw level objects
+		for (int i = 0; i < LEVEL_OBJECTS; i++, obj++)
+			if (obj->type && obj->render.f.on_screen)
+				DisplaySprite(obj);
 	}
 }
 

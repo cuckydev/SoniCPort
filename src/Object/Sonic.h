@@ -81,4 +81,5 @@ typedef enum
 } SonAnimId;
 
 //Sonic functions
+int HurtSonic(Object *obj, Object *src);
 int KillSonic(Object *obj, Object *src);
