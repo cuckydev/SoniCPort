@@ -78,7 +78,7 @@ typedef enum
 	ObjId_3D,           //3D
 	ObjId_3E,           //3E
 	ObjId_3F,           //3F
-	ObjId_40,           //40
+	ObjId_Motobug,      //40
 	ObjId_41,           //41
 	ObjId_42,           //42
 	ObjId_43,           //43
@@ -244,7 +244,7 @@ typedef struct
 		int8_t b;
 		int16_t w;
 	} frame_time;         //Frame duration remaining
-	uint8_t col_response; //Collision response
+	uint8_t col_type;     //Collision type
 	uint8_t col_property; //Collision property (object-specific)
 	union
 	{
@@ -276,3 +276,4 @@ void DisplaySprite(Object *obj);
 void DeleteObject(Object *obj);
 void SpeedToPos(Object *obj);
 void ObjectFall(Object *obj);
+void RememberState(Object *obj);

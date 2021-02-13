@@ -4,6 +4,7 @@
 #include "Level.h"
 #include "PLC.h"
 
+//Game Over card assets
 static const uint8_t map_game_over[] = {
 	#include <Resource/Mappings/GameOver.h>
 };

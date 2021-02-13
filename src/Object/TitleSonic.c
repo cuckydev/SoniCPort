@@ -1,5 +1,6 @@
 #include "Object.h"
 
+//Title Sonic assets
 static const uint8_t anim_titlesonic[] = {
 	#include <Resource/Animation/TitleSonic.h>
 };
@@ -8,6 +9,7 @@ static const uint8_t map_titlesonic[] = {
 	#include <Resource/Mappings/TitleSonic.h>
 };
 
+//Title Sonic object
 void Obj_TitleSonic(Object *obj)
 {
 	switch (obj->routine)

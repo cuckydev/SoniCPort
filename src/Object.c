@@ -32,6 +32,7 @@ void Obj_TitleSonic(Object *obj);
 void Obj_PSB(Object *obj);
 void Obj_TitleCard(Object *obj);
 void Obj_GameOverCard(Object *obj);
+void Obj_Motobug(Object *obj);
 void Obj_Credits(Object *obj);
 
 static void (*object_func[])(Object*) = {
@@ -99,7 +100,7 @@ static void (*object_func[])(Object*) = {
 	/* ObjId_3D           */ Obj_Null,
 	/* ObjId_3E           */ Obj_Null,
 	/* ObjId_3F           */ Obj_Null,
-	/* ObjId_40           */ Obj_Null,
+	/* ObjId_Motobug      */ Obj_Motobug,
 	/* ObjId_41           */ Obj_Null,
 	/* ObjId_42           */ Obj_Null,
 	/* ObjId_43           */ Obj_Null,
@@ -558,4 +559,22 @@ void ObjectFall(Object *obj)
 	obj->pos.l.x.v += obj->xsp << 8;
 	obj->pos.l.y.v += obj->ysp << 8;
 	obj->ysp += 0x38;
+}
+
+void RememberState(Object *obj)
+{
+	int16_t ox = obj->pos.l.x.f.u & ~0x7F;
+	int16_t sx = (scrpos_x.f.u - 0x80) & ~0x7F;
+	if ((uint16_t)(ox - sx) > (((SCREEN_WIDTH + 0x80) & ~0x7F) + 0x100))
+	{
+		//Off-screen
+		if (obj->respawn_index)
+			objstate[obj->respawn_index] &= 0x7F;
+		DeleteObject(obj);
+	}
+	else
+	{
+		//On-screen
+		DisplaySprite(obj);
+	}
 }

@@ -41,8 +41,56 @@ const uint8_t art_sbz[] = {
 };
 
 //Object art
-const uint8_t art_game_over[] = {
+static const uint8_t art_game_over[] = {
 	#include <Resource/Art/GameOver.h>
+};
+static const uint8_t art_ghz_stalk[] = {
+	#include <Resource/Art/GHZStalk.h>
+};
+static const uint8_t art_ghz_rock[] = {
+	#include <Resource/Art/GHZRock.h>
+};
+static const uint8_t art_crabmeat[] = {
+	#include <Resource/Art/Crabmeat.h>
+};
+static const uint8_t art_buzz_bomber[] = {
+	#include <Resource/Art/BuzzBomber.h>
+};
+static const uint8_t art_chopper[] = {
+	#include <Resource/Art/Chopper.h>
+};
+static const uint8_t art_newtron[] = {
+	#include <Resource/Art/Newtron.h>
+};
+static const uint8_t art_motobug[] = {
+	#include <Resource/Art/Motobug.h>
+};
+static const uint8_t art_spikes[] = {
+	#include <Resource/Art/Spikes.h>
+};
+static const uint8_t art_springh[] = {
+	#include <Resource/Art/SpringH.h>
+};
+static const uint8_t art_springv[] = {
+	#include <Resource/Art/SpringV.h>
+};
+static const uint8_t art_ghz_swing[] = {
+	#include <Resource/Art/GHZSwing.h>
+};
+static const uint8_t art_ghz_bridge[] = {
+	#include <Resource/Art/GHZBridge.h>
+};
+static const uint8_t art_ghz_log[] = {
+	#include <Resource/Art/GHZLog.h>
+};
+static const uint8_t art_ghz_ball[] = {
+	#include <Resource/Art/GHZBall.h>
+};
+static const uint8_t art_ghz_wall1[] = {
+	#include <Resource/Art/GHZWall1.h>
+};
+static const uint8_t art_ghz_wall2[] = {
+	#include <Resource/Art/GHZWall2.h>
 };
 
 //PLC lists
@@ -90,33 +138,32 @@ static const PLCList PLC_GameOver = {
 };
 
 static const PLCList PLC_GHZ = {
-	2,
+	12,
 	(const PLC[]){
 		{art_ghz1, 0x0000},
 		{art_ghz2, 0x39A0},
-		//plcm	Nem_Stalk, $6B00	; flower stalk
-		//plcm	Nem_PplRock, $7A00	; purple rock
-		//plcm	Nem_Crabmeat, $8000	; crabmeat enemy
-		//plcm	Nem_Buzz, $8880		; buzz bomber enemy
-		//plcm	Nem_Chopper, $8F60	; chopper enemy
-		//plcm	Nem_Newtron, $9360	; newtron enemy
-		//plcm	Nem_Motobug, $9E00	; motobug enemy
-		//plcm	Nem_Spikes, $A360	; spikes
-		//plcm	Nem_HSpring, $A460	; horizontal spring
-		//plcm	Nem_VSpring, $A660	; vertical spring
+		{art_ghz_stalk, 0x6B00},
+		{art_ghz_rock, 0x7A00},
+		{art_crabmeat, 0x8000},
+		{art_buzz_bomber, 0x8880},
+		{art_chopper, 0x8F60},
+		{art_newtron, 0x9360},
+		{art_motobug, 0x9E00},
+		{art_spikes, 0xA360},
+		{art_springh, 0xA460},
+		{art_springv, 0xA660},
 	}
 };
 
 static const PLCList PLC_GHZ2 = {
-	0,
+	6,
 	(const PLC[]){
-		{NULL, 0}, //ISO C forbids empty initializer braces
-		//plcm	Nem_Swing, $7000	; swinging platform
-		//plcm	Nem_Bridge, $71C0	; bridge
-		//plcm	Nem_SpikePole, $7300	; spiked pole
-		//plcm	Nem_Ball, $7540		; giant	ball
-		//plcm	Nem_GhzWall1, $A1E0	; breakable wall
-		//plcm	Nem_GhzWall2, $6980	; normal wall
+		{art_ghz_swing, 0x7000},
+		{art_ghz_bridge, 0x71C0},
+		{art_ghz_log, 0x7300},
+		{art_ghz_ball, 0x7540},
+		{art_ghz_wall1, 0xA1E0},
+		{art_ghz_wall2, 0x6980},
 	}
 };
 

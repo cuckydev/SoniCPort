@@ -1,5 +1,6 @@
 #include "Object.h"
 
+//'PRESS START BUTTON' Assets
 static const uint8_t anim_psb[] = {
 	#include <Resource/Animation/PSB.h>
 };
@@ -8,6 +9,7 @@ static const uint8_t map_psb[] = {
 	#include <Resource/Mappings/PSB.h>
 };
 
+//'PRESS START BUTTON' object
 void Obj_PSB(Object *obj)
 {
 	switch (obj->routine)

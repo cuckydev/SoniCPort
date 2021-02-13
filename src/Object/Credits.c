@@ -3,10 +3,12 @@
 #include "Game.h"
 #include "Palette.h"
 
+//Credits assets
 static const uint8_t map_credits[] = {
 	#include <Resource/Mappings/Credits.h>
 };
 
+//Credits object
 void Obj_Credits(Object *obj)
 {
 	switch (obj->routine)

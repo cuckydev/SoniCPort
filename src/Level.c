@@ -805,8 +805,8 @@ static bool ChkLoadObj(uint8_t index, const uint8_t **entry)
 	obj->pos.l.y.f.u = w1 & 0xFFF;
 	obj->render.b = 0;
 	obj->status.o.b = 0;
-	obj->render.f.x_flip = obj->status.o.f.x_flip = w1 >> 13;
-	obj->render.f.y_flip = obj->status.o.f.y_flip = w1 >> 14;
+	obj->render.f.x_flip = obj->status.o.f.x_flip = w1 >> 14;
+	obj->render.f.y_flip = obj->status.o.f.y_flip = w1 >> 15;
 	
 	uint8_t b4 = *(*entry)++;
 	if (b4 & 0x80)
