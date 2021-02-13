@@ -408,6 +408,7 @@ void NewPLC(PlcId plc)
 void ClearPLC()
 {
 	//Clear PLC buffer
+	plc_buffer_reg18 = 0;
 	memset(plc_buffer, 0, sizeof(plc_buffer));
 }
 

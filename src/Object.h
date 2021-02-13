@@ -45,7 +45,7 @@ typedef enum
 	ObjId_1C,           //1C
 	ObjId_1D,           //1D
 	ObjId_1E,           //1E
-	ObjId_1F,           //1F
+	ObjId_Crabmeat,     //1F
 	ObjId_20,           //20
 	ObjId_21,           //21
 	ObjId_BuzzBomber,   //22

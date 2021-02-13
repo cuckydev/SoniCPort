@@ -169,7 +169,7 @@ void DrawChunks(int16_t sx, int16_t sy, uint8_t *layout, size_t offset)
 	int16_t y = -16;
 	for (size_t i = 0; i < (SCROLL_HEIGHT + 16 + 16) / 16; i++)
 	{
-		DrawBlocks_LR_2(offset, CalcVRAMPos(sx, sy, 0, y), sx, sy, 0, y, layout, 512 / 16);
+		DrawBlocks_LR_2(offset, CalcVRAMPos(sx, sy, 0, y), sx, sy, 0, y, layout, PLANE_WIDTH / 2);
 		y += 16;
 	}
 }
@@ -201,12 +201,12 @@ void DrawBGScrollBlock1(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout,
 	//Handle flags
 	if (*flag & SCROLL_FLAG_UP)
 	{
-		DrawBlocks_LR_2(offset, CalcVRAMPos(sx, sy, -16, -16), sx, sy, -16, -16, layout, 512 / 16);
+		DrawBlocks_LR_2(offset, CalcVRAMPos(sx, sy, -16, -16), sx, sy, -16, -16, layout, PLANE_WIDTH / 2);
 		*flag &= ~SCROLL_FLAG_UP;
 	}
 	if (*flag & SCROLL_FLAG_DOWN)
 	{
-		DrawBlocks_LR_2(offset, CalcVRAMPos(sx, sy, -16, SCROLL_HEIGHT), sx, sy, -16, SCROLL_HEIGHT, layout, 512 / 16);
+		DrawBlocks_LR_2(offset, CalcVRAMPos(sx, sy, -16, SCROLL_HEIGHT), sx, sy, -16, SCROLL_HEIGHT, layout, PLANE_WIDTH / 2);
 		*flag &= ~SCROLL_FLAG_DOWN;
 	}
 	if (*flag & SCROLL_FLAG_LEFT)
@@ -221,12 +221,12 @@ void DrawBGScrollBlock1(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout,
 	}
 	if (*flag & SCROLL_FLAG_UP2)
 	{
-		DrawBlocks_LR_2(offset, CalcVRAMPos(0, sy, 0, -16), 0, sy, 0, -16, layout, 512 / 16);
+		DrawBlocks_LR_2(offset, CalcVRAMPos(0, sy, 0, -16), 0, sy, 0, -16, layout, PLANE_WIDTH / 2);
 		*flag &= ~SCROLL_FLAG_UP2;
 	}
 	if (*flag & SCROLL_FLAG_DOWN2)
 	{
-		DrawBlocks_LR_2(offset, CalcVRAMPos(0, sy, 0, SCROLL_HEIGHT), 0, sy, 0, SCROLL_HEIGHT, layout, 512 / 16);
+		DrawBlocks_LR_2(offset, CalcVRAMPos(0, sy, 0, SCROLL_HEIGHT), 0, sy, 0, SCROLL_HEIGHT, layout, PLANE_WIDTH / 2);
 		*flag &= ~SCROLL_FLAG_DOWN2;
 	}
 }

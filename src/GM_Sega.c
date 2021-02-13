@@ -41,10 +41,10 @@ void GM_Sega()
 	
 	NemDec(0x0000, art_sega);
 	
-	CopyTilemap(&map_sega[0x0000], 0xE510 + PLANE_WIDEADD, 24, 8);
-	CopyTilemap(&map_sega[0x0180], 0xC000 + PLANE_WIDEADD, 40, 28);
+	CopyTilemap(&map_sega[0x0000], MAP_PLANE(VRAM_BG, 8, 10) + PLANE_WIDEADD + PLANE_TALLADD, 24, 8);
+	CopyTilemap(&map_sega[0x0180], MAP_PLANE(VRAM_FG, 0, 0) + PLANE_WIDEADD + PLANE_TALLADD, 40, 28);
 	#ifdef SCP_JP
-		CopyTilemap(&map_sega[0x0A40], 0xC53A + PLANE_WIDEADD, 3, 2); //Hide trademark symbol
+		CopyTilemap(&map_sega[0x0A40], MAP_PLANE(VRAM_FG, 29, 10) + PLANE_WIDEADD + PLANE_TALLADD, 3, 2); //Hide trademark symbol
 	#endif
 	
 	//Load palette and initialize cycle

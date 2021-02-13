@@ -92,6 +92,7 @@ static void SRG_ScrollFG()
 	if (scroll_fg < 0xF7)
 	{
 		scroll_fg *= -2;
+		scroll_fg += (PLANE_WIDTH - 64) * 8;
 		for (int i = 0; i < 0x20; i++)
 		{ *bufp++ = scroll_fg; *bufp++ = 0; }
 	}
@@ -115,7 +116,7 @@ static void SRG_DrawFG()
 		uint16_t scroll_off = ((scroll_fg & 0x01F8) >> 2);
 		
 		//Get scroll offsets
-		size_t offset = 0xC704 + PLANE_WIDEADD + scroll_off;
+		size_t offset = MAP_PLANE(VRAM_FG, 2, 14) + PLANE_WIDEADD + PLANE_TALLADD + scroll_off;
 		const uint8_t *mapp = ssrg_memory + scroll_off;
 		
 		//Write plane data
@@ -124,7 +125,7 @@ static void SRG_DrawFG()
 			uint16_t v = ((mapp[0] << 8) | (mapp[1] << 0)) + 0x2000;
 			VDP_Tile tile = TILE_TO_STRUCT(v);
 			VDP_WriteVRAM(offset, (const uint8_t*)&tile, 2);
-			offset += PLANE_WIDTH * 2;
+			offset += PLANE_WIDTH << 1;
 			mapp += 0x46;
 		}
 	}
@@ -320,10 +321,10 @@ static void Obj_Square(Object *obj)
 		uint16_t width, height;
 		uint32_t pad;
 	} map_ram_data[] = {
-		{&ssrg_memory[0x4000], 0xE104, 0x000B, 0x000B, 0},
-		{&ssrg_memory[0x4120], 0xE000, 0x000F, 0x000F, 0},
-		{&ssrg_memory[0x4320], 0xE000, 0x0010, 0x0010, 0},
-		{&ssrg_memory[0x4562], 0xE000, 0x000F, 0x000F, 0},
+		{&ssrg_memory[0x4000], MAP_PLANE(VRAM_BG, 2, 2), 0x000B, 0x000B, 0},
+		{&ssrg_memory[0x4120], MAP_PLANE(VRAM_BG, 0, 0), 0x000F, 0x000F, 0},
+		{&ssrg_memory[0x4320], MAP_PLANE(VRAM_BG, 0, 0), 0x0010, 0x0010, 0},
+		{&ssrg_memory[0x4562], MAP_PLANE(VRAM_BG, 0, 0), 0x000F, 0x000F, 0},
 	};
 	
 	switch (obj->routine)
@@ -416,7 +417,7 @@ static void Obj_Square(Object *obj)
 	UpdateScrollPositions(obj);
 	
 	//Clear previous plane art
-	CopyTilemap_Single(0, 0xE000, 0x11, 0x11);
+	CopyTilemap_Single(0, VRAM_BG, 0x11, 0x11);
 	
 	//Copy new plane art
 	const struct MapRamData *data = &map_ram_data[(scratch->timer & 0x18) >> 3];
@@ -426,7 +427,7 @@ static void Obj_Square(Object *obj)
 		//Clear unwanted tiles
 		int16_t clip_tiles = -(obj->pos.s.x >> 3);
 		if (clip_tiles > 0)
-			CopyTilemap_Single(0, 0xE000, clip_tiles, 0x11);
+			CopyTilemap_Single(0, VRAM_BG, clip_tiles, 0x11);
 	#endif
 }
 
@@ -577,7 +578,7 @@ void GM_SSRG()
 	
 	//Decompress mappings
 	KosDec(map_link, ssrg_memory);
-	CopyTilemap(ssrg_memory, 0xCC08 + PLANE_WIDEADD, 32, 1);
+	CopyTilemap(ssrg_memory, MAP_PLANE(VRAM_FG, 4, 24) + PLANE_WIDEADD + (PLANE_TALLADD * 2), 32, 1);
 	
 	KosDec(map_main, &ssrg_memory[0x0000]);
 	KosDec(map_square, &ssrg_memory[0x4000]);

@@ -108,7 +108,7 @@ void GM_Title()
 	NemDec(0x0000, art_japanese_credits);
 	NemDec(0x14C0, art_credits_font);
 	
-	CopyTilemap(map_japanese_credits, 0xC000 + PLANE_WIDEADD, 40, 24);
+	CopyTilemap(map_japanese_credits, VRAM_FG + PLANE_WIDEADD + PLANE_TALLADD, 40, 24);
 	
 	//Clear palette
 	memset(dry_palette_dup, 0, sizeof(dry_palette_dup));
@@ -151,7 +151,7 @@ void GM_Title()
 	DrawChunks(bg_scrpos_x.f.u, bg_scrpos_y.f.u, level_layout[0][1], VRAM_BG);
 	
 	//Load title mappings
-	CopyTilemap(&map_title_fg[0x0000], 0xC206 + PLANE_WIDEADD, 34, 22);
+	CopyTilemap(&map_title_fg[0x0000], MAP_PLANE(VRAM_FG, 3, 4) + PLANE_WIDEADD + PLANE_TALLADD, 34, 22);
 	
 	//Load GHZ art and title palette
 	NemDec(0x0000, art_ghz1);

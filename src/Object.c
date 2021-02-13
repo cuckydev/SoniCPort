@@ -30,6 +30,7 @@ struct SpriteQueue
 void Obj_Sonic(Object *obj);
 void Obj_TitleSonic(Object *obj);
 void Obj_PSB(Object *obj);
+void Obj_Crabmeat(Object *obj);
 void Obj_BuzzBomber(Object *obj);
 void Obj_BuzzMissile(Object *obj);
 void Obj_BuzzExplode(Object *obj);
@@ -71,7 +72,7 @@ static void (*object_func[])(Object*) = {
 	/* ObjId_1C           */ Obj_Null,
 	/* ObjId_1D           */ Obj_Null,
 	/* ObjId_1E           */ Obj_Null,
-	/* ObjId_1F           */ Obj_Null,
+	/* ObjId_Crabmeat     */ Obj_Crabmeat,
 	/* ObjId_20           */ Obj_Null,
 	/* ObjId_21           */ Obj_Null,
 	/* ObjId_BuzzBomber   */ Obj_BuzzBomber,

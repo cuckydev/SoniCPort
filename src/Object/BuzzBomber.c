@@ -20,6 +20,12 @@ static const uint8_t anim_buzz_missile[] = {
 	#include <Resource/Animation/BuzzMissile.h>
 };
 
+//Buzz Bomber's explosion
+void Obj_BuzzExplode(Object *obj)
+{
+	
+}
+
 //Buzz Bomber's missile
 typedef struct
 {
@@ -92,6 +98,13 @@ void Obj_BuzzMissile(Object *obj)
 				//Delete if fallen below stage
 				if (obj->pos.l.y.f.u >= limit_btm2 + SCREEN_HEIGHT)
 					DeleteObject(obj);
+			}
+			else
+			{
+				//Explode
+				obj->type = ObjId_BuzzExplode;
+				obj->routine = 0;
+				Obj_BuzzExplode(obj);
 			}
 			break;
 		case 6: //Delete
@@ -240,10 +253,4 @@ void Obj_BuzzBomber(Object *obj)
 			DeleteObject(obj);
 			break;
 	}
-}
-
-//Buzz Bomber's explosion
-void Obj_BuzzExplode(Object *obj)
-{
-	
 }

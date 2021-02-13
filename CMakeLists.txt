@@ -67,6 +67,7 @@ add_executable(SoniCPort WIN32
 	"src/Object/Sonic.h"
 	"src/Object/TitleSonic.c"
 	"src/Object/PSB.c"
+	"src/Object/Crabmeat.c"
 	"src/Object/BuzzBomber.c"
 	"src/Object/Explosion.c"
 	"src/Object/TitleCard.c"
