@@ -633,6 +633,7 @@ static void Sonic_Floor(Object *obj)
 			{
 				obj->pos.l.x.f.u += dist0;
 				obj->xsp = 0;
+				obj->inertia = obj->ysp;
 			}
 			
 			//Collide with ceiling

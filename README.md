@@ -46,4 +46,8 @@ This project is not endorsed by SEGA or Sonic Team.
 
 ## Credits
 
-Sonic Retro - Sonic 1 Disassembly
+Sonic Team - Original game
+
+Sonic Retro - Sonic 1 Github Disassembly
+
+Clownacy - Additional porting (compression algorithms)

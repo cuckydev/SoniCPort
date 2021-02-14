@@ -31,7 +31,7 @@ typedef enum
 	ObjId_TitleSonic,   //0E
 	ObjId_PSB,          //0F
 	ObjId_10,           //10
-	ObjId_11,           //11
+	ObjId_GHZBridge,    //11
 	ObjId_12,           //12
 	ObjId_13,           //13
 	ObjId_14,           //14
