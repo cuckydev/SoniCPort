@@ -92,17 +92,17 @@ void WriteVRAMBuffers()
 	ReadJoypads();
 	
 	//Copy palette
+	VDP_SeekCRAM(0);
 	if (wtr_state)
-		VDP_WriteCRAM(0, &wet_palette[0][0], 0x40);
+		VDP_WriteCRAM(&wet_palette[0][0], 0x40);
 	else
-		VDP_WriteCRAM(0, &dry_palette[0][0], 0x40);
-	//srand(0);
-	//for (int i = 0; i < 0x40; i++)
-	//	VDP_FillCRAM(i, rand() & 0xEEE, 1);
+		VDP_WriteCRAM(&dry_palette[0][0], 0x40);
 	
 	//Copy buffers
-	VDP_WriteVRAM(VRAM_SPRITES, (const uint8_t*)sprite_buffer, sizeof(sprite_buffer));
-	VDP_WriteVRAM(VRAM_HSCROLL, (const uint8_t*)hscroll_buffer, sizeof(hscroll_buffer));
+	VDP_SeekVRAM(VRAM_SPRITES);
+	VDP_WriteVRAM((const uint8_t*)sprite_buffer, sizeof(sprite_buffer));
+	VDP_SeekVRAM(VRAM_HSCROLL);
+	VDP_WriteVRAM((const uint8_t*)hscroll_buffer, sizeof(hscroll_buffer));
 }
 
 void VBlank()
@@ -139,20 +139,24 @@ void VBlank()
 			ReadJoypads();
 			
 			//Copy palette
+			VDP_SeekCRAM(0);
 			if (wtr_state)
-				VDP_WriteCRAM(0, &wet_palette[0][0], 0x40);
+				VDP_WriteCRAM(&wet_palette[0][0], 0x40);
 			else
-				VDP_WriteCRAM(0, &dry_palette[0][0], 0x40);
+				VDP_WriteCRAM(&dry_palette[0][0], 0x40);
 			
 			//Copy buffers
 			VDP_SetHIntPosition(hbla_pos);
-			VDP_WriteVRAM(VRAM_SPRITES, (const uint8_t*)sprite_buffer, sizeof(sprite_buffer));
-			VDP_WriteVRAM(VRAM_HSCROLL, (const uint8_t*)hscroll_buffer, sizeof(hscroll_buffer));
+			VDP_SeekVRAM(VRAM_SPRITES);
+			VDP_WriteVRAM((const uint8_t*)sprite_buffer, sizeof(sprite_buffer));
+			VDP_SeekVRAM(VRAM_HSCROLL);
+			VDP_WriteVRAM((const uint8_t*)hscroll_buffer, sizeof(hscroll_buffer));
 			
 			//Update Sonic's art
 			if (sonframe_chg)
 			{
-				VDP_WriteVRAM(0xF000, sgfx_buffer, SONIC_DPLC_SIZE);
+				VDP_SeekVRAM(0xF000);
+				VDP_WriteVRAM(sgfx_buffer, SONIC_DPLC_SIZE);
 				sonframe_chg = false;
 			}
 			
@@ -188,20 +192,24 @@ void VBlank()
 			ReadJoypads();
 			
 			//Copy palette
+			VDP_SeekCRAM(0);
 			if (wtr_state)
-				VDP_WriteCRAM(0, &wet_palette[0][0], 0x40);
+				VDP_WriteCRAM(&wet_palette[0][0], 0x40);
 			else
-				VDP_WriteCRAM(0, &dry_palette[0][0], 0x40);
+				VDP_WriteCRAM(&dry_palette[0][0], 0x40);
 			
 			//Copy buffers
 			VDP_SetHIntPosition(hbla_pos);
-			VDP_WriteVRAM(VRAM_SPRITES, (const uint8_t*)sprite_buffer, sizeof(sprite_buffer));
-			VDP_WriteVRAM(VRAM_HSCROLL, (const uint8_t*)hscroll_buffer, sizeof(hscroll_buffer));
+			VDP_SeekVRAM(VRAM_SPRITES);
+			VDP_WriteVRAM((const uint8_t*)sprite_buffer, sizeof(sprite_buffer));
+			VDP_SeekVRAM(VRAM_HSCROLL);
+			VDP_WriteVRAM((const uint8_t*)hscroll_buffer, sizeof(hscroll_buffer));
 			
 			//Update Sonic's art
 			if (sonframe_chg)
 			{
-				VDP_WriteVRAM(0xF000, sgfx_buffer, SONIC_DPLC_SIZE);
+				VDP_SeekVRAM(0xF000);
+				VDP_WriteVRAM(sgfx_buffer, SONIC_DPLC_SIZE);
 				sonframe_chg = false;
 			}
 			

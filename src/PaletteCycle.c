@@ -129,24 +129,14 @@ void PCycle_Title()
 	PCycle_Water(pal_titlecycle);
 }
 
-void PCycle_GHZ()
-{
-	PCycle_Water(pal_ghzcycle);
-}
-
-static void (*pcycle_routines[ZoneId_Num])() = {
-	/* ZoneId_GHZ  */ PCycle_GHZ,
-	/* ZoneId_LZ   */ NULL,
-	/* ZoneId_MZ   */ NULL,
-	/* ZoneId_SLZ  */ NULL,
-	/* ZoneId_SYZ  */ NULL,
-	/* ZoneId_SBZ  */ NULL,
-	/* ZoneId_EndZ */ PCycle_GHZ,
-};
-
 //Palette cycle function
 void PaletteCycle()
 {
-	if (pcycle_routines[LEVEL_ZONE(level_id)] != NULL)
-		pcycle_routines[LEVEL_ZONE(level_id)]();
+	switch (LEVEL_ZONE(level_id))
+	{
+		case ZoneId_GHZ:
+		case ZoneId_EndZ:
+			PCycle_Water(pal_ghzcycle);
+			break;
+	}
 }

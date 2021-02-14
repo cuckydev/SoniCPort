@@ -58,10 +58,9 @@ static void CopyTilemap_Single(uint16_t v, size_t offset, size_t width, size_t h
 	VDP_Tile tile = TILE_TO_STRUCT(v);
 	while (height-- > 0)
 	{
+		VDP_SeekVRAM(offset);
 		for (size_t x = 0; x < width; x++)
-		{
-			VDP_WriteVRAM(offset + (x << 1), (const uint8_t*)&tile, 2);
-		}
+			VDP_WriteVRAM((const uint8_t*)&tile, 2);
 		offset += PLANE_WIDTH * 2;
 	}
 }
@@ -71,11 +70,12 @@ static void CopyTilemap_Add(const uint8_t *tilemap, size_t offset, size_t width,
 {
 	while (height-- > 0)
 	{
+		VDP_SeekVRAM(offset);
 		for (size_t x = 0; x < width; x++)
 		{
 			uint16_t v = ((*tilemap++ << 8) | (*tilemap++ << 0)) + add;
 			VDP_Tile tile = TILE_TO_STRUCT(v);
-			VDP_WriteVRAM(offset + (x << 1), (const uint8_t*)&tile, 2);
+			VDP_WriteVRAM((const uint8_t*)&tile, 2);
 		}
 		offset += PLANE_WIDTH * 2;
 	}
@@ -124,7 +124,8 @@ static void SRG_DrawFG()
 		{
 			uint16_t v = ((mapp[0] << 8) | (mapp[1] << 0)) + 0x2000;
 			VDP_Tile tile = TILE_TO_STRUCT(v);
-			VDP_WriteVRAM(offset, (const uint8_t*)&tile, 2);
+			VDP_SeekVRAM(offset);
+			VDP_WriteVRAM((const uint8_t*)&tile, 2);
 			offset += PLANE_WIDTH << 1;
 			mapp += 0x46;
 		}
@@ -571,10 +572,14 @@ void GM_SSRG()
 	vid_bg_scrpos_y_dup = -44;
 	
 	//Decompress art into VRAM
-	NemDec(0x0020, art_main);
-	NemDec(0x4000, art_square);
-	NemDec(0x8000, art_sonic);
-	NemDec(0x9000, art_link);
+	VDP_SeekVRAM(0x0020);
+	NemDec(art_main);
+	VDP_SeekVRAM(0x4000);
+	NemDec(art_square);
+	VDP_SeekVRAM(0x8000);
+	NemDec(art_sonic);
+	VDP_SeekVRAM(0x9000);
+	NemDec(art_link);
 	
 	//Decompress mappings
 	KosDec(map_link, ssrg_memory);

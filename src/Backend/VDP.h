@@ -81,11 +81,13 @@ typedef struct
 int VDP_Init(const MD_Header *header);
 void VDP_Quit();
 
-void VDP_WriteVRAM(size_t offset, const uint8_t *data, size_t len);
-void VDP_FillVRAM(size_t offset, uint8_t data, size_t len);
+void VDP_SeekVRAM(size_t offset);
+void VDP_WriteVRAM(const uint8_t *data, size_t len);
+void VDP_FillVRAM(uint8_t data, size_t len);
 
-void VDP_WriteCRAM(size_t offset, const uint16_t *data, size_t len);
-void VDP_FillCRAM(size_t offset, uint16_t data, size_t len);
+void VDP_SeekCRAM(size_t offset);
+void VDP_WriteCRAM(const uint16_t *data, size_t len);
+void VDP_FillCRAM(uint16_t data, size_t len);
 
 void VDP_SetPlaneALocation(size_t loc);
 void VDP_SetPlaneBLocation(size_t loc);

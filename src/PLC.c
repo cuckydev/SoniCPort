@@ -4,6 +4,8 @@
 
 #include "Nemesis.h"
 
+#include <Backend/VDP.h>
+
 #include <string.h>
 
 //PLC constants
@@ -440,7 +442,7 @@ void RunPLC()
 
 static void ProcessDPLC_Main(size_t off)
 {
-	NemDecSeek(off);
+	VDP_SeekVRAM(off);
 	
 	do
 	{
@@ -495,5 +497,8 @@ void QuickPLC(PlcId plc)
 	if (list == NULL)
 		return;
 	for (size_t i = 0; i < list->plcs; i++)
-		NemDec(list->plc[i].off, list->plc[i].art);
+	{
+		VDP_SeekVRAM(list->plc[i].off);
+		NemDec(list->plc[i].art);
+	}
 }

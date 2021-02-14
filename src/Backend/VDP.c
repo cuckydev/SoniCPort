@@ -26,6 +26,9 @@ int Input_HandleEvents();
 static ALIGNED2 uint8_t vdp_vram[VRAM_SIZE];
 static uint16_t vdp_cram[4][16];
 
+static uint8_t *vdp_vram_p;
+static uint16_t *vdp_cram_p;
+
 static size_t vdp_plane_a_location, vdp_plane_b_location, vdp_sprite_location, vdp_hscroll_location;
 static size_t vdp_plane_w, vdp_plane_h;
 static uint8_t vdp_background_colour;
@@ -67,54 +70,80 @@ void VDP_Quit()
 	Render_Quit();
 }
 
-void VDP_WriteVRAM(size_t offset, const uint8_t *data, size_t len)
+void VDP_SeekVRAM(size_t offset)
 {
 	#ifdef VDP_SANITY
-	if (offset > VRAM_SIZE || offset + len > VRAM_SIZE)
+	if (offset >= VRAM_SIZE)
+	{
+		puts("VDP_SeekVRAM: Out-of-bounds");
+		return;
+	}
+	#endif
+	vdp_vram_p = vdp_vram + offset;
+}
+
+void VDP_WriteVRAM(const uint8_t *data, size_t len)
+{
+	#ifdef VDP_SANITY
+	if ((vdp_vram_p - vdp_vram) >= VRAM_SIZE || (vdp_vram_p - vdp_vram + len) > VRAM_SIZE)
 	{
 		puts("VDP_WriteVRAM: Out-of-bounds");
 		return;
 	}
 	#endif
-	memcpy(vdp_vram + offset, data, len);
+	memcpy(vdp_vram_p, data, len);
+	vdp_vram_p += len;
 }
 
-void VDP_FillVRAM(size_t offset, uint8_t data, size_t len)
+void VDP_FillVRAM(uint8_t data, size_t len)
 {
 	#ifdef VDP_SANITY
-	if (offset > VRAM_SIZE || offset + len > VRAM_SIZE)
+	if ((vdp_vram_p - vdp_vram) >= VRAM_SIZE || (vdp_vram_p - vdp_vram + len) > VRAM_SIZE)
 	{
-		puts("VDP_FillVRAM: Out-of-bounds");
+		puts("VDP_WriteVRAM: Out-of-bounds");
 		return;
 	}
 	#endif
-	memset(vdp_vram + offset, data, len);
+	memset(vdp_vram_p, data, len);
+	vdp_vram_p += len;
 }
 
-void VDP_WriteCRAM(size_t offset, const uint16_t *data, size_t len)
+void VDP_SeekCRAM(size_t offset)
 {
 	#ifdef VDP_SANITY
-	if (offset > COLOURS || offset + len > COLOURS)
+	if (offset >= COLOURS)
+	{
+		puts("VDP_SeekCRAM: Out-of-bounds");
+		return;
+	}
+	#endif
+	vdp_cram_p = &vdp_cram[0][0] + offset;
+}
+
+void VDP_WriteCRAM(const uint16_t *data, size_t len)
+{
+	#ifdef VDP_SANITY
+	if ((vdp_cram_p - &vdp_cram[0][0]) >= COLOURS || (vdp_cram_p - &vdp_cram[0][0] + len) > COLOURS)
 	{
 		puts("VDP_WriteCRAM: Out-of-bounds");
 		return;
 	}
 	#endif
-	memcpy(&vdp_cram[0][0] + offset, data, len << 1);
+	memcpy(vdp_cram_p, data, len << 1);
+	vdp_cram_p += len;
 }
 
-void VDP_FillCRAM(size_t offset, uint16_t data, size_t len)
+void VDP_FillCRAM(uint16_t data, size_t len)
 {
 	#ifdef VDP_SANITY
-	if (offset > COLOURS || offset + len > COLOURS)
+	if ((vdp_cram_p - &vdp_cram[0][0]) >= COLOURS || (vdp_cram_p - &vdp_cram[0][0] + len) > COLOURS)
 	{
-		puts("VDP_FillCRAM: Out-of-bounds");
+		puts("VDP_WriteCRAM: Out-of-bounds");
 		return;
 	}
 	#endif
-	uint16_t *outp = &vdp_cram[0][0] + offset;
 	while (len-- > 0)
-		*outp++ = data;
+		*vdp_cram_p++ = data;
 }
 
 void VDP_SetPlaneALocation(size_t loc)

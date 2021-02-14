@@ -41,7 +41,8 @@ void GM_Level()
 	if (demo >= 0)
 	{
 		//Load title card art
-		NemDec(0xB000, art_titlecard);
+		VDP_SeekVRAM(0xB000);
+		NemDec(art_titlecard);
 		
 		//Load level art and general art
 		if (level_header[LEVEL_ZONE(level_id)].plc1 != 0)

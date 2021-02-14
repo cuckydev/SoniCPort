@@ -39,7 +39,8 @@ void GM_Sega()
 	//Clear screen and load SEGA graphics
 	ClearScreen();
 	
-	NemDec(0x0000, art_sega);
+	VDP_SeekVRAM(0x0000);
+	NemDec(art_sega);
 	
 	CopyTilemap(&map_sega[0x0000], MAP_PLANE(VRAM_BG, 8, 10) + PLANE_WIDEADD + PLANE_TALLADD, 24, 8);
 	CopyTilemap(&map_sega[0x0180], MAP_PLANE(VRAM_FG, 0, 0) + PLANE_WIDEADD + PLANE_TALLADD, 40, 28);

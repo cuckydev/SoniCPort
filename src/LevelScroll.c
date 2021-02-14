@@ -351,7 +351,7 @@ void ScrollVertical()
 	scroll.v = scrpos_y.v - (scroll.f.l << 8);
 	
 	LimitTop:;
-	if (scroll.f.u <= limit_top2)
+	if (scroll.f.u <= (int16_t)limit_top2)
 	{
 		if (scroll.f.u <= -0x100)
 		{

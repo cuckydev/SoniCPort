@@ -34,4 +34,5 @@ void Obj_GHZBridge(Object *obj)
 			
 			break;
 	}
+	DisplaySprite(obj);
 }

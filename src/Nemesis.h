@@ -26,5 +26,5 @@ extern uint8_t nemesis_buffer[0x200];
 void NemDecPrepare(NemesisState *state);
 void NemDecRun(NemesisState *state);
 void NemDecSeek(size_t off);
-void NemDec(size_t off, const uint8_t *source);
+void NemDec(const uint8_t *source);
 void NemDecToRAM(const uint8_t *source, uint8_t *destination);

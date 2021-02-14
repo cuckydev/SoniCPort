@@ -105,8 +105,10 @@ void GM_Title()
 	memset(objects, 0, sizeof(objects));
 	
 	//Load Japanese credits
-	NemDec(0x0000, art_japanese_credits);
-	NemDec(0x14C0, art_credits_font);
+	VDP_SeekVRAM(0x0000);
+	NemDec(art_japanese_credits);
+	VDP_SeekVRAM(0x14C0);
+	NemDec(art_credits_font);
 	
 	CopyTilemap(map_japanese_credits, VRAM_FG + PLANE_WIDEADD + PLANE_TALLADD, 40, 24);
 	
@@ -124,9 +126,12 @@ void GM_Title()
 	PaletteFadeIn();
 	
 	//Load title art
-	NemDec(0x4000, art_title_fg);
-	NemDec(0x6000, art_title_sonic);
-	NemDec(0xA200, art_title_tm);
+	VDP_SeekVRAM(0x4000);
+	NemDec(art_title_fg);
+	VDP_SeekVRAM(0x6000);
+	NemDec(art_title_sonic);
+	VDP_SeekVRAM(0xA200);
+	NemDec(art_title_tm);
 	
 	//Reset game state
 	last_lamp = 0;
@@ -154,7 +159,8 @@ void GM_Title()
 	CopyTilemap(&map_title_fg[0x0000], MAP_PLANE(VRAM_FG, 3, 4) + PLANE_WIDEADD + PLANE_TALLADD, 34, 22);
 	
 	//Load GHZ art and title palette
-	NemDec(0x0000, art_ghz1);
+	VDP_SeekVRAM(0x0000);
+	NemDec(art_ghz1);
 	PalLoad1(PalId_Title);
 	
 	//Run title screen for 376 frames

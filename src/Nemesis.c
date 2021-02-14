@@ -9,8 +9,6 @@
 
 uint8_t nemesis_buffer[0x200];
 
-static size_t nemesis_off;
-
 void NemDecPrepare(NemesisState *state)
 {
 	uint8_t d0;
@@ -82,8 +80,7 @@ void NemDecRun(NemesisState *state)
 					if (state->vram_mode)
 					{
 						uint32_t wdw = LESWAP_32(state->d2);
-						VDP_WriteVRAM(nemesis_off, (const uint8_t*)&wdw, 4);
-						nemesis_off += 4;
+						VDP_WriteVRAM((const uint8_t*)&wdw, 4);
 					}
 					else
 					{
@@ -99,8 +96,7 @@ void NemDecRun(NemesisState *state)
 					if (state->vram_mode)
 					{
 						uint32_t wdw = LESWAP_32(state->d4);
-						VDP_WriteVRAM(nemesis_off, (const uint8_t*)&wdw, 4);
-						nemesis_off += 4;
+						VDP_WriteVRAM((const uint8_t*)&wdw, 4);
 					}
 					else
 					{
@@ -204,16 +200,10 @@ static void NemDecMain(NemesisState *state)
 	NemDecRun(state);
 }
 
-void NemDecSeek(size_t off)
-{
-	nemesis_off = off;
-}
-
-void NemDec(size_t off, const uint8_t *source)
+void NemDec(const uint8_t *source)
 {
 	NemesisState state;
 	
-	nemesis_off = off;
 	state.source = source;
 	state.vram_mode = true;
 	

@@ -56,7 +56,8 @@ void GetBlockData(const uint8_t **meta, const uint8_t **block, int16_t sx, int16
 {                                                            \
 	uint16_t v = ((*block++ << 8) | (*block++ << 0)) ^ xor;  \
 	VDP_Tile tile = TILE_TO_STRUCT(v);                       \
-	VDP_WriteVRAM(offset + (off), (const uint8_t*)&tile, 2); \
+	VDP_SeekVRAM(offset + (off));                            \
+	VDP_WriteVRAM((const uint8_t*)&tile, 2);                 \
 }
 
 void DrawBlock(const uint8_t *meta, const uint8_t *block, size_t offset)

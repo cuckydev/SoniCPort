@@ -30,8 +30,10 @@ void VDPSetupGame()
 	VDP_SetBackgroundColour(0);
 	
 	//Clear VRAM and CRAM
-	VDP_FillVRAM(0, 0x00, 0x10000);
-	VDP_FillCRAM(0, 0x0000, 64);
+	VDP_SeekVRAM(0);
+	VDP_FillVRAM(0x00, VRAM_SIZE);
+	VDP_SeekCRAM(0);
+	VDP_FillCRAM(0x0000, COLOURS);
 	
 	//Clear internal palette
 	memset(dry_palette, 0, sizeof(dry_palette));
@@ -49,8 +51,10 @@ void WaitForVBla()
 void ClearScreen()
 {
 	//Clear foreground and background planes
-	VDP_FillVRAM(VRAM_FG, 0x00, PLANE_SIZE);
-	VDP_FillVRAM(VRAM_BG, 0x00, PLANE_SIZE);
+	VDP_SeekVRAM(VRAM_FG);
+	VDP_FillVRAM(0x00, PLANE_SIZE);
+	VDP_SeekVRAM(VRAM_BG);
+	VDP_FillVRAM(0x00, PLANE_SIZE);
 	
 	//Reset screen position duplicates
 	vid_scrpos_y_dup = 0;
@@ -67,11 +71,12 @@ void CopyTilemap(const uint8_t *tilemap, size_t offset, size_t width, size_t hei
 {
 	while (height-- > 0)
 	{
+		VDP_SeekVRAM(offset);
 		for (size_t x = 0; x < width; x++)
 		{
 			uint16_t v = (*tilemap++ << 8) | (*tilemap++ << 0);
 			VDP_Tile tile = TILE_TO_STRUCT(v);
-			VDP_WriteVRAM(offset + (x << 1), (const uint8_t*)&tile, 2);
+			VDP_WriteVRAM((const uint8_t*)&tile, 2);
 		}
 		offset += PLANE_WIDTH * 2;
 	}
