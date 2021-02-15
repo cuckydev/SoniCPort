@@ -433,6 +433,7 @@ void BuildSprites()
 						int16_t oy = obj->pos.l.y.f.u - *scrpos[1] + 0x80;
 						if (oy < 0x60 || oy >= (0x180 + SCREEN_TALLADD))
 							continue;
+						y = oy;
 					}
 				}
 				else
