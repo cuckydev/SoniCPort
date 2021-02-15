@@ -59,8 +59,9 @@ void Obj_BuzzMissile(Object *obj)
 			obj->render.f.align_fg = true;
 			obj->priority = 3;
 			obj->width_pixels = 8;
+			obj->status.o.f.flag2 = false;
 			obj->status.o.f.player_stand = false;
-			obj->status.o.f.flag5 = false;
+			obj->status.o.f.flag4 = false;
 			obj->status.o.f.player_push = false;
 			obj->status.o.f.flag6 = false;
 			obj->status.o.f.flag7 = false;

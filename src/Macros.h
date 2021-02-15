@@ -3,7 +3,7 @@
 #include "Constants.h"
 
 //Planes
-#define MAP_PLANE(base, x, y) ((base) + ((y) * (PLANE_WIDTH << 1)) + ((x) << 1))
+#define MAP_PLANE(base, x, y) ((base) + (((y) * PLANE_WIDTH + (x)) << 1))
 
 //Assertion
 #define GLUE(a, b) a ## b

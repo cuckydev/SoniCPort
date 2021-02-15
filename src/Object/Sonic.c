@@ -313,7 +313,7 @@ static void Sonic_LoadGfx(Object *obj)
 }
 
 //Sonic collision functions
-static void Sonic_ResetOnFloor(Object *obj)
+void Sonic_ResetOnFloor(Object *obj)
 {
 	Scratch_Sonic *scratch = (Scratch_Sonic*)&obj->scratch;
 	
@@ -1092,6 +1092,8 @@ static void Sonic_Move(Object *obj)
 							obj->status.p.f.x_flip = true;
 						else if (left_dist >= right_dist)
 							obj->status.p.f.x_flip = false;
+						else
+							goto LookUpDown;
 						obj->anim = SonAnimId_Balance;
 						goto Sonic_ResetScr;
 					}
@@ -1117,6 +1119,7 @@ static void Sonic_Move(Object *obj)
 				}
 				
 				//Handle looking up and down
+				LookUpDown:;
 				if (jpad1_hold2 & JPAD_UP)
 				{
 					obj->anim = SonAnimId_LookUp;

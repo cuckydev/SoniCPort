@@ -175,17 +175,21 @@ void VBlank()
 			bg2_scroll_flags_dup = bg2_scroll_flags;
 			bg3_scroll_flags_dup = bg3_scroll_flags;
 			
-			//Scroll camera
-			LoadTilesAsYouMove();
-			
-			//Update level animations and HUD
-			
-			//Process PLCs
-			ProcessDPLC2();
-			
-			//Decrement demo timer
-			if (demo_length)
-				demo_length--;
+			if (hbla_pos >= 96) //Uh?
+			{
+				//Scroll camera
+				LoadTilesAsYouMove();
+				
+				//Update level animations and HUD
+				AnimateLevelGfx();
+				
+				//Process PLCs
+				ProcessDPLC2();
+				
+				//Decrement demo timer
+				if (demo_length)
+					demo_length--;
+			}
 			break;
 		case 0x0C:
 			//Read joypad state
@@ -232,6 +236,7 @@ void VBlank()
 			LoadTilesAsYouMove();
 			
 			//Update level animations and HUD
+			AnimateLevelGfx();
 			
 			//Process PLCs
 			ProcessDPLC();

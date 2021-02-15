@@ -32,7 +32,8 @@ typedef enum
 
 typedef struct
 {
-	uint8_t frame, time;
+	uint8_t frame;
+	int8_t time;
 } LevelAnim;
 
 typedef struct
@@ -147,9 +148,9 @@ extern uint8_t sonicend;
 extern uint16_t lz_deform;
 extern uint8_t f_switch[0x10];
 
-extern LevelAnim sprite_anim[4];
-
 extern Oscillatory oscillatory;
+
+extern LevelAnim sprite_anim[4];
 
 //Game functions
 void AddPoints(uint16_t points);

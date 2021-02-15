@@ -4,6 +4,8 @@
 #include "Level.h"
 #include "LevelScroll.h"
 
+#include "Object/Sonic.h"
+
 #include <string.h>
 
 //Object draw queue
@@ -598,4 +600,89 @@ void RememberState(Object *obj)
 		//On-screen
 		DisplaySprite(obj);
 	}
+}
+
+void PlatformObject(Object *obj, uint16_t x_rad)
+{
+	//Check if player is colliding with platform
+	Object *pla = player;
+	
+	if (pla->ysp < 0)
+		return;
+	
+	int16_t x_off = pla->pos.l.x.f.u - obj->pos.l.x.f.u + x_rad;
+	if (x_off < 0 || x_off >= (x_rad << 1))
+		return;
+	
+	Platform3(obj, pla, obj->pos.l.y.f.u - 8);
+}
+
+void Platform3(Object *obj, Object *pla, int16_t top)
+{
+	Scratch_Sonic *scratch = (Scratch_Sonic*)&pla->scratch;
+	
+	//Check if player is touching the top of platform
+	int16_t py = pla->pos.l.y.f.u;
+	int16_t by = py + pla->y_rad + 4;
+	if (top > by)
+		return;
+	top -= by;
+	if (top < -16)
+		return;
+	
+	//Check if player can collide with platform
+	if (lock_multi || pla->routine >= 6)
+		return;
+	
+	//Clip on top of platform
+	pla->pos.l.y.f.u = top + py + 3;
+	
+	//Modify platform state
+	obj->routine += 2;
+	
+	if (pla->status.p.f.object_stand)
+	{
+		//Release from last standing object
+		Object *prv = objects + scratch->standing_obj;
+		prv->status.o.f.player_stand = false;
+		prv->routine_sec = 0;
+		if (prv->routine == 4)
+			prv->routine = 2;
+	}
+	
+	//Modify player state
+	scratch->standing_obj = obj - objects;
+	pla->angle = 0;
+	pla->ysp = 0;
+	pla->inertia = pla->xsp;
+	if (pla->status.p.f.in_air)
+		Sonic_ResetOnFloor(pla);
+	
+	pla->status.p.f.object_stand = true;
+	obj->status.o.f.player_stand = true;
+}
+
+bool ExitPlatform(Object *obj, int16_t x_rad, int16_t x_dia2, int16_t *x_off_p)
+{
+	int16_t x_dia = x_dia2 << 1;
+	Object *pla = player;
+	
+	//Check if we've jumped off
+	if (!pla->status.p.f.in_air)
+	{
+		//Check if we've walked off
+		int16_t x_off = pla->pos.l.x.f.u - obj->pos.l.x.f.u + x_rad;
+		if (x_off >= 0 && x_off < x_dia)
+		{
+			if (x_off_p != NULL)
+				*x_off_p = x_off;
+			return false;
+		}
+	}
+	
+	//Release player from platform
+	pla->status.p.f.object_stand = false;
+	obj->routine = 2;
+	obj->status.o.f.player_stand = false;
+	return true;
 }

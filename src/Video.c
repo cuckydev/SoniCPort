@@ -52,9 +52,9 @@ void ClearScreen()
 {
 	//Clear foreground and background planes
 	VDP_SeekVRAM(VRAM_FG);
-	VDP_FillVRAM(0x00, PLANE_SIZE);
+	VDP_FillVRAM(0x00, (PLANE_WIDTH * PLANE_HEIGHT) << 1);
 	VDP_SeekVRAM(VRAM_BG);
-	VDP_FillVRAM(0x00, PLANE_SIZE);
+	VDP_FillVRAM(0x00, (PLANE_WIDTH * PLANE_HEIGHT) << 1);
 	
 	//Reset screen position duplicates
 	vid_scrpos_y_dup = 0;

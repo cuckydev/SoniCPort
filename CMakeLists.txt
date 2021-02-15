@@ -122,6 +122,9 @@ set(RESOURCES
 	"Art/SLZ"
 	"Art/SYZ"
 	"Art/SBZ"
+	"Art/GHZWaterfall"
+	"Art/GHZFlowerLarge"
+	"Art/GHZFlowerSmall"
 	
 	"Tilemap/SegaREV00"
 	"Tilemap/SegaREV01"

@@ -201,9 +201,9 @@ void VDP_SetHScrollLocation(size_t loc)
 void VDP_SetPlaneSize(size_t w, size_t h)
 {
 	#ifdef VDP_SANITY
-	if (w * h > 0x1000)
+	if (((w * h) << 1) > PLANE_SIZE)
 	{
-		puts("VDP_SetPlaneSize: Requested plane size exceeds 0x2000 bytes");
+		printf("VDP_SetPlaneSize: Requested plane size exceeds 0x%04X bytes\n", PLANE_SIZE);
 		return;
 	}
 	#endif

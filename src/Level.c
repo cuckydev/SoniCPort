@@ -582,9 +582,9 @@ uint8_t sonicend;
 uint16_t lz_deform;
 uint8_t f_switch[0x10];
 
-LevelAnim sprite_anim[4];
-
 Oscillatory oscillatory;
+
+LevelAnim sprite_anim[4];
 
 //Game functions
 void AddPoints(uint16_t points)

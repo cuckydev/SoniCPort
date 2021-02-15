@@ -329,3 +329,76 @@ void LoadTilesAsYouMove_BGOnly()
 	DrawBGScrollBlock2(bg2_scrpos_x.f.u, bg2_scrpos_y.f.u, &bg2_scroll_flags, level_layout[0][1], VRAM_BG);
 	//No scroll block 3, even in REV01... odd
 }
+
+//Level art animation
+static const uint8_t art_ghz_waterfall[] = {
+	#include <Resource/Art/GHZWaterfall.h>
+};
+static const uint8_t art_ghz_flower_large[] = {
+	#include <Resource/Art/GHZFlowerLarge.h>
+};
+static const uint8_t art_ghz_flower_small[] = {
+	#include <Resource/Art/GHZFlowerSmall.h>
+};
+
+static void AniArt_GiantRing()
+{
+	
+}
+
+void AnimateLevelGfx()
+{
+	//Don't run if game is paused
+	if (pause)
+		return;
+	
+	//Animate giant ring
+	AniArt_GiantRing();
+	
+	//Run level animation
+	switch (LEVEL_ZONE(level_id))
+	{
+		case ZoneId_GHZ:
+			//Animate waterfall
+			if (--sprite_anim[0].time < 0)
+			{
+				//Increment frame and reset timer
+				sprite_anim[0].time = 5;
+				uint8_t frame = sprite_anim[0].frame++ & 1;
+				
+				//Write to VRAM
+				VDP_SeekVRAM(0x6F00);
+				VDP_WriteVRAM(art_ghz_waterfall + (frame * 8 * 0x20), 8 * 0x20);
+			}
+			
+			//Animate large flowers
+			if (--sprite_anim[1].time < 0)
+			{
+				//Increment frame and reset timer
+				sprite_anim[1].time = 15;
+				uint8_t frame = sprite_anim[1].frame++ & 1;
+				
+				//Write to VRAM
+				VDP_SeekVRAM(0x6B80);
+				VDP_WriteVRAM(art_ghz_flower_large + (frame * 16 * 0x20), 16 * 0x20);
+			}
+			
+			//Animate small flowers
+			if (--sprite_anim[2].time < 0)
+			{
+				
+				//Increment frame and reset timer
+				sprite_anim[2].time = 7;
+				
+				static const uint8_t seq[4] = {0, 1, 2, 1};
+				uint8_t frame = seq[sprite_anim[2].frame++ & 3];
+				if (!(frame & 1))
+					sprite_anim[2].time = 127;
+				
+				//Write to VRAM
+				VDP_SeekVRAM(0x6D80);
+				VDP_WriteVRAM(art_ghz_flower_small + (frame * 12 * 0x20), 12 * 0x20);
+			}
+			break;
+	}
+}

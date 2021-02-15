@@ -14,3 +14,4 @@ void DrawBGScrollBlock2(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout,
 void DrawBGScrollBlock3(int16_t sx, int16_t sy, uint16_t *flag, uint8_t *layout, size_t offset);
 void LoadTilesAsYouMove();
 void LoadTilesAsYouMove_BGOnly();
+void AnimateLevelGfx();

@@ -183,8 +183,9 @@ typedef union
 	{
 		uint8_t x_flip : 1;       //Horizontally flipped
 		uint8_t y_flip : 1;       //Vertially flipped
+		uint8_t flag2 : 1;        //Unused
 		uint8_t player_stand : 1; //Player is standing on us
-		uint8_t flag5 : 1;        //Unused
+		uint8_t flag4 : 1;        //Unused
 		uint8_t player_push : 1;  //Player is pushing us
 		uint8_t flag6 : 1;        //Unused
 		uint8_t flag7 : 1;        //Object-specific
@@ -277,3 +278,6 @@ void DeleteObject(Object *obj);
 void SpeedToPos(Object *obj);
 void ObjectFall(Object *obj);
 void RememberState(Object *obj);
+void PlatformObject(Object *obj, uint16_t x_rad);
+void Platform3(Object *obj, Object *pla, int16_t top);
+bool ExitPlatform(Object *obj, int16_t x_rad, int16_t x_dia2, int16_t *x_off_p);
