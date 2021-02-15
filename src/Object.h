@@ -57,7 +57,7 @@ typedef enum
 	ObjId_Animal,       //28
 	ObjId_29,           //29
 	ObjId_2A,           //2A
-	ObjId_2B,           //2B
+	ObjId_Chopper,      //2B
 	ObjId_2C,           //2C
 	ObjId_2D,           //2D
 	ObjId_2E,           //2E
@@ -165,14 +165,14 @@ typedef union
 {
 	struct
 	{
-		uint8_t x_flip : 1;        //Horizontally flipped
-		uint8_t y_flip : 1;        //Vertically flipped
-		uint8_t align_fg : 1;      //Aligned to the foreground
-		uint8_t align_bg : 1;      //Aligned to the background (overrides `align_fg`)
-		uint8_t assume_height : 1; //Cull height is assumed to be 32
-		uint8_t raw_mappings : 1;  //`mappings` member points to a single mapping
-		uint8_t player_loop : 1;   //Set if we're the player object and behind a loop
-		uint8_t on_screen : 1;     //Set if the object's on-screen (see BuildSprites)
+		uint8_t x_flip : 1;       //Horizontally flipped
+		uint8_t y_flip : 1;       //Vertically flipped
+		uint8_t align_fg : 1;     //Aligned to the foreground
+		uint8_t align_bg : 1;     //Aligned to the background (overrides `align_fg`)
+		uint8_t yrad_height : 1;  //Use y_rad as cull height instead of 32
+		uint8_t raw_mappings : 1; //`mappings` member points to a single mapping
+		uint8_t player_loop : 1;  //Set if we're the player object and behind a loop
+		uint8_t on_screen : 1;    //Set if the object's on-screen (see BuildSprites)
 	} f;
 	uint8_t b;
 } ObjectRender;

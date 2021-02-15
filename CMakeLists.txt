@@ -71,6 +71,7 @@ add_executable(SoniCPort WIN32
 	"src/Object/Crabmeat.c"
 	"src/Object/BuzzBomber.c"
 	"src/Object/Explosion.c"
+	"src/Object/Chopper.c"
 	"src/Object/TitleCard.c"
 	"src/Object/GameOverCard.c"
 	"src/Object/Motobug.c"
@@ -162,6 +163,7 @@ set(RESOURCES
 	"Animation/Crabmeat"
 	"Animation/BuzzBomber"
 	"Animation/BuzzMissile"
+	"Animation/Chopper"
 	"Animation/Motobug"
 	
 	"Mappings/Sonic"
@@ -174,6 +176,7 @@ set(RESOURCES
 	"Mappings/BuzzMissile"
 	"Mappings/BuzzExplode"
 	"Mappings/Explosion"
+	"Mappings/Chopper"
 	"Mappings/TitleCard"
 	"Mappings/GameOver"
 	"Mappings/Motobug"

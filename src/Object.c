@@ -38,6 +38,7 @@ void Obj_BuzzBomber(Object *obj);
 void Obj_BuzzMissile(Object *obj);
 void Obj_BuzzExplode(Object *obj);
 void Obj_Explosion(Object *obj);
+void Obj_Chopper(Object *obj);
 void Obj_TitleCard(Object *obj);
 void Obj_GameOverCard(Object *obj);
 void Obj_Motobug(Object *obj);
@@ -87,7 +88,7 @@ static void (*object_func[])(Object*) = {
 	/* ObjId_Animal       */ Obj_Null,
 	/* ObjId_29           */ Obj_Null,
 	/* ObjId_2A           */ Obj_Null,
-	/* ObjId_2B           */ Obj_Null,
+	/* ObjId_Chopper      */ Obj_Chopper,
 	/* ObjId_2C           */ Obj_Null,
 	/* ObjId_2D           */ Obj_Null,
 	/* ObjId_2E           */ Obj_Null,
@@ -420,7 +421,7 @@ void BuildSprites()
 					x = 128 + ox; //VDP sprites start at 128
 					
 					//Get object Y position
-					if (!obj->render.f.assume_height)
+					if (obj->render.f.yrad_height)
 					{
 						int16_t oy = obj->pos.l.y.f.u - *scrpos[1];
 						if ((oy + obj->y_rad) < 0 || (oy - obj->y_rad) >= SCREEN_HEIGHT)
