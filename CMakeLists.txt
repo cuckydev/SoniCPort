@@ -75,6 +75,7 @@ add_executable(SoniCPort WIN32
 	"src/Object/TitleCard.c"
 	"src/Object/GameOverCard.c"
 	"src/Object/Motobug.c"
+	"src/Object/Newtron.c"
 	"src/Object/Credits.c"
 	
 	# Backend
@@ -165,6 +166,7 @@ set(RESOURCES
 	"Animation/BuzzMissile"
 	"Animation/Chopper"
 	"Animation/Motobug"
+	"Animation/Newtron"
 	
 	"Mappings/Sonic"
 	"Mappings/SonicDPLC"
@@ -180,6 +182,7 @@ set(RESOURCES
 	"Mappings/TitleCard"
 	"Mappings/GameOver"
 	"Mappings/Motobug"
+	"Mappings/Newtron"
 	"Mappings/Credits"
 	
 	"Layout/GHZ1"

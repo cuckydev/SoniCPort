@@ -80,7 +80,7 @@ typedef enum
 	ObjId_3F,           //3F
 	ObjId_Motobug,      //40
 	ObjId_41,           //41
-	ObjId_42,           //42
+	ObjId_Newtron,      //42
 	ObjId_43,           //43
 	ObjId_44,           //44
 	ObjId_45,           //45

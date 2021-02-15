@@ -29,11 +29,11 @@ void Obj_BuzzExplode(Object *obj)
 //Buzz Bomber's missile
 typedef struct
 {
-	uint8_t subtype; //0x28
-	uint8_t pad0[9]; //0x29 - 0x31
+	uint8_t subtype;    //0x28
+	uint8_t pad0[9];    //0x29 - 0x31
 	int16_t time_delay; //0x32
 	uint8_t pad1[0xC - sizeof(Object*)]; //This will break in 20 years when 128-bit processors are mainstream
-	Object *parent; //0x3C assuming 32-bit address
+	Object *parent;     //0x3C assuming 32-bit address
 } Scratch_BuzzMissile;
 
 void Obj_BuzzMissile(Object *obj)
@@ -44,7 +44,7 @@ void Obj_BuzzMissile(Object *obj)
 	{
 		case 0: //Initialization
 			//Wait for timer to expire
-			if (--scratch->time_delay < 0)
+			if (--scratch->time_delay >= 0)
 				break;
 			
 			//Increment routine
@@ -71,8 +71,11 @@ void Obj_BuzzMissile(Object *obj)
 			{
 				obj->routine = 8;
 				obj->col_type = 0x87;
+				obj->anim = 1;
+				AnimateSprite(obj, anim_buzz_missile);
+				DisplaySprite(obj);
+				break;
 			}
-			
 	//Fallthrough
 		case 2: //Charging
 			//Delete object if parent Buzz Bomber has exploded

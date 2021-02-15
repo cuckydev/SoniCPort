@@ -42,6 +42,7 @@ void Obj_Chopper(Object *obj);
 void Obj_TitleCard(Object *obj);
 void Obj_GameOverCard(Object *obj);
 void Obj_Motobug(Object *obj);
+void Obj_Newtron(Object *obj);
 void Obj_Credits(Object *obj);
 
 static void (*object_func[])(Object*) = {
@@ -111,7 +112,7 @@ static void (*object_func[])(Object*) = {
 	/* ObjId_3F           */ Obj_Null,
 	/* ObjId_Motobug      */ Obj_Motobug,
 	/* ObjId_41           */ Obj_Null,
-	/* ObjId_42           */ Obj_Null,
+	/* ObjId_Newtron      */ Obj_Newtron,
 	/* ObjId_43           */ Obj_Null,
 	/* ObjId_44           */ Obj_Null,
 	/* ObjId_45           */ Obj_Null,

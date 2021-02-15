@@ -10,6 +10,8 @@
 
 #include <string.h>
 
+#define DEMO_WARP
+
 //Sonic mappings
 static const uint8_t map_sonic[] = {
 	#include <Resource/Mappings/Sonic.h>
@@ -1647,6 +1649,11 @@ void Obj_Sonic(Object *obj)
 		return;
 	}
 	
+	#ifdef DEMO_WARP
+		if (obj->routine != 0 && obj->routine < 10 && obj->pos.l.x.f.u >= limit_right2 + 160)
+			obj->routine = 10;
+	#endif
+	
 	//Run player routine
 	switch (obj->routine)
 	{
@@ -1784,5 +1791,102 @@ void Obj_Sonic(Object *obj)
 			if (scratch->death_timer && --scratch->death_timer == 0)
 				restart = true;
 			break;
+	#ifdef DEMO_WARP
+		case 10:
+			//Increment routine
+			obj->routine += 2;
+			
+			//Initialize demo warp state
+			obj->anim = SonAnimId_Roll;
+			obj->inertia = 0;
+			scratch->flash_time = 100;
+	//Fallthrough
+		case 12:
+			//Animate
+			Sonic_Animate(obj);
+			
+			//Move to the left
+			obj->xsp -= 0x30;
+			obj->ysp >>= 1;
+			SpeedToPos(obj);
+			
+			//Increase animation speed and go to next state after 80 frames
+			obj->inertia += 0xC;
+			if (--scratch->flash_time == 0)
+			{
+				obj->xsp = 0x2000;
+				obj->ysp = 0;
+				obj->routine += 2;
+			}
+			
+			//Handle DPLCs and draw sprite
+			Sonic_LoadGfx(obj);
+			DisplaySprite(obj);
+			break;
+		case 14:;
+			//Load next level once off-screen
+			static const uint16_t demo_loc[ZoneId_Num][4] =
+			{
+				{
+					LEVEL_ID(ZoneId_GHZ, 1),
+					LEVEL_ID(ZoneId_GHZ, 2),
+					LEVEL_ID(ZoneId_MZ,  0),
+					0,
+				},
+				{
+					LEVEL_ID(ZoneId_LZ,  1),
+					LEVEL_ID(ZoneId_LZ,  2),
+					LEVEL_ID(ZoneId_SLZ, 0),
+					LEVEL_ID(ZoneId_SBZ, 2),
+				},
+				{
+					LEVEL_ID(ZoneId_MZ,  1),
+					LEVEL_ID(ZoneId_MZ,  2),
+					LEVEL_ID(ZoneId_SYZ, 0),
+					0,
+				},
+				{
+					LEVEL_ID(ZoneId_SLZ, 1),
+					LEVEL_ID(ZoneId_SLZ, 2),
+					LEVEL_ID(ZoneId_SBZ, 0),
+					0,
+				},
+				{
+					LEVEL_ID(ZoneId_SYZ, 1),
+					LEVEL_ID(ZoneId_SYZ, 2),
+					LEVEL_ID(ZoneId_LZ,  0),
+					0,
+				},
+				{
+					LEVEL_ID(ZoneId_SBZ, 1),
+					LEVEL_ID(ZoneId_LZ,  3),
+					LEVEL_ID(ZoneId_GHZ, 0),
+					0,
+				},
+				{
+					0,
+					0,
+					0,
+					0,
+				},
+			};
+			if (obj->pos.l.x.f.u >= (scrpos_x.f.u + SCREEN_WIDTH + 24))
+			{
+				level_id = demo_loc[LEVEL_ZONE(level_id)][LEVEL_ACT(level_id)];
+				restart = true;
+			}
+			
+			//Set animation
+			obj->anim = SonAnimId_Warp1;
+			Sonic_Animate(obj);
+			
+			//Move to the right
+			SpeedToPos(obj);
+			
+			//Handle DPLCs and draw sprite
+			Sonic_LoadGfx(obj);
+			DisplaySprite(obj);
+			break;
+	#endif
 	}
 }
