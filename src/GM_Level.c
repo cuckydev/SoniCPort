@@ -192,7 +192,7 @@ void GM_Level()
 	VDP_SetPlaneBLocation(VRAM_BG);
 	VDP_SetSpriteLocation(VRAM_SPRITES);
 	VDP_SetPlaneSize(PLANE_WIDTH, PLANE_HEIGHT);
-	VDP_SetBackgroundColour(0x30); //Line 3, entry 0
+	VDP_SetBackgroundColour(0x20); //Line 2, entry 0
 	
 	//Load water
 	hbla_pos = (SCREEN_HEIGHT - 1);
