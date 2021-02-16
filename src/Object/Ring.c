@@ -135,7 +135,7 @@ void Obj_Ring(Object *obj)
 				}
 			}
 			
-			if (state & 1)
+			if (*statep & 1)
 			{
 				DeleteObject(obj);
 				return;
