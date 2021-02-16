@@ -1658,15 +1658,6 @@ void Obj_Sonic(Object *obj)
 	switch (obj->routine)
 	{
 		case 0: //Initialiation
-			{
-				Object *rock = FindFreeObj();
-				if (rock != NULL)
-				{
-					rock->type = ObjId_GHZRock;
-					rock->pos.l.x.f.u = obj->pos.l.x.f.u + 80;
-					rock->pos.l.y.f.u = obj->pos.l.y.f.u - 48;
-				}
-			}
 			//Increment routine
 			obj->routine += 2;
 			
