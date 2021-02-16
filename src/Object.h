@@ -51,7 +51,7 @@ typedef enum
 	ObjId_BuzzBomber,   //22
 	ObjId_BuzzMissile,  //23
 	ObjId_BuzzExplode,  //24
-	ObjId_25,           //25
+	ObjId_Ring,         //25
 	ObjId_26,           //26
 	ObjId_Explosion,    //27
 	ObjId_Animal,       //28
@@ -266,6 +266,9 @@ typedef struct
 		int32_t  s32[0x6];
 	} scratch;             //Scratch memory
 } Object;
+
+//Object globals
+extern int ExecuteObjects_i;
 
 //Object functions
 Object *FindFreeObj();

@@ -360,11 +360,11 @@ void AnimateLevelGfx()
 	{
 		case ZoneId_GHZ:
 			//Animate waterfall
-			if (--sprite_anim[0].time < 0)
+			if (--level_anim[0].time < 0)
 			{
 				//Increment frame and reset timer
-				sprite_anim[0].time = 5;
-				uint8_t frame = sprite_anim[0].frame++ & 1;
+				level_anim[0].time = 5;
+				uint8_t frame = level_anim[0].frame++ & 1;
 				
 				//Write to VRAM
 				VDP_SeekVRAM(0x6F00);
@@ -372,11 +372,11 @@ void AnimateLevelGfx()
 			}
 			
 			//Animate large flowers
-			if (--sprite_anim[1].time < 0)
+			if (--level_anim[1].time < 0)
 			{
 				//Increment frame and reset timer
-				sprite_anim[1].time = 15;
-				uint8_t frame = sprite_anim[1].frame++ & 1;
+				level_anim[1].time = 15;
+				uint8_t frame = level_anim[1].frame++ & 1;
 				
 				//Write to VRAM
 				VDP_SeekVRAM(0x6B80);
@@ -384,16 +384,16 @@ void AnimateLevelGfx()
 			}
 			
 			//Animate small flowers
-			if (--sprite_anim[2].time < 0)
+			if (--level_anim[2].time < 0)
 			{
 				
 				//Increment frame and reset timer
-				sprite_anim[2].time = 7;
+				level_anim[2].time = 7;
 				
 				static const uint8_t seq[4] = {0, 1, 2, 1};
-				uint8_t frame = seq[sprite_anim[2].frame++ & 3];
+				uint8_t frame = seq[level_anim[2].frame++ & 3];
 				if (!(frame & 1))
-					sprite_anim[2].time = 127;
+					level_anim[2].time = 127;
 				
 				//Write to VRAM
 				VDP_SeekVRAM(0x6D80);

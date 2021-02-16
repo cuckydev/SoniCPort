@@ -188,7 +188,7 @@ void GM_Title()
 	DeformLayers();
 	BuildSprites();
 	
-	AddPLC(PlcId_Main);
+	NewPLC(PlcId_Main);
 	
 	//Fade in
 	PaletteFadeIn();

@@ -166,6 +166,7 @@ void GM_Level()
 	//FE60 to FF80
 	memset(oscillatory.state, 0, sizeof(oscillatory.state));
 	memset(sprite_anim, 0, sizeof(sprite_anim));
+	sprite_anim_3buf = 0;
 	
 	limit_top_db = 0;
 	limit_btm_db = 0;
@@ -344,6 +345,9 @@ void GM_Level()
 		ObjPosLoad();
 		PaletteCycle();
 		RunPLC();
+		
+		//Other level stuff
+		SynchroAnimate();
 		
 		//Check if level loop should end
 		if (gamemode != GameMode_Demo)

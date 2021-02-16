@@ -43,59 +43,98 @@ const uint8_t art_sbz[] = {
 };
 
 //Object art
+static const uint8_t art_lamppost[] = {
+	#include <Resource/Art/Lamppost.h>
+	,0,
+};
+static const uint8_t art_hud[] = {
+	#include <Resource/Art/HUD.h>
+	,0,
+};
+static const uint8_t art_hud_life[] = {
+	#include <Resource/Art/HUDLife.h>
+	,0,
+};
+static const uint8_t art_ring[] = {
+	#include <Resource/Art/Ring.h>
+	,0,
+};
+static const uint8_t art_points[] = {
+	#include <Resource/Art/Points.h>
+	,0,
+};
+
 static const uint8_t art_explosion[] = {
 	#include <Resource/Art/Explosion.h>
+	,0,
 };
 static const uint8_t art_game_over[] = {
 	#include <Resource/Art/GameOver.h>
+	,0,
 };
 static const uint8_t art_ghz_stalk[] = {
 	#include <Resource/Art/GHZStalk.h>
+	,0,
 };
 static const uint8_t art_ghz_rock[] = {
 	#include <Resource/Art/GHZRock.h>
+	,0,
 };
 static const uint8_t art_crabmeat[] = {
 	#include <Resource/Art/Crabmeat.h>
+	,0,
 };
 static const uint8_t art_buzz_bomber[] = {
 	#include <Resource/Art/BuzzBomber.h>
+	,0,
 };
 static const uint8_t art_chopper[] = {
 	#include <Resource/Art/Chopper.h>
+	,0,
 };
 static const uint8_t art_newtron[] = {
 	#include <Resource/Art/Newtron.h>
+	,0,
 };
 static const uint8_t art_motobug[] = {
 	#include <Resource/Art/Motobug.h>
+	,0,
 };
 static const uint8_t art_spikes[] = {
 	#include <Resource/Art/Spikes.h>
+	,0,
 };
 static const uint8_t art_springh[] = {
 	#include <Resource/Art/SpringH.h>
+	,0,
 };
 static const uint8_t art_springv[] = {
 	#include <Resource/Art/SpringV.h>
+	,0,
 };
 static const uint8_t art_ghz_swing[] = {
 	#include <Resource/Art/GHZSwing.h>
+	,0,
 };
 static const uint8_t art_ghz_bridge[] = {
 	#include <Resource/Art/GHZBridge.h>
+	,0,
 };
 static const uint8_t art_ghz_log[] = {
 	#include <Resource/Art/GHZLog.h>
+	,0,
 };
 static const uint8_t art_ghz_ball[] = {
 	#include <Resource/Art/GHZBall.h>
+	,0,
 };
 static const uint8_t art_ghz_wall1[] = {
 	#include <Resource/Art/GHZWall1.h>
+	,0,
 };
 static const uint8_t art_ghz_wall2[] = {
 	#include <Resource/Art/GHZWall2.h>
+	,0,
 };
 
 //PLC lists
@@ -106,14 +145,13 @@ typedef struct
 } PLCList;
 
 static const PLCList PLC_Main = {
-	0,
+	5,
 	(const PLC[]){
-		{NULL, 0}, //ISO C forbids empty initializer braces
-		//plcm	Nem_Lamp, $F400		; lamppost
-		//plcm	Nem_Hud, $D940		; HUD
-		//plcm	Nem_Lives, $FA80	; lives	counter
-		//plcm	Nem_Ring, $F640 	; rings
-		//plcm	Nem_Points, $F2E0	; points from enemy
+		{art_lamppost, 0xF400},
+		{art_hud,      0xD940},
+		{art_hud_life, 0xFA80},
+		{art_ring,     0xF640},
+		{art_points,   0xF2E0},
 	}
 };
 

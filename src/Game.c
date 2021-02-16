@@ -243,6 +243,7 @@ void VBlank()
 			break;
 		case 0x12:
 			WriteVRAMBuffers();
+			ProcessDPLC();
 			break;
 	}
 	

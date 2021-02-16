@@ -62,6 +62,7 @@ extern const uint8_t art_sbz[];
 
 //PLC interface
 void AddPLC(PlcId plc);
+void NewPLC(PlcId plc);
 void ClearPLC();
 void RunPLC();
 void ProcessDPLC();

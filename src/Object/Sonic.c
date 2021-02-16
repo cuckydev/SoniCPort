@@ -669,6 +669,30 @@ static void Sonic_Floor(Object *obj)
 	}
 }
 
+static void Sonic_HurtStop(Object *obj)
+{
+	Scratch_Sonic *scratch = (Scratch_Sonic*)&obj->scratch;
+	
+	//Die when falling below the level
+	if ((limit_btm2 + SCREEN_HEIGHT) < obj->pos.l.y.f.u)
+	{
+		KillSonic(obj, obj); //a1 isn't set
+		return;
+	}
+	
+	//Do collision
+	Sonic_Floor(obj);
+	if (!obj->status.p.f.in_air)
+	{
+		obj->ysp = 0;
+		obj->xsp = 0;
+		obj->inertia = 0;
+		obj->anim = SonAnimId_Walk;
+		obj->routine -= 2;
+		scratch->flash_time = 120;
+	}
+}
+
 //Object collision
 static const uint8_t obj_sizes[][2] = {
 	{ 0x0,  0x0},
@@ -739,7 +763,6 @@ static int React_Enemy(Object *obj, Object *hit)
 		hit->col_type = 0;
 		if (!(--hit->col_property))
 			hit->status.o.f.flag7 = true;
-		return 0; //d0 not set
 	}
 	else
 	{
@@ -775,18 +798,24 @@ static int React_Enemy(Object *obj, Object *hit)
 				obj->ysp = -obj->ysp;
 			else
 				obj->ysp -= 0x100;
-			return (uint16_t)obj->pos.l.y.f.u; //d0 is set to obj->pos.l.y.f.u
 		}
 		else
 		{
 			obj->ysp += 0x100;
-			return 0; //d0 not set
 		}
 	}
+	return 0; //d0 not set
+}
+
+static int React_Monitor(Object *obj, Object *hit)
+{
+	return 0; //d0 not set
 }
 
 static int ReactToItem(Object *obj)
 {
+	Scratch_Sonic *scratch = (Scratch_Sonic*)&obj->scratch;
+	
 	//Get collision area
 	int16_t width, height;
 	int16_t x = obj->pos.l.x.f.u - 8;
@@ -830,6 +859,10 @@ static int ReactToItem(Object *obj)
 				case 0x80: //Hurt
 					return React_ChkHurt(obj, hit);
 				case 0x40: //Other
+					if ((hit->col_type & 0x3F) == 6)
+						return React_Monitor(obj, hit);
+					if (scratch->flash_time < 90)
+						hit->routine = 4;
 					break;
 			}
 		}
@@ -856,7 +889,7 @@ int HurtSonic(Object *obj, Object *src)
 				rings->pos.l.y.f.u = obj->pos.l.y.f.u;
 			}
 		}
-		else
+		else if (!debug_mode)
 		{
 			//Die
 			return KillSonic(obj, src);
@@ -1246,7 +1279,7 @@ static void Sonic_LevelBound(Object *obj)
 	} 
 	
 	//Fall off the bottom boundary
-	if (obj->pos.l.y.f.u >= limit_btm2 + SCREEN_HEIGHT)
+	if ((limit_btm2 + SCREEN_HEIGHT) < obj->pos.l.y.f.u)
 	{
 		if (level_id == LEVEL_ID(ZoneId_SBZ, 1) && obj->pos.l.x.f.u >= 0x2000)
 		{
@@ -1650,8 +1683,57 @@ void Obj_Sonic(Object *obj)
 	}
 	
 	#ifdef DEMO_WARP
-		if (obj->routine != 0 && obj->routine < 10 && obj->pos.l.x.f.u >= limit_right2 + 160)
-			obj->routine = 10;
+		static const uint16_t demo_loc[ZoneId_Num][4] =
+		{
+			{
+				LEVEL_ID(ZoneId_GHZ, 1),
+				LEVEL_ID(ZoneId_GHZ, 2),
+				LEVEL_ID(ZoneId_MZ,  0),
+				0,
+			},
+			{
+				LEVEL_ID(ZoneId_LZ,  1),
+				LEVEL_ID(ZoneId_LZ,  2),
+				LEVEL_ID(ZoneId_SLZ, 0),
+				LEVEL_ID(ZoneId_SBZ, 2),
+			},
+			{
+				LEVEL_ID(ZoneId_MZ,  1),
+				LEVEL_ID(ZoneId_MZ,  2),
+				LEVEL_ID(ZoneId_SYZ, 0),
+				0,
+			},
+			{
+				LEVEL_ID(ZoneId_SLZ, 1),
+				LEVEL_ID(ZoneId_SLZ, 2),
+				LEVEL_ID(ZoneId_SBZ, 0),
+				0,
+			},
+			{
+				LEVEL_ID(ZoneId_SYZ, 1),
+				LEVEL_ID(ZoneId_SYZ, 2),
+				LEVEL_ID(ZoneId_LZ,  0),
+				0,
+			},
+			{
+				LEVEL_ID(ZoneId_SBZ, 1),
+				LEVEL_ID(ZoneId_LZ,  3),
+				LEVEL_ID(ZoneId_GHZ, 0),
+				0,
+			},
+			{
+				0,
+				0,
+				0,
+				0,
+			},
+		};
+		
+		if ((jpad1_press1 & JPAD_START) && (jpad1_hold1 & JPAD_A))
+		{
+			level_id = demo_loc[LEVEL_ZONE(level_id)][LEVEL_ACT(level_id)];
+			restart = true;
+		}
 	#endif
 	
 	//Run player routine
@@ -1770,6 +1852,25 @@ void Obj_Sonic(Object *obj)
 			Sonic_LoadGfx(obj);
 			break;
 		case 4: //Hurt
+			//Fall
+			SpeedToPos(obj);
+			obj->ysp += 0x30;
+			if (obj->status.p.f.underwater)
+				obj->ysp -= 0x20;
+			
+			//Collision
+			Sonic_HurtStop(obj);
+			
+			//Handle general player state stuff
+			Sonic_RecordPosition(obj);
+			Sonic_LevelBound(obj);
+			
+			//Animate
+			Sonic_Animate(obj);
+			
+			//Handle DPLCs and draw sprite
+			Sonic_LoadGfx(obj);
+			DisplaySprite(obj);
 			break;
 		case 6: //Dead
 			//Check for respawning and fall
@@ -1791,103 +1892,5 @@ void Obj_Sonic(Object *obj)
 			if (scratch->death_timer && --scratch->death_timer == 0)
 				restart = true;
 			break;
-	#ifdef DEMO_WARP
-		case 10:
-			//Increment routine
-			obj->routine += 2;
-			
-			//Initialize demo warp state
-			obj->status.p.f.x_flip = false;
-			obj->anim = SonAnimId_Roll;
-			obj->inertia = 0;
-			scratch->flash_time = 100;
-	//Fallthrough
-		case 12:
-			//Animate
-			Sonic_Animate(obj);
-			
-			//Move to the left
-			obj->xsp -= 0x30;
-			obj->ysp >>= 1;
-			SpeedToPos(obj);
-			
-			//Increase animation speed and go to next state after 80 frames
-			obj->inertia += 0xC;
-			if (--scratch->flash_time == 0)
-			{
-				obj->xsp = 0x2000;
-				obj->ysp = 0;
-				obj->routine += 2;
-			}
-			
-			//Handle DPLCs and draw sprite
-			Sonic_LoadGfx(obj);
-			DisplaySprite(obj);
-			break;
-		case 14:;
-			//Load next level once off-screen
-			static const uint16_t demo_loc[ZoneId_Num][4] =
-			{
-				{
-					LEVEL_ID(ZoneId_GHZ, 1),
-					LEVEL_ID(ZoneId_GHZ, 2),
-					LEVEL_ID(ZoneId_MZ,  0),
-					0,
-				},
-				{
-					LEVEL_ID(ZoneId_LZ,  1),
-					LEVEL_ID(ZoneId_LZ,  2),
-					LEVEL_ID(ZoneId_SLZ, 0),
-					LEVEL_ID(ZoneId_SBZ, 2),
-				},
-				{
-					LEVEL_ID(ZoneId_MZ,  1),
-					LEVEL_ID(ZoneId_MZ,  2),
-					LEVEL_ID(ZoneId_SYZ, 0),
-					0,
-				},
-				{
-					LEVEL_ID(ZoneId_SLZ, 1),
-					LEVEL_ID(ZoneId_SLZ, 2),
-					LEVEL_ID(ZoneId_SBZ, 0),
-					0,
-				},
-				{
-					LEVEL_ID(ZoneId_SYZ, 1),
-					LEVEL_ID(ZoneId_SYZ, 2),
-					LEVEL_ID(ZoneId_LZ,  0),
-					0,
-				},
-				{
-					LEVEL_ID(ZoneId_SBZ, 1),
-					LEVEL_ID(ZoneId_LZ,  3),
-					LEVEL_ID(ZoneId_GHZ, 0),
-					0,
-				},
-				{
-					0,
-					0,
-					0,
-					0,
-				},
-			};
-			if (obj->pos.l.x.f.u >= (scrpos_x.f.u + SCREEN_WIDTH + 24))
-			{
-				level_id = demo_loc[LEVEL_ZONE(level_id)][LEVEL_ACT(level_id)];
-				restart = true;
-			}
-			
-			//Set animation
-			obj->anim = SonAnimId_Warp1;
-			Sonic_Animate(obj);
-			
-			//Move to the right
-			SpeedToPos(obj);
-			
-			//Handle DPLCs and draw sprite
-			Sonic_LoadGfx(obj);
-			DisplaySprite(obj);
-			break;
-	#endif
 	}
 }

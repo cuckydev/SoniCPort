@@ -39,9 +39,11 @@ void Obj_Crabmeat(Object *obj);
 void Obj_BuzzBomber(Object *obj);
 void Obj_BuzzMissile(Object *obj);
 void Obj_BuzzExplode(Object *obj);
+void Obj_Ring(Object *obj);
 void Obj_Explosion(Object *obj);
 void Obj_Chopper(Object *obj);
 void Obj_TitleCard(Object *obj);
+void Obj_RingLoss(Object *obj);
 void Obj_GameOverCard(Object *obj);
 void Obj_GHZRock(Object *obj);
 void Obj_Motobug(Object *obj);
@@ -86,7 +88,7 @@ static void (*object_func[])(Object*) = {
 	/* ObjId_BuzzBomber   */ Obj_BuzzBomber,
 	/* ObjId_BuzzMissile  */ Obj_BuzzMissile,
 	/* ObjId_BuzzExplode  */ Obj_BuzzExplode,
-	/* ObjId_25           */ Obj_Null,
+	/* ObjId_Ring         */ Obj_Ring,
 	/* ObjId_26           */ Obj_Null,
 	/* ObjId_Explosion    */ Obj_Explosion,
 	/* ObjId_Animal       */ Obj_Null,
@@ -104,7 +106,7 @@ static void (*object_func[])(Object*) = {
 	/* ObjId_TitleCard    */ Obj_TitleCard,
 	/* ObjId_35           */ Obj_Null,
 	/* ObjId_36           */ Obj_Null,
-	/* ObjId_RingLoss     */ Obj_Null,
+	/* ObjId_RingLoss     */ Obj_RingLoss,
 	/* ObjId_38           */ Obj_Null,
 	/* ObjId_GameOverCard */ Obj_GameOverCard,
 	/* ObjId_3A           */ Obj_Null,
@@ -202,7 +204,6 @@ Object *FindFreeObj()
 	return NULL; //Original would return the address at the end of object space, I believe
 }
 
-
 Object *FindNextFreeObj(Object *obj)
 {
 	for (; (obj - objects) < OBJECTS; obj++)
@@ -210,6 +211,8 @@ Object *FindNextFreeObj(Object *obj)
 			return obj;
 	return NULL; //Original would return the address at the end of object space, I believe
 }
+
+int ExecuteObjects_i;
 
 void ExecuteObjects()
 {
@@ -219,22 +222,34 @@ void ExecuteObjects()
 	{
 		//Run all objects
 		obj = objects;
-		for (int i = 0; i < OBJECTS; i++, obj++)
+		ExecuteObjects_i = OBJECTS - 1;
+		do
+		{
 			if (obj->type)
 				object_func[obj->type](obj);
+			obj++;
+		} while (ExecuteObjects_i-- > 0);
 	}
 	else
 	{
 		//Run reserved objects
 		obj = objects;
-		for (int i = 0; i < RESERVED_OBJECTS; i++, obj++)
+		ExecuteObjects_i = RESERVED_OBJECTS - 1;
+		do
+		{
 			if (obj->type)
 				object_func[obj->type](obj);
+			obj++;
+		} while (ExecuteObjects_i-- > 0);
 		
 		//Draw level objects
-		for (int i = 0; i < LEVEL_OBJECTS; i++, obj++)
+		ExecuteObjects_i = LEVEL_OBJECTS - 1;
+		do
+		{
 			if (obj->type && obj->render.f.on_screen)
 				DisplaySprite(obj);
+			obj++;
+		} while (ExecuteObjects_i-- > 0);
 	}
 }
 

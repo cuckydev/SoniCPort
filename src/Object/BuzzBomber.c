@@ -100,7 +100,7 @@ void Obj_BuzzMissile(Object *obj)
 				DisplaySprite(obj);
 				
 				//Delete if fallen below stage
-				if (obj->pos.l.y.f.u >= limit_btm2 + SCREEN_HEIGHT)
+				if ((limit_btm2 + SCREEN_HEIGHT) < obj->pos.l.y.f.u)
 					DeleteObject(obj);
 			}
 			else

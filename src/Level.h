@@ -151,6 +151,7 @@ extern uint8_t f_switch[0x10];
 extern Oscillatory oscillatory;
 
 extern LevelAnim sprite_anim[4];
+extern uint16_t sprite_anim_3buf;
 
 //Game functions
 void AddPoints(uint16_t points);
@@ -164,4 +165,5 @@ void LevelSizeLoad();
 void LevelDataLoad();
 void ColIndexLoad();
 void DynamicLevelEvents();
+void SynchroAnimate();
 void ObjPosLoad();

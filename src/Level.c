@@ -556,6 +556,7 @@ const uint8_t *opl_ptr0;
 const uint8_t *opl_ptr4;
 const uint8_t *opl_ptr8;
 const uint8_t *opl_ptrC;
+const uint8_t *opl_layout;
 
 uint8_t objstate_left;
 uint8_t objstate_right;
@@ -585,6 +586,7 @@ uint8_t f_switch[0x10];
 Oscillatory oscillatory;
 
 LevelAnim sprite_anim[4];
+uint16_t sprite_anim_3buf;
 
 //Game functions
 void AddPoints(uint16_t points)
@@ -767,6 +769,16 @@ void DynamicLevelEvents()
 						limit_btm1 = 0x300 - SCREEN_TALLADD;
 					break;
 				case 1: //Act 2
+					limit_btm1 = 0x300;
+					if ((uint16_t)scrpos_x.f.u < (0xED0 - SCREEN_WIDEADD2))
+						break;
+					limit_btm1 = 0x200;
+					if ((uint16_t)scrpos_x.f.u < (0x1600 - SCREEN_WIDEADD2))
+						break;
+					limit_btm1 = 0x400;
+					if ((uint16_t)scrpos_x.f.u < (0x1D60 - SCREEN_WIDEADD2))
+						break;
+					limit_btm1 = 0x300;
 					break;
 				case 2: //Act 3
 					break;
@@ -793,6 +805,41 @@ void DynamicLevelEvents()
 			spd *= 4;
 		limit_btm2 += spd;
 		bgscrollvert = true;
+	}
+}
+
+//Object animation
+void SynchroAnimate()
+{
+	//Spiked log
+	if (--sprite_anim[0].time < 0)
+	{
+		sprite_anim[0].time = 11;
+		sprite_anim[0].frame = (sprite_anim[0].frame - 1) & 7;
+	}
+	
+	//Rings
+	if (--sprite_anim[1].time < 0)
+	{
+		sprite_anim[1].time = 7;
+		sprite_anim[1].frame = (sprite_anim[1].frame + 1) & 3;
+	}
+	
+	//Unused
+	if (--sprite_anim[2].time < 0)
+	{
+		sprite_anim[2].time = 7;
+		if (++sprite_anim[2].frame >= 6)
+			sprite_anim[2].frame = 0;
+	}
+	
+	//Bouncing rings
+	if (sprite_anim[3].time != 0)
+	{
+		//WACKY!!
+		sprite_anim_3buf += (uint8_t)sprite_anim[3].time;
+		sprite_anim[3].frame = (sprite_anim_3buf >> 9) & 3;
+		sprite_anim[3].time--;
 	}
 }
 
@@ -853,8 +900,9 @@ void ObjPosLoad()
 			opl_routine += 2;
 			
 			//Initialize state
-			opl_ptr0 = level_obj[LEVEL_ZONE(level_id)][LEVEL_ACT(level_id)][0];
-			opl_ptr4 = level_obj[LEVEL_ZONE(level_id)][LEVEL_ACT(level_id)][0];
+			opl_layout = level_obj[LEVEL_ZONE(level_id)][LEVEL_ACT(level_id)][0];
+			opl_ptr0 = opl_layout;
+			opl_ptr4 = opl_layout;
 			opl_ptr8 = level_obj[LEVEL_ZONE(level_id)][LEVEL_ACT(level_id)][1];
 			opl_ptrC = level_obj[LEVEL_ZONE(level_id)][LEVEL_ACT(level_id)][1];
 			
@@ -907,7 +955,7 @@ void ObjPosLoad()
 				entry = opl_ptr4;
 				if ((load_x -= 0x80) >= 0)
 				{
-					while (load_x < (int16_t)((entry[-6] << 8) | (entry[-5] << 0)))
+					while (entry > opl_layout && load_x < (int16_t)((entry[-6] << 8) | (entry[-5] << 0)))
 					{
 						entry -= 6;
 						if (entry[4] & 0x80)
@@ -932,7 +980,7 @@ void ObjPosLoad()
 				//Move right pointer
 				entry = opl_ptr0;
 				load_x += 0x80 + LOAD_WIDTH;
-				while (load_x <= ((entry[-6] << 8) | (entry[-5] << 0)))
+				while (entry > opl_layout && load_x <= ((entry[-6] << 8) | (entry[-5] << 0)))
 				{
 					if (entry[-2] & 0x80)
 						objstate_right--;
