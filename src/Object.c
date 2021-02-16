@@ -25,7 +25,7 @@ struct SpriteQueue
 	{
 		if (obj->respawn_index)
 			objstate[obj->respawn_index] &= 0x7F;
-		DeleteObject(obj);
+		ObjectDelete(obj);
 	}
 //#endif
 //Don't re-enable this until all objects are implemented
@@ -584,7 +584,7 @@ void DisplaySprite(Object *obj)
 	queue->obj[queue->size++] = obj;
 }
 
-void DeleteObject(Object *obj)
+void ObjectDelete(Object *obj)
 {
 	//Clear object memory
 	memset(obj, 0, sizeof(Object));
@@ -611,7 +611,7 @@ void RememberState(Object *obj)
 		//Off-screen
 		if (obj->respawn_index)
 			objstate[obj->respawn_index] &= 0x7F;
-		DeleteObject(obj);
+		ObjectDelete(obj);
 	}
 	else
 	{

@@ -137,7 +137,7 @@ void Obj_Ring(Object *obj)
 			
 			if (*statep & 1)
 			{
-				DeleteObject(obj);
+				ObjectDelete(obj);
 				return;
 			}
 		}
@@ -147,7 +147,7 @@ void Obj_Ring(Object *obj)
 			obj->frame = sprite_anim[1].frame;
 			DisplaySprite(obj);
 			if (IS_OFFSCREEN(scratch->base_x))
-				DeleteObject(obj);
+				ObjectDelete(obj);
 			break;
 		case 4: //Collected
 			//Change object state
@@ -165,7 +165,7 @@ void Obj_Ring(Object *obj)
 			DisplaySprite(obj);
 			break;
 		case 8: //Delete
-			DeleteObject(obj);
+			ObjectDelete(obj);
 			break;
 	}
 }

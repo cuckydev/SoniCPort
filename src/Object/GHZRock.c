@@ -35,7 +35,7 @@ void Obj_GHZRock(Object *obj)
 			
 			//Delete once off-screen
 			if (IS_OFFSCREEN(obj->pos.l.x.f.u))
-				DeleteObject(obj);
+				ObjectDelete(obj);
 			break;
 	}
 }

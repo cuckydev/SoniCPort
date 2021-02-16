@@ -3,7 +3,7 @@
 //Screen dimensions
 #define SCREEN_SCALE 2 //TODO: make screen scale a variable
 
-#define SCREEN_WIDTH  320
+#define SCREEN_WIDTH  398
 #define SCREEN_HEIGHT 224
 
 #define SCREEN_WIDEADD  (SCREEN_WIDTH - 320)

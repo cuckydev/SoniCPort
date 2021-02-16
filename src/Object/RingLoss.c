@@ -113,12 +113,12 @@ void Obj_RingLoss(Object *obj)
 			//Delete once below level or animation is done
 			if (!sprite_anim[3].time)
 			{
-				DeleteObject(obj);
+				ObjectDelete(obj);
 				break;
 			}
 			if ((limit_btm2 + SCREEN_HEIGHT) < obj->pos.l.y.f.u)
 			{
-				DeleteObject(obj);
+				ObjectDelete(obj);
 				break;
 			}
 			
@@ -140,7 +140,7 @@ void Obj_RingLoss(Object *obj)
 			DisplaySprite(obj);
 			break;
 		case 8: //Delete
-			DeleteObject(obj);
+			ObjectDelete(obj);
 			break;
 	}
 }

@@ -186,9 +186,9 @@ static void Obj_GHZBridge_ChkDel(Object *obj)
 		{
 			Object *seg = objects + *segp++;
 			if (seg != obj)
-				DeleteObject(seg);
+				ObjectDelete(seg);
 		} while (segs-- > 0);
-		DeleteObject(obj);
+		ObjectDelete(obj);
 	}
 }
 
@@ -279,7 +279,7 @@ void Obj_GHZBridge(Object *obj)
 			break;
 		case 6: //Delete
 		case 8:
-			DeleteObject(obj);
+			ObjectDelete(obj);
 			break;
 		case 10: //Segment draw
 			DisplaySprite(obj);

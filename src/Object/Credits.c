@@ -40,7 +40,7 @@ void Obj_Credits(Object *obj)
 				{
 					dry_palette_dup[2][0] = 0xEEE;
 					dry_palette_dup[2][1] = 0x880;
-					DeleteObject(obj);
+					ObjectDelete(obj);
 					break;
 				}
 			}

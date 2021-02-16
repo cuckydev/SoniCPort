@@ -159,7 +159,7 @@ void Obj_Crabmeat(Object *obj)
 			RememberState(obj);
 			break;
 		case 4: //Delete
-			DeleteObject(obj);
+			ObjectDelete(obj);
 			break;
 		case 6: //Projectile initialization
 			//Increment routine
@@ -187,7 +187,7 @@ void Obj_Crabmeat(Object *obj)
 			
 			//Delete if fallen below stage
 			if (obj->pos.l.y.f.u >= limit_btm2 + SCREEN_HEIGHT)
-				DeleteObject(obj);
+				ObjectDelete(obj);
 			break;
 	}
 }

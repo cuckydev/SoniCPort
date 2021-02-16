@@ -80,7 +80,7 @@ void Obj_BuzzMissile(Object *obj)
 		case 2: //Charging
 			//Delete object if parent Buzz Bomber has exploded
 			if (scratch->parent->type == ObjId_Explosion)
-				DeleteObject(obj);
+				ObjectDelete(obj);
 			
 			//Animate and draw
 			AnimateSprite(obj, anim_buzz_missile);
@@ -101,7 +101,7 @@ void Obj_BuzzMissile(Object *obj)
 				
 				//Delete if fallen below stage
 				if ((limit_btm2 + SCREEN_HEIGHT) < obj->pos.l.y.f.u)
-					DeleteObject(obj);
+					ObjectDelete(obj);
 			}
 			else
 			{
@@ -112,13 +112,13 @@ void Obj_BuzzMissile(Object *obj)
 			}
 			break;
 		case 6: //Delete
-			DeleteObject(obj);
+			ObjectDelete(obj);
 			break;
 		case 8: //Fired by Newtron
 			//Delete once off-screen
 			if (!obj->render.f.on_screen)
 			{
-				DeleteObject(obj);
+				ObjectDelete(obj);
 				break;
 			}
 			
@@ -254,7 +254,7 @@ void Obj_BuzzBomber(Object *obj)
 			RememberState(obj);
 			break;
 		case 4: //Delete
-			DeleteObject(obj);
+			ObjectDelete(obj);
 			break;
 	}
 }

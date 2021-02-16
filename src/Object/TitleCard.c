@@ -135,7 +135,7 @@ void Obj_TitleCard(Object *obj)
 					AddPLC(PlcId_Explode);
 					AddPLC(PlcId_GHZAnimals + LEVEL_ZONE(level_id));
 				}
-				DeleteObject(obj);
+				ObjectDelete(obj);
 				break;
 			}
 			

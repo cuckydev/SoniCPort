@@ -130,7 +130,7 @@ void Obj_Motobug(Object *obj)
 			DisplaySprite(obj);
 			break;
 		case 6: //Delete (smoke)
-			DeleteObject(obj);
+			ObjectDelete(obj);
 			break;
 	}
 }

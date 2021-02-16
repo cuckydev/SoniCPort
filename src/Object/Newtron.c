@@ -168,7 +168,7 @@ void Obj_Newtron(Object *obj)
 			RememberState(obj);
 			break;
 		case 4: //Delete
-			DeleteObject(obj);
+			ObjectDelete(obj);
 			break;
 	}
 }

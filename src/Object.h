@@ -277,7 +277,7 @@ void ExecuteObjects();
 void BuildSprites();
 void AnimateSprite(Object *obj, const uint8_t *anim_script);
 void DisplaySprite(Object *obj);
-void DeleteObject(Object *obj);
+void ObjectDelete(Object *obj);
 void SpeedToPos(Object *obj);
 void ObjectFall(Object *obj);
 void RememberState(Object *obj);

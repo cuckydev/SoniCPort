@@ -52,7 +52,7 @@ void Obj_Explosion(Object *obj)
 				obj->frame_time.b = 7;
 				if (++obj->frame == 5)
 				{
-					DeleteObject(obj);
+					ObjectDelete(obj);
 					break;
 				}
 			}
