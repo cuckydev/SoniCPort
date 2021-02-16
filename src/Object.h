@@ -73,7 +73,7 @@ typedef enum
 	ObjId_38,           //38
 	ObjId_GameOverCard, //39
 	ObjId_3A,           //3A
-	ObjId_3B,           //3B
+	ObjId_GHZRock,      //3B
 	ObjId_3C,           //3C
 	ObjId_3D,           //3D
 	ObjId_3E,           //3E
@@ -278,6 +278,8 @@ void DeleteObject(Object *obj);
 void SpeedToPos(Object *obj);
 void ObjectFall(Object *obj);
 void RememberState(Object *obj);
+void MvSonicOnPtfm(Object *obj, Object *pla, int16_t y, int16_t prev_x);
 void PlatformObject(Object *obj, uint16_t x_rad);
 void Platform3(Object *obj, Object *pla, int16_t top);
-bool ExitPlatform(Object *obj, int16_t x_rad, int16_t x_dia2, int16_t *x_off_p);
+bool ExitPlatform(Object *obj, uint16_t x_rad, uint16_t x_dia2, int16_t *x_off_p);
+int SolidObject(Object *obj, uint16_t x_rad, uint16_t y_rad1, uint16_t y_rad2, int16_t prev_x);

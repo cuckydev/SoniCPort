@@ -40,6 +40,9 @@
 //Helper macros
 #define POSITIVE_MOD(x, y) (((x) % (y) + (y)) % (y))
 
+//LevelScroll.h must be included
+#define IS_OFFSCREEN(x) (uint16_t)(((x) & ~0x7F) - ((scrpos_x.f.u - 0x80) & ~0x7F)) > (((SCREEN_WIDTH + 0x80) & ~0x7F) + 0x100)
+
 //Resource include
 #ifdef SCP_REV00
 	#define RES_REV(x) <Resource/x##REV00.h>

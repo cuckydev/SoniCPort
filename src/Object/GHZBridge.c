@@ -5,6 +5,8 @@
 
 #include "MathUtil.h"
 
+#include <Macros.h>
+
 //GHZ bridge assets
 static const uint8_t map_ghz_bridge[] = {
 	#include <Resource/Mappings/GHZBridge.h>
@@ -174,9 +176,7 @@ static void Obj_GHZBridge_ChkDel(Object *obj)
 {
 	Scratch_GHZBridge *scratch = (Scratch_GHZBridge*)&obj->scratch;
 	
-	int16_t ox = obj->pos.l.x.f.u & ~0x7F;
-	int16_t sx = (scrpos_x.f.u - 0x80) & ~0x7F;
-	if ((uint16_t)(ox - sx) > (((SCREEN_WIDTH + 0x80) & ~0x7F) + 0x100))
+	if (IS_OFFSCREEN(obj->pos.l.x.f.u))
 	{
 		//Off-screen
 		uint8_t *segp = &scratch->subtype; //seg immediately follows
