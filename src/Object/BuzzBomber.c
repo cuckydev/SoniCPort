@@ -54,7 +54,7 @@ void Obj_BuzzMissile(Object *obj)
 			
 			//Set object drawing information
 			obj->mappings = map_buzz_missile;
-			obj->tile = TILE_MAP(0, 0, 0, 0, 0x444);
+			obj->tile = TILE_MAP(0, 1, 0, 0, 0x444);
 			obj->render.b = 0;
 			obj->render.f.align_fg = true;
 			obj->priority = 3;

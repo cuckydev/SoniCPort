@@ -22,7 +22,7 @@ static void Obj_RingLoss_SetupRing(Object *obj, int16_t *xsp, int16_t *ysp, word
 	
 	//Set object drawing information
 	ring->mappings = map_ring;
-	obj->tile = TILE_MAP(0, 1, 0, 0, 0x7B2);
+	ring->tile = TILE_MAP(0, 1, 0, 0, 0x7B2);
 	ring->render.b = 0;
 	ring->render.f.align_fg = true;
 	ring->priority = 3;
