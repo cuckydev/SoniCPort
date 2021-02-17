@@ -31,8 +31,7 @@ void Obj_Explosion(Object *obj)
 			
 			//Set object drawing information
 			obj->mappings = map_explosion;
-			obj->tile.w = 0;
-			obj->tile.s.pattern = 0x5A0;
+			obj->tile = TILE_MAP(0, 0, 0, 0, 0x5A0);
 			obj->render.b = 0;
 			obj->render.f.align_fg = true;
 			obj->priority = 1;

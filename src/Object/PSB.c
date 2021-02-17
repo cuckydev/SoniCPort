@@ -22,8 +22,7 @@ void Obj_PSB(Object *obj)
 			
 			//Set object drawing information
 			obj->mappings = map_psb;
-			obj->tile.w = 0;
-			obj->tile.s.pattern = 0x200;
+			obj->tile = TILE_MAP(0, 0, 0, 0, 0x200);
 			
 			//Handle different frames
 			if (obj->frame >= 2)
@@ -32,9 +31,7 @@ void Obj_PSB(Object *obj)
 				if (obj->frame == 3)
 				{
 					//Trademark
-					obj->tile.w = 0;
-					obj->tile.s.palette = 1;
-					obj->tile.s.pattern = 0x510;
+					obj->tile = TILE_MAP(0, 1, 0, 0, 0x510);
 					obj->pos.s.x = 0x170 + (PLANE_WIDEADD * 4);
 					obj->pos.s.y = 0xF8;
 				}

@@ -19,63 +19,42 @@
 #pragma pack(push)
 #pragma pack(1)
 
+//Tile structure
+#define TILE_PRIORITY_AND   0x8000
+#define TILE_PRIORITY_SHIFT 15
+#define TILE_PALETTE_AND    0x6000
+#define TILE_PALETTE_SHIFT  13
+#define TILE_Y_FLIP_AND     0x1000
+#define TILE_Y_FLIP_SHIFT   12
+#define TILE_X_FLIP_AND     0x0800
+#define TILE_X_FLIP_SHIFT   11
+#define TILE_PATTERN_AND    0x07FF
+#define TILE_PATTERN_SHIFT  0
+
+#define TILE_MAP(priority, palette, y_flip, x_flip, pattern)      \
+	(                                                             \
+		((priority << TILE_PRIORITY_SHIFT) & TILE_PRIORITY_AND) | \
+		((palette  << TILE_PALETTE_SHIFT)  & TILE_PALETTE_AND)  | \
+		((y_flip   << TILE_Y_FLIP_SHIFT)   & TILE_Y_FLIP_AND)   | \
+		((x_flip   << TILE_X_FLIP_SHIFT)   & TILE_X_FLIP_AND)   | \
+		((pattern  << TILE_PATTERN_SHIFT)  & TILE_PATTERN_AND)    \
+	)
+
 //Sprite structure
-typedef union
-{
-	struct
-	{
-		uint16_t pattern : 11;
-		uint8_t x_flip : 1;
-		uint8_t y_flip : 1;
-		uint8_t palette : 2;
-		uint8_t priority : 1;
-	} s;
-	uint16_t w;
-} VDP_Tile;
-
-#define TILE_TO_STRUCT(v)           \
-{                                   \
-	.s = {                          \
-		(uint16_t)((v) & 0x7FF),    \
-		(uint8_t)(((v) >> 11) & 1), \
-		(uint8_t)(((v) >> 12) & 1), \
-		(uint8_t)(((v) >> 13) & 3), \
-		(uint8_t)(((v) >> 15) & 1), \
-	}                               \
-}
-
-typedef union
-{
-	struct
-	{
-		uint8_t link;
-		uint8_t height : 2;
-		uint8_t width : 2;
-		uint8_t pad1 : 4;
-	} s;
-	uint16_t w;
-} VDP_SpriteInfo;
-
-typedef struct
-{
-	//Y coordinate
-	uint16_t y;
-	union
-	{
-		struct
-		{
-			uint8_t height : 2;
-			uint8_t width : 2;
-			uint8_t pad : 4;
-		} s;
-		uint8_t b;
-	} size;
-	uint8_t link;
-	VDP_Tile tile;
-	uint16_t x;
-} VDP_Sprite;
-
-#pragma pack(pop)
+//word y 000000YYYYYYYYYY
+#define SPRITE_Y_AND   0x3FF
+#define SPRITE_Y_SHIFT 0
+//word sizelink 0000WWHH00LLLLLL
+#define SPRITE_SL_W_AND   0x0C00
+#define SPRITE_SL_W_SHIFT 10
+#define SPRITE_SL_H_AND   0x0300
+#define SPRITE_SL_H_SHIFT 8
+#define SPRITE_SL_L_AND   0x003F
+#define SPRITE_SL_L_SHIFT 0
+//word tile
+//word x
+#define SPRITE_X_AND   0x1FF
+#define SPRITE_X_SHIFT 0
 
 //VDP interface
 int VDP_Init(const MD_Header *header);

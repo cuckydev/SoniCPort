@@ -30,8 +30,7 @@ void Obj_Motobug(Object *obj)
 		case 0: //Initialization
 			//Set object drawing information
 			obj->mappings = map_motobug;
-			obj->tile.w = 0;
-			obj->tile.s.pattern = 0x4F0;
+			obj->tile = TILE_MAP(0, 0, 0, 0, 0x4F0);
 			obj->render.b = 0;
 			obj->render.f.align_fg = true;
 			obj->priority = 4;

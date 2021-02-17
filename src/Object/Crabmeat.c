@@ -49,8 +49,7 @@ void Obj_Crabmeat(Object *obj)
 			
 			//Initialize object drawing information
 			obj->mappings = map_crabmeat;
-			obj->tile.w = 0;
-			obj->tile.s.pattern = 0x400;
+			obj->tile = TILE_MAP(0, 0, 0, 0, 0x400);
 			obj->render.b = 0;
 			obj->render.f.align_fg = true;
 			obj->priority = 3;
@@ -167,8 +166,7 @@ void Obj_Crabmeat(Object *obj)
 			
 			//Initialize object drawing information
 			obj->mappings = map_crabmeat;
-			obj->tile.w = 0;
-			obj->tile.s.pattern = 0x400;
+			obj->tile = TILE_MAP(0, 0, 0, 0, 0x400);
 			obj->render.b = 0;
 			obj->render.f.align_fg = true;
 			obj->priority = 3;

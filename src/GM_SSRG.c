@@ -55,12 +55,11 @@ static const uint16_t pal_ssrg[] = {
 //SSRG planes
 static void CopyTilemap_Single(uint16_t v, size_t offset, size_t width, size_t height)
 {
-	VDP_Tile tile = TILE_TO_STRUCT(v);
 	while (height-- > 0)
 	{
 		VDP_SeekVRAM(offset);
 		for (size_t x = 0; x < width; x++)
-			VDP_WriteVRAM((const uint8_t*)&tile, 2);
+			VDP_WriteVRAM((const uint8_t*)&v, 2);
 		offset += PLANE_WIDTH * 2;
 	}
 }
@@ -74,8 +73,7 @@ static void CopyTilemap_Add(const uint8_t *tilemap, size_t offset, size_t width,
 		for (size_t x = 0; x < width; x++)
 		{
 			uint16_t v = ((*tilemap++ << 8) | (*tilemap++ << 0)) + add;
-			VDP_Tile tile = TILE_TO_STRUCT(v);
-			VDP_WriteVRAM((const uint8_t*)&tile, 2);
+			VDP_WriteVRAM((const uint8_t*)&v, 2);
 		}
 		offset += PLANE_WIDTH * 2;
 	}
@@ -123,9 +121,8 @@ static void SRG_DrawFG()
 		for (int i = 0; i < 3; i++)
 		{
 			uint16_t v = ((mapp[0] << 8) | (mapp[1] << 0)) + 0x2000;
-			VDP_Tile tile = TILE_TO_STRUCT(v);
 			VDP_SeekVRAM(offset);
-			VDP_WriteVRAM((const uint8_t*)&tile, 2);
+			VDP_WriteVRAM((const uint8_t*)&v, 2);
 			offset += PLANE_WIDTH << 1;
 			mapp += 0x46;
 		}
@@ -202,9 +199,7 @@ static void Obj_Letters(Object *obj)
 			obj->pos.s.x = *datap++ + PLANE_WIDEADD * 4;
 			obj->pos.s.y = *datap++;
 			
-			uint16_t v = *datap++;
-			VDP_Tile tile = TILE_TO_STRUCT(v);
-			obj->tile.w = tile.w;
+			obj->tile = *datap++;
 			
 			scratch->timer = *datap++;
 			obj->xsp = *datap++;
@@ -254,10 +249,10 @@ static void Obj_Letters(Object *obj)
 			else if ((++scratch->timer) & 1)
 			{
 				//Handle flashing
-				if (obj->tile.s.palette >= 2 || obj->tile.s.priority)
+				if ((obj->tile >> TILE_PALETTE_SHIFT) >= 2)
 				{
 					//Reset palette and state, increment routine
-					obj->tile.s.palette = 0;
+					obj->tile &= ~TILE_PALETTE_AND;
 					obj->routine += 2;
 					obj->xsp = 0;
 					obj->ysp = 0;
@@ -269,7 +264,7 @@ static void Obj_Letters(Object *obj)
 				else
 				{
 					//Increment palette
-					obj->tile.s.palette++;
+					obj->tile += TILE_MAP(0, 1, 0, 0, 0);
 				}
 			}
 	//Fallthrough
@@ -483,9 +478,7 @@ static void Obj_SonicNeon(Object *obj)
 		obj->type = 1; //'Engine doesn't like the ID being null'
 		
 		//Set object drawing information
-		obj->tile.w = 0;
-		obj->tile.s.palette = 3;
-		obj->tile.s.pattern = 0x400;
+		obj->tile = TILE_MAP(0, 3, 0, 0, 0x400);
 		obj->mappings = mappings;
 		
 		//Initialize state

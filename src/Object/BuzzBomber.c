@@ -9,9 +9,11 @@ static const uint8_t map_buzz_bomber[] = {
 static const uint8_t map_buzz_missile[] = {
 	#include <Resource/Mappings/BuzzMissile.h>
 };
+/*
 static const uint8_t map_buzz_explode[] = {
 	#include <Resource/Mappings/BuzzExplode.h>
 };
+*/
 
 static const uint8_t anim_buzz_bomber[] = {
 	#include <Resource/Animation/BuzzBomber.h>
@@ -23,7 +25,7 @@ static const uint8_t anim_buzz_missile[] = {
 //Buzz Bomber's explosion
 void Obj_BuzzExplode(Object *obj)
 {
-	
+	(void)obj;
 }
 
 //Buzz Bomber's missile
@@ -52,9 +54,7 @@ void Obj_BuzzMissile(Object *obj)
 			
 			//Set object drawing information
 			obj->mappings = map_buzz_missile;
-			obj->tile.w = 0;
-			obj->tile.s.palette = 1;
-			obj->tile.s.pattern = 0x444;
+			obj->tile = TILE_MAP(0, 0, 0, 0, 0x444);
 			obj->render.b = 0;
 			obj->render.f.align_fg = true;
 			obj->priority = 3;
@@ -150,8 +150,7 @@ void Obj_BuzzBomber(Object *obj)
 			
 			//Set object drawing information
 			obj->mappings = map_buzz_bomber;
-			obj->tile.w = 0;
-			obj->tile.s.pattern = 0x444;
+			obj->tile = TILE_MAP(0, 0, 0, 0, 0x444);
 			obj->render.b = 0;
 			obj->render.f.align_fg = true;
 			obj->priority = 3;

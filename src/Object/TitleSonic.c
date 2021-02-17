@@ -23,9 +23,7 @@ void Obj_TitleSonic(Object *obj)
 			
 			//Set object drawing information
 			obj->mappings = map_titlesonic;
-			obj->tile.w = 0;
-			obj->tile.s.palette = 1;
-			obj->tile.s.pattern = 0x300;
+			obj->tile = TILE_MAP(0, 1, 0, 0, 0x300);
 			obj->priority = 1;
 			
 			//Initialize state

@@ -52,12 +52,11 @@ void GetBlockData(const uint8_t **meta, const uint8_t **block, int16_t sx, int16
 	*block = level_map16 + (tile << 3);
 }
 
-#define WRITE_TILE(off, xor)                                 \
-{                                                            \
-	uint16_t v = ((*block++ << 8) | (*block++ << 0)) ^ xor;  \
-	VDP_Tile tile = TILE_TO_STRUCT(v);                       \
-	VDP_SeekVRAM(offset + (off));                            \
-	VDP_WriteVRAM((const uint8_t*)&tile, 2);                 \
+#define WRITE_TILE(off, xor)                                \
+{                                                           \
+	VDP_SeekVRAM(offset + (off));                           \
+	uint16_t v = ((*block++ << 8) | (*block++ << 0)) ^ xor; \
+	VDP_WriteVRAM((const uint8_t*)&v, 2);                   \
 }
 
 void DrawBlock(const uint8_t *meta, const uint8_t *block, size_t offset)

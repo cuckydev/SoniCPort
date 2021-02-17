@@ -215,7 +215,7 @@ typedef struct
 {
 	uint8_t type;            //Object type
 	ObjectRender render;     //Object render
-	VDP_Tile tile;           //Object base tile
+	uint16_t tile;           //Object base tile
 	const uint8_t *mappings; //Object mappings
 	union
 	{

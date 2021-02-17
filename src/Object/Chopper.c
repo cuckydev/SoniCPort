@@ -27,8 +27,7 @@ void Obj_Chopper(Object *obj)
 			
 			//Set object drawing information
 			obj->mappings = map_chopper;
-			obj->tile.w = 0;
-			obj->tile.s.pattern = 0x47B;
+			obj->tile = TILE_MAP(0, 0, 0, 0, 0x47B);
 			obj->render.b = 0;
 			obj->render.f.align_fg = true;
 			obj->priority = 4;

@@ -20,9 +20,7 @@ void Obj_GHZRock(Object *obj)
 			
 			//Set object drawing information
 			obj->mappings = map_ghz_rock;
-			obj->tile.w = 0;
-			obj->tile.s.palette = 3;
-			obj->tile.s.pattern = 0x3D0;
+			obj->tile = TILE_MAP(0, 3, 0, 0, 0x3D0);
 			obj->render.b = 0;
 			obj->render.f.align_fg = true;
 			obj->width_pixels = 19;

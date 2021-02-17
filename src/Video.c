@@ -14,8 +14,8 @@ int16_t hbla_pos;
 
 int16_t vid_scrpos_y_dup, vid_bg_scrpos_y_dup, vid_scrpos_x_dup, vid_bg_scrpos_x_dup, vid_bg3_scrpos_y_dup, vid_bg3_scrpos_x_dup;
 
-VDP_Sprite sprite_buffer[BUFFER_SPRITES]; //Apparently the last 16 entries of this intrude other memory in the original
-                                          //... now how would I emulate that?
+uint16_t sprite_buffer[BUFFER_SPRITES][4]; //Apparently the last 16 entries of this intrude other memory in the original
+                                           //... now how would I emulate that?
 int16_t hscroll_buffer[SCREEN_HEIGHT][2];
 
 //Video interface
@@ -75,8 +75,7 @@ void CopyTilemap(const uint8_t *tilemap, size_t offset, size_t width, size_t hei
 		for (size_t x = 0; x < width; x++)
 		{
 			uint16_t v = (*tilemap++ << 8) | (*tilemap++ << 0);
-			VDP_Tile tile = TILE_TO_STRUCT(v);
-			VDP_WriteVRAM((const uint8_t*)&tile, 2);
+			VDP_WriteVRAM((const uint8_t*)&v, 2);
 		}
 		offset += PLANE_WIDTH * 2;
 	}

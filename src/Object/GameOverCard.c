@@ -34,9 +34,7 @@ void Obj_GameOverCard(Object *obj)
 			
 			//Set object drawing information
 			obj->mappings = map_game_over;
-			obj->tile.w = 0;
-			obj->tile.s.pattern = 0x55E;
-			obj->tile.s.priority = true;
+			obj->tile = TILE_MAP(1, 0, 0, 0, 0x55E);
 			obj->render.b = 0;
 			obj->priority = 0;
 	//Fallthrough

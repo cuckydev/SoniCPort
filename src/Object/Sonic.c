@@ -942,7 +942,7 @@ int KillSonic(Object *obj, Object *src)
 	obj->inertia = 0;
 	scratch->x38.death_y = obj->pos.l.y.f.u;
 	obj->anim = SonAnimId_Death;
-	obj->tile.s.priority = true;
+	obj->tile |= TILE_PRIORITY_AND;
 	
 	//Play death sound
 	//move.w	#sfx_Death,d0	; play normal death sound
@@ -1749,8 +1749,7 @@ void Obj_Sonic(Object *obj)
 			
 			//Set object drawing information
 			obj->mappings = map_sonic;
-			obj->tile.w = 0;
-			obj->tile.s.pattern = 0x780;
+			obj->tile = TILE_MAP(0, 0, 0, 0, 0x780);
 			obj->priority = 2;
 			obj->width_pixels = 24;
 			obj->render.b = 0;

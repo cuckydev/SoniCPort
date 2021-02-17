@@ -66,9 +66,7 @@ static void Obj_Ring_SetupRing(Object *obj, uint8_t index, int16_t x, int16_t y,
 	
 	//Set object drawing information
 	ring->mappings = map_ring;
-	ring->tile.w = 0;
-	ring->tile.s.palette = 1;
-	ring->tile.s.pattern = 0x7B2;
+	ring->tile = TILE_MAP(0, 1, 0, 0, 0x7B2);
 	ring->render.b = 0;
 	ring->render.f.align_fg = true;
 	ring->priority = 2;

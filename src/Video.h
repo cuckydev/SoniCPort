@@ -13,7 +13,7 @@ extern int16_t hbla_pos;
 
 extern int16_t vid_scrpos_y_dup, vid_bg_scrpos_y_dup, vid_scrpos_x_dup, vid_bg_scrpos_x_dup, vid_bg3_scrpos_y_dup, vid_bg3_scrpos_x_dup;
 
-extern VDP_Sprite sprite_buffer[BUFFER_SPRITES];
+extern uint16_t sprite_buffer[BUFFER_SPRITES][4];
 extern int16_t hscroll_buffer[SCREEN_HEIGHT][2];
 
 //Video interface

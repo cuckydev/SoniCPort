@@ -96,9 +96,7 @@ void Obj_TitleCard(Object *obj)
 				
 				a1->frame = d0;
 				a1->mappings = map_titlecard;
-				a1->tile.w = 0;
-				a1->tile.s.priority = true;
-				a1->tile.s.pattern = 0x580;
+				a1->tile = TILE_MAP(1, 0, 0, 0, 0x580);
 				a1->width_pixels = 0;
 				a1->render.b = 0;
 				a1->priority = 0;

@@ -254,7 +254,7 @@ void ExecuteObjects()
 }
 
 //Object drawing
-void BuildSprites_Draw(VDP_Sprite **sprite, uint8_t *sprite_i, uint16_t x, uint16_t y, Object *obj, const uint8_t *mappings, uint8_t pieces)
+void BuildSprites_Draw(uint16_t **sprite, uint8_t *sprite_i, uint16_t x, uint16_t y, Object *obj, const uint8_t *mappings, uint8_t pieces)
 {
 	if (obj->render.f.x_flip)
 	{
@@ -267,20 +267,17 @@ void BuildSprites_Draw(VDP_Sprite **sprite, uint8_t *sprite_i, uint16_t x, uint1
 				if (*sprite_i >= BUFFER_SPRITES)
 					break;
 				
+				//Read mappings
+				int8_t map_y = *mappings++;
+				uint8_t map_size = *mappings++;
+				uint16_t map_tile = (*mappings++ << 8) | (*mappings++ << 0);
+				int8_t map_x = *mappings++;
+				
 				//Write sprite
-				int8_t py = (int8_t)*mappings++;
-				uint8_t size = *mappings++;
-				(*sprite)->y = y - py - (((size << 3) & 0x18) + 8);
-				(*sprite)->size.s.width = (size >> 2);
-				(*sprite)->size.s.height = size;
-				(*sprite)->link = ++(*sprite_i);
-				uint16_t tile = (*mappings++ << 8) | (*mappings++ << 0);
-				(*sprite)->tile.s.priority = obj->tile.s.priority ^ (uint8_t)(tile >> 15);
-				(*sprite)->tile.s.palette  = obj->tile.s.palette  + (uint8_t)(tile >> 13);
-				(*sprite)->tile.s.y_flip   = obj->tile.s.y_flip   ^ (uint8_t)(tile >> 12) ^ 1;
-				(*sprite)->tile.s.x_flip   = obj->tile.s.x_flip   ^ (uint8_t)(tile >> 11) ^ 1;
-				(*sprite)->tile.s.pattern  = obj->tile.s.pattern  + (uint16_t)tile;
-				uint16_t px = x - ((int8_t)*mappings++) - (((size << 1) & 0x18) + 8);
+				*(*sprite)++ = y - map_y - (((map_size << 3) & 0x18) + 8); //y
+				*(*sprite)++ = (map_size << 8) | ++(*sprite_i); //size and link
+				*(*sprite)++ = (map_tile + obj->tile) ^ (TILE_Y_FLIP_AND | TILE_X_FLIP_AND); //tile
+				uint16_t px = x - map_x - (((map_size << 1) & 0x18) + 8);
 				#if (SCREEN_WIDTH <= 320)
 					if ((px &= 0x1FF) == 0)
 						px++; //Prevent sprite from being x=0 (acts as a mask)
@@ -288,9 +285,7 @@ void BuildSprites_Draw(VDP_Sprite **sprite, uint8_t *sprite_i, uint16_t x, uint1
 					if (px == 0)
 						px++;
 				#endif
-				(*sprite)->x = px;
-				
-				(*sprite)++;
+				*(*sprite)++ = px; //x
 			}
 		}
 		else
@@ -302,20 +297,17 @@ void BuildSprites_Draw(VDP_Sprite **sprite, uint8_t *sprite_i, uint16_t x, uint1
 				if (*sprite_i >= BUFFER_SPRITES)
 					break;
 				
+				//Read mappings
+				int8_t map_y = *mappings++;
+				uint8_t map_size = *mappings++;
+				uint16_t map_tile = (*mappings++ << 8) | (*mappings++ << 0);
+				int8_t map_x = *mappings++;
+				
 				//Write sprite
-				int8_t py = (int8_t)*mappings++;
-				(*sprite)->y = y + py;
-				uint8_t size = *mappings++;
-				(*sprite)->size.s.width = (size >> 2);
-				(*sprite)->size.s.height = size;
-				(*sprite)->link = ++(*sprite_i);
-				uint16_t tile = (*mappings++ << 8) | (*mappings++ << 0);
-				(*sprite)->tile.s.priority = obj->tile.s.priority ^ (uint8_t)(tile >> 15);
-				(*sprite)->tile.s.palette  = obj->tile.s.palette  + (uint8_t)(tile >> 13);
-				(*sprite)->tile.s.y_flip   = obj->tile.s.y_flip   ^ (uint8_t)(tile >> 12);
-				(*sprite)->tile.s.x_flip   = obj->tile.s.x_flip   ^ (uint8_t)(tile >> 11) ^ 1;
-				(*sprite)->tile.s.pattern  = obj->tile.s.pattern  + (uint16_t)tile;
-				uint16_t px = x - ((int8_t)*mappings++) - (((size << 1) & 0x18) + 8);
+				*(*sprite)++ = y + map_y; //y
+				*(*sprite)++ = (map_size << 8) | ++(*sprite_i); //size and link
+				*(*sprite)++ = (map_tile + obj->tile) ^ TILE_X_FLIP_AND; //tile
+				uint16_t px = x - map_x - (((map_size << 1) & 0x18) + 8);
 				#if (SCREEN_WIDTH <= 320)
 					if ((px &= 0x1FF) == 0)
 						px++; //Prevent sprite from being x=0 (acts as a mask)
@@ -323,9 +315,7 @@ void BuildSprites_Draw(VDP_Sprite **sprite, uint8_t *sprite_i, uint16_t x, uint1
 					if (px == 0)
 						px++;
 				#endif
-				(*sprite)->x = px;
-				
-				(*sprite)++;
+				*(*sprite)++ = px; //x
 			}
 		}
 	}
@@ -338,20 +328,17 @@ void BuildSprites_Draw(VDP_Sprite **sprite, uint8_t *sprite_i, uint16_t x, uint1
 			if (*sprite_i >= BUFFER_SPRITES)
 				break;
 			
+			//Read mappings
+			int8_t map_y = *mappings++;
+			uint8_t map_size = *mappings++;
+			uint16_t map_tile = (*mappings++ << 8) | (*mappings++ << 0);
+			int8_t map_x = *mappings++;
+			
 			//Write sprite
-			int8_t py = (int8_t)*mappings++;
-			uint8_t size = *mappings++;
-			(*sprite)->y = y - py - (((size << 3) & 0x18) + 8);
-			(*sprite)->size.s.width = (size >> 2);
-			(*sprite)->size.s.height = size;
-			(*sprite)->link = ++(*sprite_i);
-			uint16_t tile = (*mappings++ << 8) | (*mappings++ << 0);
-			(*sprite)->tile.s.priority = obj->tile.s.priority ^ (uint8_t)(tile >> 15);
-			(*sprite)->tile.s.palette  = obj->tile.s.palette  + (uint8_t)(tile >> 13);
-			(*sprite)->tile.s.y_flip   = obj->tile.s.y_flip   ^ (uint8_t)(tile >> 12) ^ 1;
-			(*sprite)->tile.s.x_flip   = obj->tile.s.x_flip   ^ (uint8_t)(tile >> 11);
-			(*sprite)->tile.s.pattern  = obj->tile.s.pattern  + (uint16_t)tile;
-			uint16_t px = x + (int8_t)*mappings++;
+			*(*sprite)++ = y - map_y - (((map_size << 3) & 0x18) + 8); //y
+			*(*sprite)++ = (map_size << 8) | ++(*sprite_i); //size and link
+			*(*sprite)++ = (map_tile + obj->tile) ^ TILE_Y_FLIP_AND; //tile
+			uint16_t px = x + map_x;
 			#if (SCREEN_WIDTH <= 320)
 				if ((px &= 0x1FF) == 0)
 					px++; //Prevent sprite from being x=0 (acts as a mask)
@@ -359,9 +346,7 @@ void BuildSprites_Draw(VDP_Sprite **sprite, uint8_t *sprite_i, uint16_t x, uint1
 				if (px == 0)
 					px++;
 			#endif
-			(*sprite)->x = px;
-			
-			(*sprite)++;
+			*(*sprite)++ = px; //x
 		}
 	}
 	else
@@ -373,20 +358,17 @@ void BuildSprites_Draw(VDP_Sprite **sprite, uint8_t *sprite_i, uint16_t x, uint1
 			if (*sprite_i >= BUFFER_SPRITES)
 				break;
 			
+			//Read mappings
+			int8_t map_y = *mappings++;
+			uint8_t map_size = *mappings++;
+			uint16_t map_tile = (*mappings++ << 8) | (*mappings++ << 0);
+			int8_t map_x = *mappings++;
+			
 			//Write sprite
-			int8_t py = (int8_t)*mappings++;
-			(*sprite)->y = y + py;
-			uint8_t size = *mappings++;
-			(*sprite)->size.s.width = (size >> 2);
-			(*sprite)->size.s.height = size;
-			(*sprite)->link = ++(*sprite_i);
-			uint16_t tile = (*mappings++ << 8) | (*mappings++ << 0);
-			(*sprite)->tile.s.priority = obj->tile.s.priority ^ (uint8_t)(tile >> 15);
-			(*sprite)->tile.s.palette  = obj->tile.s.palette  + (uint8_t)(tile >> 13);
-			(*sprite)->tile.s.y_flip   = obj->tile.s.y_flip   ^ (uint8_t)(tile >> 12);
-			(*sprite)->tile.s.x_flip   = obj->tile.s.x_flip   ^ (uint8_t)(tile >> 11);
-			(*sprite)->tile.s.pattern  = obj->tile.s.pattern  + (uint16_t)(tile & 0x7FF);
-			uint16_t px = x + (int8_t)*mappings++;
+			*(*sprite)++ = y + map_y; //y
+			*(*sprite)++ = (map_size << 8) | ++(*sprite_i); //size and link
+			*(*sprite)++ = map_tile + obj->tile; //tile
+			uint16_t px = x + map_x;
 			#if (SCREEN_WIDTH <= 320)
 				if ((px &= 0x1FF) == 0)
 					px++; //Prevent sprite from being x=0 (acts as a mask)
@@ -394,9 +376,7 @@ void BuildSprites_Draw(VDP_Sprite **sprite, uint8_t *sprite_i, uint16_t x, uint1
 				if (px == 0)
 					px++;
 			#endif
-			(*sprite)->x = px;
-			
-			(*sprite)++;
+			*(*sprite)++ = px; //x
 		}
 	}
 }
@@ -404,7 +384,7 @@ void BuildSprites_Draw(VDP_Sprite **sprite, uint8_t *sprite_i, uint16_t x, uint1
 void BuildSprites()
 {
 	//Draw each sprite priority queue
-	VDP_Sprite *sprite = sprite_buffer;
+	uint16_t *sprite = &sprite_buffer[0][0];
 	uint8_t sprite_i = 0;
 	struct SpriteQueue *queue = sprite_queue;
 	
@@ -490,13 +470,12 @@ void BuildSprites()
 	//Terminate end of sprite list
 	if (sprite_i >= BUFFER_SPRITES)
 	{
-		sprite[-1].link = 0;
+		sprite[-2] &= 0xFF00; //Clear link byte
 	}
 	else
 	{
-		sprite->y = 0;
-		sprite->size.b = 0;
-		sprite->link = 0;
+		*sprite++ = 0;
+		*sprite++ = 0;
 	}
 }
 
