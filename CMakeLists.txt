@@ -80,6 +80,7 @@ add_executable(SoniCPort WIN32
 	"src/Object/GHZRock.c"
 	"src/Object/Motobug.c"
 	"src/Object/Newtron.c"
+	"src/Object/GHZEdge.c"
 	"src/Object/Credits.c"
 	
 	# Backend
@@ -196,6 +197,7 @@ set(RESOURCES
 	"Mappings/GHZRock"
 	"Mappings/Motobug"
 	"Mappings/Newtron"
+	"Mappings/GHZEdge"
 	"Mappings/Credits"
 	
 	"Layout/GHZ1"

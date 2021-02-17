@@ -82,7 +82,7 @@ typedef enum
 	ObjId_41,           //41
 	ObjId_Newtron,      //42
 	ObjId_43,           //43
-	ObjId_44,           //44
+	ObjId_GHZEdge,      //44
 	ObjId_45,           //45
 	ObjId_46,           //46
 	ObjId_47,           //47

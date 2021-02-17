@@ -48,6 +48,7 @@ void Obj_GameOverCard(Object *obj);
 void Obj_GHZRock(Object *obj);
 void Obj_Motobug(Object *obj);
 void Obj_Newtron(Object *obj);
+void Obj_GHZEdge(Object *obj);
 void Obj_Credits(Object *obj);
 
 static void (*object_func[])(Object*) = {
@@ -119,7 +120,7 @@ static void (*object_func[])(Object*) = {
 	/* ObjId_41           */ Obj_Null,
 	/* ObjId_Newtron      */ Obj_Newtron,
 	/* ObjId_43           */ Obj_Null,
-	/* ObjId_44           */ Obj_Null,
+	/* ObjId_GHZEdge      */ Obj_GHZEdge,
 	/* ObjId_45           */ Obj_Null,
 	/* ObjId_46           */ Obj_Null,
 	/* ObjId_47           */ Obj_Null,
@@ -731,7 +732,7 @@ static int Solid_ChkEnter(Object *obj, uint16_t x_rad, uint16_t y_rad)
 	if (x_off >= 0 && x_off <= x_dia)
 	{
 		//Check if player is in vertical range
-		y_rad += player->y_rad;
+		y_rad += pla->y_rad;
 		int16_t y_off = pla->pos.l.y.f.u - obj->pos.l.y.f.u + 4 + y_rad;
 		uint16_t y_dia = y_rad << 1;
 		
