@@ -640,6 +640,7 @@ void LoadLayout(const uint8_t *from, uint8_t *to)
 void LoadLevelLayout()
 {
 	//Load foreground and background layers
+	memset(level_layout, 0, sizeof(level_layout));
 	LoadLayout(
 		level_layouts[LEVEL_ZONE(level_id)][LEVEL_ACT(level_id)].layout_fg,
 		level_layout[0][0]);

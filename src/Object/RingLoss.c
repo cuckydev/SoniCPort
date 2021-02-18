@@ -72,14 +72,13 @@ void Obj_RingLoss(Object *obj)
 			angle.v = 0x0288;
 			
 			Obj_RingLoss_SetupRing(obj, &xsp, &ysp, &angle, obj);
-			drop--;
-			do
+			while (drop-- > 0)
 			{
 				Object *ring = FindFreeObj();
 				if (ring == NULL)
 					break;
 				Obj_RingLoss_SetupRing(obj, &xsp, &ysp, &angle, ring);
-			} while (drop-- > 0);
+			}
 			
 			//Lose rings
 			rings = 0;

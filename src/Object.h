@@ -79,7 +79,7 @@ typedef enum
 	ObjId_3E,           //3E
 	ObjId_3F,           //3F
 	ObjId_Motobug,      //40
-	ObjId_41,           //41
+	ObjId_Spring,       //41
 	ObjId_Newtron,      //42
 	ObjId_43,           //43
 	ObjId_GHZEdge,      //44
@@ -281,8 +281,8 @@ void ObjectDelete(Object *obj);
 void SpeedToPos(Object *obj);
 void ObjectFall(Object *obj);
 void RememberState(Object *obj);
-void MvSonicOnPtfm(Object *obj, Object *pla, int16_t y, int16_t prev_x);
+void MvSonicOnPtfm(Object *obj, int16_t y, int16_t prev_x);
 void PlatformObject(Object *obj, uint16_t x_rad);
-void Platform3(Object *obj, Object *pla, int16_t top);
+void Platform3(Object *obj, int16_t top);
 bool ExitPlatform(Object *obj, uint16_t x_rad, uint16_t x_dia2, int16_t *x_off_p);
-int SolidObject(Object *obj, uint16_t x_rad, uint16_t y_rad1, uint16_t y_rad2, int16_t prev_x);
+int SolidObject(Object *obj, uint16_t x_rad, uint16_t y_rad1, uint16_t y_rad2, int16_t prev_x, int16_t *x_off, int16_t *y_off);

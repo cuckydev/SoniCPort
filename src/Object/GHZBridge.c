@@ -132,17 +132,15 @@ static void Obj_GHZBridge_Solid(Object *obj)
 	uint16_t x_dia = scratch->subtype << 4;
 	
 	//Check if player is colliding with bridge
-	Object *pla = player;
-	
-	if (pla->ysp < 0)
+	if (player->ysp < 0)
 		return;
 	
-	int16_t off = pla->pos.l.x.f.u - obj->pos.l.x.f.u + x_rad;
+	int16_t off = player->pos.l.x.f.u - obj->pos.l.x.f.u + x_rad;
 	if (off < 0 || off >= x_dia)
 		return;
 	
 	//Collide with bridge
-	Platform3(obj, pla, obj->pos.l.y.f.u - 8);
+	Platform3(obj, obj->pos.l.y.f.u - 8);
 }
 
 static void Obj_GHZBridge_MoveSonic(Object *obj)

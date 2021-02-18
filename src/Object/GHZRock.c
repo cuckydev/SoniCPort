@@ -28,7 +28,7 @@ void Obj_GHZRock(Object *obj)
 	//Fallthrough
 		case 2: //Solid
 			//Act as solid object and draw
-			SolidObject(obj, 27, 16, 16, obj->pos.l.x.f.u);
+			SolidObject(obj, 27, 16, 16, obj->pos.l.x.f.u, NULL, NULL);
 			DisplaySprite(obj);
 			
 			//Delete once off-screen

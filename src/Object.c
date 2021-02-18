@@ -47,6 +47,7 @@ void Obj_RingLoss(Object *obj);
 void Obj_GameOverCard(Object *obj);
 void Obj_GHZRock(Object *obj);
 void Obj_Motobug(Object *obj);
+void Obj_Spring(Object *obj);
 void Obj_Newtron(Object *obj);
 void Obj_GHZEdge(Object *obj);
 void Obj_Credits(Object *obj);
@@ -117,7 +118,7 @@ static void (*object_func[])(Object*) = {
 	/* ObjId_3E           */ Obj_Null,
 	/* ObjId_3F           */ Obj_Null,
 	/* ObjId_Motobug      */ Obj_Motobug,
-	/* ObjId_41           */ Obj_Null,
+	/* ObjId_Spring       */ Obj_Spring,
 	/* ObjId_Newtron      */ Obj_Newtron,
 	/* ObjId_43           */ Obj_Null,
 	/* ObjId_GHZEdge      */ Obj_GHZEdge,
@@ -601,42 +602,40 @@ void RememberState(Object *obj)
 }
 
 //Platform and solid objects
-void MvSonicOnPtfm(Object *obj, Object *pla, int16_t y, int16_t prev_x)
+void MvSonicOnPtfm(Object *obj, int16_t y, int16_t prev_x)
 {
 	//Check if player can be moved
 	if (lock_multi & 0x80)
 		return;
-	if (pla->routine >= 6)
+	if (player->routine >= 6)
 		return;
 	if (debug_use)
 		return;
 	
-	pla->pos.l.y.f.u = y - pla->y_rad;
-	pla->pos.l.x.f.u += obj->pos.l.x.f.u - prev_x;
+	player->pos.l.y.f.u = y - player->y_rad;
+	player->pos.l.x.f.u += obj->pos.l.x.f.u - prev_x;
 }
 
 void PlatformObject(Object *obj, uint16_t x_rad)
 {
 	//Check if player is colliding with platform
-	Object *pla = player;
-	
-	if (pla->ysp < 0)
+	if (player->ysp < 0)
 		return;
 	
-	int16_t x_off = pla->pos.l.x.f.u - obj->pos.l.x.f.u + x_rad;
+	int16_t x_off = player->pos.l.x.f.u - obj->pos.l.x.f.u + x_rad;
 	if (x_off < 0 || x_off >= (x_rad << 1))
 		return;
 	
-	Platform3(obj, pla, obj->pos.l.y.f.u - 8);
+	Platform3(obj, obj->pos.l.y.f.u - 8);
 }
 
-void Platform3(Object *obj, Object *pla, int16_t top)
+void Platform3(Object *obj, int16_t top)
 {
-	Scratch_Sonic *scratch = (Scratch_Sonic*)&pla->scratch;
+	Scratch_Sonic *scratch = (Scratch_Sonic*)&player->scratch;
 	
 	//Check if player is touching the top of platform
-	int16_t py = pla->pos.l.y.f.u;
-	int16_t by = py + pla->y_rad + 4;
+	int16_t py = player->pos.l.y.f.u;
+	int16_t by = py + player->y_rad + 4;
 	if (top > by)
 		return;
 	top -= by;
@@ -644,16 +643,16 @@ void Platform3(Object *obj, Object *pla, int16_t top)
 		return;
 	
 	//Check if player can collide with platform
-	if ((lock_multi & 0x80) || pla->routine >= 6)
+	if ((lock_multi & 0x80) || player->routine >= 6)
 		return;
 	
 	//Clip on top of platform
-	pla->pos.l.y.f.u = top + py + 3;
+	player->pos.l.y.f.u = top + py + 3;
 	
 	//Modify platform state
 	obj->routine += 2;
 	
-	if (pla->status.p.f.object_stand)
+	if (player->status.p.f.object_stand)
 	{
 		//Release from last standing object
 		Object *prv = objects + scratch->standing_obj;
@@ -665,26 +664,25 @@ void Platform3(Object *obj, Object *pla, int16_t top)
 	
 	//Modify player state
 	scratch->standing_obj = obj - objects;
-	pla->angle = 0;
-	pla->ysp = 0;
-	pla->inertia = pla->xsp;
-	if (pla->status.p.f.in_air)
-		Sonic_ResetOnFloor(pla);
+	player->angle = 0;
+	player->ysp = 0;
+	player->inertia = player->xsp;
+	if (player->status.p.f.in_air)
+		Sonic_ResetOnFloor(player);
 	
-	pla->status.p.f.object_stand = true;
+	player->status.p.f.object_stand = true;
 	obj->status.o.f.player_stand = true;
 }
 
 bool ExitPlatform(Object *obj, uint16_t x_rad, uint16_t x_dia2, int16_t *x_off_p)
 {
 	uint16_t x_dia = x_dia2 << 1;
-	Object *pla = player;
 	
 	//Check if we've jumped off
-	if (!pla->status.p.f.in_air)
+	if (!player->status.p.f.in_air)
 	{
 		//Check if we've walked off
-		int16_t x_off = pla->pos.l.x.f.u - obj->pos.l.x.f.u + x_rad;
+		int16_t x_off = player->pos.l.x.f.u - obj->pos.l.x.f.u + x_rad;
 		if (x_off_p != NULL)
 			*x_off_p = x_off;
 		if (x_off >= 0 && x_off < x_dia)
@@ -692,7 +690,7 @@ bool ExitPlatform(Object *obj, uint16_t x_rad, uint16_t x_dia2, int16_t *x_off_p
 	}
 	
 	//Release player from platform
-	pla->status.p.f.object_stand = false;
+	player->status.p.f.object_stand = false;
 	obj->routine = 2;
 	obj->status.o.f.player_stand = false;
 	return true;
@@ -700,10 +698,10 @@ bool ExitPlatform(Object *obj, uint16_t x_rad, uint16_t x_dia2, int16_t *x_off_p
 
 static void Solid_ResetFloor(Object *obj, Object *pla)
 {
-	Scratch_Sonic *scratch = (Scratch_Sonic*)&pla->scratch;
+	Scratch_Sonic *scratch = (Scratch_Sonic*)&player->scratch;
 	
 	//Release player from last standing object
-	if (pla->status.p.f.object_stand)
+	if (player->status.p.f.object_stand)
 	{
 		Object *prv = objects + scratch->standing_obj;
 		prv->status.o.f.player_stand = false;
@@ -712,59 +710,57 @@ static void Solid_ResetFloor(Object *obj, Object *pla)
 	
 	//Modify player state
 	scratch->standing_obj = obj - objects;
-	pla->angle = 0;
-	pla->ysp = 0;
-	pla->inertia = pla->xsp;
-	if (pla->status.p.f.in_air)
+	player->angle = 0;
+	player->ysp = 0;
+	player->inertia = player->xsp;
+	if (player->status.p.f.in_air)
 		Sonic_ResetOnFloor(pla);
 	
-	pla->status.p.f.object_stand = true;
+	player->status.p.f.object_stand = true;
 	obj->status.o.f.player_stand = true;
 }
 
-static int Solid_ChkEnter(Object *obj, uint16_t x_rad, uint16_t y_rad)
+static int Solid_ChkEnter(Object *obj, uint16_t x_rad, uint16_t y_rad, int16_t *x_off, int16_t *y_off)
 {
 	//Check if player is in horizontal range
-	Object *pla = player;
-	
-	int16_t x_off = pla->pos.l.x.f.u - obj->pos.l.x.f.u + x_rad;
+	*x_off = player->pos.l.x.f.u - obj->pos.l.x.f.u + x_rad;
 	uint16_t x_dia = x_rad << 1;
-	if (x_off >= 0 && x_off <= x_dia)
+	if (*x_off >= 0 && *x_off <= x_dia)
 	{
 		//Check if player is in vertical range
-		y_rad += pla->y_rad;
-		int16_t y_off = pla->pos.l.y.f.u - obj->pos.l.y.f.u + 4 + y_rad;
+		y_rad += player->y_rad;
+		*y_off = player->pos.l.y.f.u - obj->pos.l.y.f.u + 4 + y_rad;
 		uint16_t y_dia = y_rad << 1;
 		
-		if (y_off >= 0 && y_off < y_dia)
+		if (*y_off >= 0 && *y_off < y_dia)
 		{
 			//Check if player can collide with object
 			if (!(lock_multi & 0x80))
 			{
 			#ifdef SCP_REV00
-				if (pla->routine >= 6)
+				if (player->routine >= 6)
 				{
 					if (debug_use)
 						return 0;
 			#else
-				if (pla->routine >= 6 || debug_use)
+				if (player->routine >= 6 || debug_use)
 					return 0;
 				{
 			#endif
 					//Get X clip
-					uint16_t x_clip = x_off;
-					if (x_rad < x_off)
+					uint16_t x_clip = *x_off;
+					if (x_rad < *x_off)
 					{
-						x_off -= x_dia;
-						x_clip = -x_off;
+						*x_off -= x_dia;
+						x_clip = -*x_off;
 					}
 					
 					//Get Y clip
-					uint16_t y_clip = y_off;
-					if (y_rad < y_off)
+					uint16_t y_clip = *y_off;
+					if (y_rad < *y_off)
 					{
-						y_off -= (4 + y_dia);
-						y_clip = -y_off;
+						*y_off -= (4 + y_dia);
+						y_clip = -*y_off;
 					}
 					
 					//Check if we're hitting the top/bottom or sides
@@ -774,55 +770,55 @@ static int Solid_ChkEnter(Object *obj, uint16_t x_rad, uint16_t y_rad)
 						if (y_clip > 4)
 						{
 							//Stop speed going towards object
-							if (x_off > 0)
+							if (*x_off > 0)
 							{
-								if (pla->xsp > 0)
+								if (player->xsp > 0)
 								{
-									pla->xsp = 0;
-									pla->inertia = 0;
+									player->xsp = 0;
+									player->inertia = 0;
 								}
 							}
-							else if (x_off < 0)
+							else if (*x_off < 0)
 							{
-								if (pla->xsp < 0)
+								if (player->xsp < 0)
 								{
-									pla->xsp = 0;
-									pla->inertia = 0;
+									player->xsp = 0;
+									player->inertia = 0;
 								}
 							}
 							
 							//Clip and change push flags
-							pla->pos.l.x.f.u -= x_off;
-							if (!pla->status.p.f.in_air)
+							player->pos.l.x.f.u -= *x_off;
+							if (!player->status.p.f.in_air)
 							{
 								//On ground, set push flags
 								obj->status.o.f.player_push = true;
-								pla->status.p.f.pushing = true;
+								player->status.p.f.pushing = true;
 								return 1;
 							}
 						}
 						
 						//Mid-air or near edges, clear push flags
 						obj->status.o.f.player_push = false;
-						pla->status.p.f.pushing = false;
+						player->status.p.f.pushing = false;
 						return 1;
 					}
-					else if (y_off < 0)
+					else if (*y_off < 0)
 					{
 						//Bottom
-						if (pla->ysp != 0)
+						if (player->ysp != 0)
 						{
 							//Check if we should be clipped out the bottom
-							if (pla->ysp < 0 && y_off < 0)
+							if (player->ysp < 0 && *y_off < 0)
 							{
-								pla->pos.l.y.f.u -= y_off;
-								pla->ysp = 0;
+								player->pos.l.y.f.u -= *y_off;
+								player->ysp = 0;
 							}
 						}
-						else if (!pla->status.p.f.in_air)
+						else if (!player->status.p.f.in_air)
 						{
 							//Squish Sonic
-							KillSonic(pla, obj);
+							KillSonic(player, obj);
 						}
 						return -1;
 					}
@@ -830,19 +826,19 @@ static int Solid_ChkEnter(Object *obj, uint16_t x_rad, uint16_t y_rad)
 					{
 						//Top
 						//Check if we're going to land on the object
-						if (y_off < 16)
+						if (*y_off < 16)
 						{
-							y_off -= 4;
+							*y_off -= 4;
 							
 							//Check if we're within horizontal range and moving downwards
 							uint16_t lx_rad = obj->width_pixels;
 							uint16_t lx_dia = lx_rad << 1;
-							int16_t lx_off = pla->pos.l.x.f.u - obj->pos.l.x.f.u + lx_rad;
-							if (lx_off >= 0 && lx_off < lx_dia && pla->ysp >= 0)
+							int16_t lx_off = player->pos.l.x.f.u - obj->pos.l.x.f.u + lx_rad;
+							if (lx_off >= 0 && lx_off < lx_dia && player->ysp >= 0)
 							{
 								//Land on object
-								pla->pos.l.y.f.u -= y_off;
-								Solid_ResetFloor(obj, pla);
+								player->pos.l.y.f.u -= *y_off;
+								Solid_ResetFloor(obj, player);
 								obj->routine_sec = 2;
 								obj->status.o.f.player_stand = true;
 								return -1;
@@ -858,39 +854,44 @@ static int Solid_ChkEnter(Object *obj, uint16_t x_rad, uint16_t y_rad)
 	//Clear pushing state
 	if (obj->status.o.f.player_push)
 	{
-		pla->anim = SonAnimId_Run; //Not Walk
+		player->anim = SonAnimId_Run; //Not Walk
 		obj->status.o.f.player_push = false;
-		pla->status.p.f.pushing = false;
+		player->status.p.f.pushing = false;
 	}
 	return 0;
 }
 
-int SolidObject(Object *obj, uint16_t x_rad, uint16_t y_rad1, uint16_t y_rad2, int16_t prev_x)
+int SolidObject(Object *obj, uint16_t x_rad, uint16_t y_rad1, uint16_t y_rad2, int16_t prev_x, int16_t *x_off, int16_t *y_off)
 {
 	if (obj->routine_sec)
 	{
 		uint16_t x_dia = x_rad << 1;
-		Object *pla = player;
 		
 		//Check if we've jumped off
-		if (!pla->status.p.f.in_air)
+		if (!player->status.p.f.in_air)
 		{
 			//Check if we've walked off
-			int16_t x_off = pla->pos.l.x.f.u - obj->pos.l.x.f.u + x_rad;
+			int16_t x_off = player->pos.l.x.f.u - obj->pos.l.x.f.u + x_rad;
 			if (x_off >= 0 && x_off <= x_dia)
 			{
 				//Move on platform
-				MvSonicOnPtfm(obj, pla, obj->pos.l.y.f.u - y_rad2, prev_x);
+				MvSonicOnPtfm(obj, obj->pos.l.y.f.u - y_rad2, prev_x);
 				return 0;
 			}
 		}
 		
 		//Release player from platform
-		pla->status.p.f.object_stand = false;
+		player->status.p.f.object_stand = false;
 		obj->status.o.f.player_stand = false;
 		obj->routine_sec = 0;
 		return 0;
 	}
 	
-	return Solid_ChkEnter(obj, x_rad, y_rad1);
+	int16_t x_off_t = 0, y_off_t = 0;
+	int res = Solid_ChkEnter(obj, x_rad, y_rad1, &x_off_t, &y_off_t);
+	if (x_off != NULL)
+		*x_off = x_off_t;
+	if (y_off != NULL)
+		*y_off = y_off_t;
+	return res;
 }

@@ -79,6 +79,7 @@ add_executable(SoniCPort WIN32
 	"src/Object/GameOverCard.c"
 	"src/Object/GHZRock.c"
 	"src/Object/Motobug.c"
+	"src/Object/Spring.c"
 	"src/Object/Newtron.c"
 	"src/Object/GHZEdge.c"
 	"src/Object/Credits.c"
@@ -177,6 +178,7 @@ set(RESOURCES
 	"Animation/Ring"
 	"Animation/Chopper"
 	"Animation/Motobug"
+	"Animation/Spring"
 	"Animation/Newtron"
 	
 	"Mappings/Sonic"
@@ -196,6 +198,7 @@ set(RESOURCES
 	"Mappings/GameOver"
 	"Mappings/GHZRock"
 	"Mappings/Motobug"
+	"Mappings/Spring"
 	"Mappings/Newtron"
 	"Mappings/GHZEdge"
 	"Mappings/Credits"
