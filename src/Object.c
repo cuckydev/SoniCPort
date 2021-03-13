@@ -272,7 +272,8 @@ void BuildSprites_Draw(uint16_t **sprite, uint8_t *sprite_i, uint16_t x, uint16_
 				//Read mappings
 				int8_t map_y = *mappings++;
 				uint8_t map_size = *mappings++;
-				uint16_t map_tile = (*mappings++ << 8) | (*mappings++ << 0);
+				uint16_t map_tile = (mappings[0] << 8) | (mappings[1] << 0);
+				mappings += 2;
 				int8_t map_x = *mappings++;
 				
 				//Write sprite
@@ -302,7 +303,8 @@ void BuildSprites_Draw(uint16_t **sprite, uint8_t *sprite_i, uint16_t x, uint16_
 				//Read mappings
 				int8_t map_y = *mappings++;
 				uint8_t map_size = *mappings++;
-				uint16_t map_tile = (*mappings++ << 8) | (*mappings++ << 0);
+				uint16_t map_tile = (mappings[0] << 8) | (mappings[1] << 0);
+				mappings += 2;
 				int8_t map_x = *mappings++;
 				
 				//Write sprite
@@ -333,7 +335,8 @@ void BuildSprites_Draw(uint16_t **sprite, uint8_t *sprite_i, uint16_t x, uint16_
 			//Read mappings
 			int8_t map_y = *mappings++;
 			uint8_t map_size = *mappings++;
-			uint16_t map_tile = (*mappings++ << 8) | (*mappings++ << 0);
+			uint16_t map_tile = (mappings[0] << 8) | (mappings[1] << 0);
+			mappings += 2;
 			int8_t map_x = *mappings++;
 			
 			//Write sprite
@@ -363,7 +366,8 @@ void BuildSprites_Draw(uint16_t **sprite, uint8_t *sprite_i, uint16_t x, uint16_
 			//Read mappings
 			int8_t map_y = *mappings++;
 			uint8_t map_size = *mappings++;
-			uint16_t map_tile = (*mappings++ << 8) | (*mappings++ << 0);
+			uint16_t map_tile = (mappings[0] << 8) | (mappings[1] << 0);
+			mappings += 2;
 			int8_t map_x = *mappings++;
 			
 			//Write sprite

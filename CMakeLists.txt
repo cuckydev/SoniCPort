@@ -371,7 +371,7 @@ endif()
 if(MSVC)
 	target_compile_options(SoniCPort PRIVATE /W4)
 else()
-	target_compile_options(SoniCPort PRIVATE -Wall -Wno-sequence-point -Wextra -pedantic)
+	target_compile_options(SoniCPort PRIVATE -Wall -Wextra -pedantic)
 endif()
 
 # Use LTO if requested
