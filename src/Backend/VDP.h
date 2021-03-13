@@ -15,10 +15,6 @@
 #define SPRITES_SIZE (SPRITES * 8)
 #define COLOURS      (4 * 16)
 
-//VDP structures
-#pragma pack(push)
-#pragma pack(1)
-
 //Tile structure
 #define TILE_PRIORITY_AND   0x8000
 #define TILE_PRIORITY_SHIFT 15
