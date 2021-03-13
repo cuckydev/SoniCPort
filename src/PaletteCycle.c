@@ -53,7 +53,10 @@ int PCycle_Sega()
 			if (!((to - &dry_palette[1][0]) & 0xF))
 				to++;
 			if ((to - &dry_palette[0][0]) < 0x40)
-				*to++ = (*from++ << 8) | (*from++ << 0);
+			{
+				*to++ = (from[0] << 8) | (from[1] << 0);
+				from += 2;
+			}
 			else
 				to++;
 		}
@@ -91,7 +94,10 @@ int PCycle_Sega()
 		//Copy border palette
 		to = &dry_palette[0][2];
 		for (size_t i = 0; i < 5; i++)
-			*to++ = (*from++ << 8) | (*from++ << 0);
+		{
+			*to++ = (from[0] << 8) | (from[1] << 0);
+			from += 2;
+		}
 		
 		//Copy filled palette
 		to = &dry_palette[1][0];
@@ -121,7 +127,10 @@ static void PCycle_Water(const uint8_t *palette)
 	const uint8_t *from = palette + (pal_num << 3);
 	uint16_t *to = &dry_palette[2][8];
 	for (size_t i = 0; i < 4; i++)
-		*to++ = (*from++ << 8) | (*from++ << 0);
+	{
+		*to++ = (from[0] << 8) | (from[1] << 0);
+		from += 2;
+	}
 }
 
 void PCycle_Title()

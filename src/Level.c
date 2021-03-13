@@ -870,9 +870,11 @@ static bool ChkLoadObj(uint8_t index, const uint8_t **entry)
 	if (obj == NULL)
 		return true; //Result from FindFreeObj, not d0
 	
-	obj->pos.l.x.f.u = (*(*entry)++ << 8) | (*(*entry)++ << 0);
+	obj->pos.l.x.f.u = ((*entry)[0] << 8) | ((*entry)[1] << 0);
+	*entry += 2;
 	
-	uint16_t w1 = (*(*entry)++ << 8) | (*(*entry)++ << 0);
+	uint16_t w1 = ((*entry)[0] << 8) | ((*entry)[1] << 0);
+	*entry += 2;
 	obj->pos.l.y.f.u = w1 & 0xFFF;
 	obj->render.b = 0;
 	obj->status.o.b = 0;

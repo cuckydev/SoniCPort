@@ -288,8 +288,8 @@ static inline uint8_t *VDP_GetPatternAddress(size_t pattern)
 
 #define WRITE_NIBBLE(from, to, tom, pal, and, or, nibs) \
 {                                             \
-	uint8_t v;                                \
-	if ((v = (*from >> nibs) & 0xF))          \
+	uint8_t v = (*from >> nibs) & 0xF;        \
+	if (v != 0)                               \
 	{                                         \
 		if (*tom & and)                       \
 		{                                     \

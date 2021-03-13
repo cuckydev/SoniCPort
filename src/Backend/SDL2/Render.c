@@ -138,7 +138,7 @@ void Render_Screen(const uint32_t *screen)
 	//Unlock screen texture and draw to window
 	SDL_UnlockTexture(texture);
 	
-	for (int i = 0; i < vsync; i++)
+	for (int i = 0; i < (vsync == 0 ? 1 : vsync); i++)
 	{
 		SDL_RenderCopy(renderer, texture, NULL, NULL);
 		SDL_RenderPresent(renderer);

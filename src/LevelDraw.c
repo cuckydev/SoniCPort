@@ -55,7 +55,8 @@ void GetBlockData(const uint8_t **meta, const uint8_t **block, int16_t sx, int16
 #define WRITE_TILE(off, xor)                                \
 {                                                           \
 	VDP_SeekVRAM(offset + (off));                           \
-	uint16_t v = ((*block++ << 8) | (*block++ << 0)) ^ xor; \
+	uint16_t v = ((block[0] << 8) | (block[1] << 0)) ^ xor; \
+	block += 2;                                             \
 	VDP_WriteVRAM((const uint8_t*)&v, 2);                   \
 }
 

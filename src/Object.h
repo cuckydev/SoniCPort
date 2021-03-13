@@ -165,14 +165,14 @@ typedef union
 {
 	struct
 	{
-		uint8_t x_flip : 1;       //Horizontally flipped
-		uint8_t y_flip : 1;       //Vertically flipped
-		uint8_t align_fg : 1;     //Aligned to the foreground
-		uint8_t align_bg : 1;     //Aligned to the background (overrides `align_fg`)
-		uint8_t yrad_height : 1;  //Use y_rad as cull height instead of 32
-		uint8_t raw_mappings : 1; //`mappings` member points to a single mapping
-		uint8_t player_loop : 1;  //Set if we're the player object and behind a loop
-		uint8_t on_screen : 1;    //Set if the object's on-screen (see BuildSprites)
+		unsigned int x_flip : 1;       //Horizontally flipped
+		unsigned int y_flip : 1;       //Vertically flipped
+		unsigned int align_fg : 1;     //Aligned to the foreground
+		unsigned int align_bg : 1;     //Aligned to the background (overrides `align_fg`)
+		unsigned int yrad_height : 1;  //Use y_rad as cull height instead of 32
+		unsigned int raw_mappings : 1; //`mappings` member points to a single mapping
+		unsigned int player_loop : 1;  //Set if we're the player object and behind a loop
+		unsigned int on_screen : 1;    //Set if the object's on-screen (see BuildSprites)
 	} f;
 	uint8_t b;
 } ObjectRender;
@@ -181,14 +181,14 @@ typedef union
 {
 	struct
 	{
-		uint8_t x_flip : 1;       //Horizontally flipped
-		uint8_t y_flip : 1;       //Vertially flipped
-		uint8_t flag2 : 1;        //Unused
-		uint8_t player_stand : 1; //Player is standing on us
-		uint8_t flag4 : 1;        //Unused
-		uint8_t player_push : 1;  //Player is pushing us
-		uint8_t flag6 : 1;        //Unused
-		uint8_t flag7 : 1;        //Object-specific
+		unsigned int x_flip : 1;       //Horizontally flipped
+		unsigned int y_flip : 1;       //Vertially flipped
+		unsigned int flag2 : 1;        //Unused
+		unsigned int player_stand : 1; //Player is standing on us
+		unsigned int flag4 : 1;        //Unused
+		unsigned int player_push : 1;  //Player is pushing us
+		unsigned int flag6 : 1;        //Unused
+		unsigned int flag7 : 1;        //Object-specific
 	} f;
 	uint8_t b;
 } ObjectStatus;
@@ -197,14 +197,14 @@ typedef union
 {
 	struct
 	{
-		uint8_t x_flip : 1;       //Horizontally flipped
-		uint8_t in_air : 1;       //In mid-air
-		uint8_t in_ball : 1;      //In ball-form
-		uint8_t object_stand : 1; //Standing on an object
-		uint8_t roll_jump : 1;    //Set when jumping from a roll
-		uint8_t pushing : 1;      //Set if we're pushing
-		uint8_t underwater : 1;   //Set if we're underwater
-		uint8_t flag7 : 1;        //Unused
+		unsigned int x_flip : 1;       //Horizontally flipped
+		unsigned int in_air : 1;       //In mid-air
+		unsigned int in_ball : 1;      //In ball-form
+		unsigned int object_stand : 1; //Standing on an object
+		unsigned int roll_jump : 1;    //Set when jumping from a roll
+		unsigned int pushing : 1;      //Set if we're pushing
+		unsigned int underwater : 1;   //Set if we're underwater
+		unsigned int flag7 : 1;        //Unused
 	} f;
 	uint8_t b;
 } PlayerStatus;
