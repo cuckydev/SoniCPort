@@ -16,12 +16,18 @@
 #endif
 
 //Alignment
-#ifdef __GNUC__
+#if defined(__GNUC__)
 	#define ALIGNED2 __attribute__((aligned(2)))
 	#define ALIGNED4 __attribute__((aligned(4)))
 	#define ALIGNED8 __attribute__((aligned(8)))
 	#define ALIGNED16 __attribute__((aligned(16)))
+#elif defined(_MSC_VER)
+	#define ALIGNED2 __declspec(align(2))
+	#define ALIGNED4 __declspec(align(4))
+	#define ALIGNED8 __declspec(align(8))
+	#define ALIGNED16 __declspec(align(16))
 #else
+	#pragma message("WARNING: Your compiler isn't supported - please define your own ALIGNED macros in " __FILE__)
 	#define ALIGNED2
 	#define ALIGNED4
 	#define ALIGNED8
