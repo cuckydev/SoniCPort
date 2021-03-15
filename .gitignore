@@ -4,6 +4,9 @@
 
 # Exclude converted resources
 /src/Resource/
+/.vs
+/out
+CMakeSettings.json
 
 # Exclude submodule libraries
 libs/build*/
