@@ -72,7 +72,8 @@ static void CopyTilemap_Add(const uint8_t *tilemap, size_t offset, size_t width,
 		VDP_SeekVRAM(offset);
 		for (size_t x = 0; x < width; x++)
 		{
-			uint16_t v = ((*tilemap++ << 8) | (*tilemap++ << 0)) + add;
+			uint16_t v = ((tilemap[0] << 8) | (tilemap[1] << 0)) + add;
+			tilemap += 2;
 			VDP_WriteVRAM((const uint8_t*)&v, 2);
 		}
 		offset += PLANE_WIDTH * 2;

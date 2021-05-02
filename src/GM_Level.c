@@ -16,6 +16,7 @@
 #include "Demo.h"
 
 #include <string.h>
+#include <stdio.h>
 
 //Title card art
 static const uint8_t art_titlecard[] = {

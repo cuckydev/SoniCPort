@@ -841,7 +841,7 @@ static int Solid_ChkEnter(Object *obj, uint16_t x_rad, uint16_t y_rad, int16_t *
 							if (lx_off >= 0 && lx_off < lx_dia && player->ysp >= 0)
 							{
 								//Land on object
-								player->pos.l.y.f.u -= *y_off;
+								player->pos.l.y.f.u -= *y_off + 1;
 								Solid_ResetFloor(obj, player);
 								obj->routine_sec = 2;
 								obj->status.o.f.player_stand = true;

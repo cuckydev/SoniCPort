@@ -71,7 +71,7 @@ void Obj_Spring(Object *obj)
 			obj->routine += 2;
 			
 			//Launch Sonic
-			player->pos.l.y.f.u -= 8;
+			player->pos.l.y.f.u += 8;
 			player->ysp = scratch->power;
 			player->status.p.f.in_air = true;
 			player->status.p.f.object_stand = false;
@@ -105,12 +105,12 @@ void Obj_Spring(Object *obj)
 			if (obj->status.o.f.x_flip)
 			{
 				player->xsp = scratch->power;
-				player->pos.l.x.f.u -= 8;
+				player->pos.l.x.f.u += 8;
 			}
 			else
 			{
 				player->xsp = -scratch->power;
-				player->pos.l.x.f.u += 8;
+				player->pos.l.x.f.u -= 8;
 			}
 			Scratch_Sonic *sscratch = (Scratch_Sonic*)&player->scratch;
 			sscratch->control_lock = 15;
@@ -144,7 +144,7 @@ void Obj_Spring(Object *obj)
 			obj->routine += 2;
 			
 			//Launch Sonic
-			player->pos.l.y.f.u -= 8; //subtract?
+			player->pos.l.y.f.u -= 8;
 			player->ysp = -scratch->power;
 			player->status.p.f.in_air = true;
 			player->status.p.f.object_stand = false;
