@@ -34,6 +34,8 @@ static const uint8_t *hud_cmd_ringbase = &hud_cmd_base[12];
 
 void HUD_WriteCmd(size_t offset, const uint8_t *cmd, size_t cmds)
 {
+	VDP_SeekVRAM(offset);
+	
 	do
 	{
 		//Get tile
@@ -41,12 +43,12 @@ void HUD_WriteCmd(size_t offset, const uint8_t *cmd, size_t cmds)
 		if (tile >= 0)
 		{
 			const uint8_t *art = art_hud_num + (tile <<= 5);
-			VDP_SeekVRAM(offset);
 			VDP_WriteVRAM(art, 64);
 		}
-		
-		//Increment offset
-		offset += 64;
+		else
+		{
+			VDP_FillVRAM(0, 64);
+		}
 	} while (cmds-- > 0);
 }
 
