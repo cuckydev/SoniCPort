@@ -83,7 +83,7 @@ void Obj_RingLoss(Object *obj)
 			//Lose rings
 			rings = 0;
 			ring_count = 0x80;
-			life_count = 0;
+			life_num = 0;
 			//sfx	sfx_RingLoss,0,0,0	; play ring loss sound //TODO
 		}
 	//Fallthrough

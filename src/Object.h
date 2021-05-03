@@ -52,7 +52,7 @@ typedef enum
 	ObjId_BuzzMissile,  //23
 	ObjId_BuzzExplode,  //24
 	ObjId_Ring,         //25
-	ObjId_26,           //26
+	ObjId_Monitor,      //26
 	ObjId_Explosion,    //27
 	ObjId_Animal,       //28
 	ObjId_29,           //29
@@ -60,7 +60,7 @@ typedef enum
 	ObjId_Chopper,      //2B
 	ObjId_2C,           //2C
 	ObjId_2D,           //2D
-	ObjId_2E,           //2E
+	ObjId_MonitorItem,  //2E
 	ObjId_2F,           //2F
 	ObjId_30,           //30
 	ObjId_31,           //31
@@ -284,5 +284,6 @@ void RememberState(Object *obj);
 void MvSonicOnPtfm(Object *obj, int16_t y, int16_t prev_x);
 void PlatformObject(Object *obj, uint16_t x_rad);
 void Platform3(Object *obj, int16_t top);
-bool ExitPlatform(Object *obj, uint16_t x_rad, uint16_t x_dia2, int16_t *x_off_p);
-int SolidObject(Object *obj, uint16_t x_rad, uint16_t y_rad1, uint16_t y_rad2, int16_t prev_x, int16_t *x_off, int16_t *y_off);
+void Platform_SetStand(Object *obj);
+bool ExitPlatform(Object *obj, uint16_t x_rad, uint16_t x_rad2, int16_t *x_off_p);
+signed int SolidObject(Object *obj, uint16_t x_rad, uint16_t y_rad1, uint16_t y_rad2, int16_t prev_x, int16_t *x_off, int16_t *y_off);

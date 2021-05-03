@@ -41,8 +41,10 @@ void Obj_BuzzBomber(Object *obj);
 void Obj_BuzzMissile(Object *obj);
 void Obj_BuzzExplode(Object *obj);
 void Obj_Ring(Object *obj);
+void Obj_Monitor(Object *obj);
 void Obj_Explosion(Object *obj);
 void Obj_Chopper(Object *obj);
+void Obj_MonitorItem(Object *obj);
 void Obj_TitleCard(Object *obj);
 void Obj_RingLoss(Object *obj);
 void Obj_GameOverCard(Object *obj);
@@ -92,7 +94,7 @@ static void (*object_func[])(Object*) = {
 	/* ObjId_BuzzMissile  */ Obj_BuzzMissile,
 	/* ObjId_BuzzExplode  */ Obj_BuzzExplode,
 	/* ObjId_Ring         */ Obj_Ring,
-	/* ObjId_26           */ Obj_Null,
+	/* ObjId_Monitor      */ Obj_Monitor,
 	/* ObjId_Explosion    */ Obj_Explosion,
 	/* ObjId_Animal       */ Obj_Null,
 	/* ObjId_29           */ Obj_Null,
@@ -100,7 +102,7 @@ static void (*object_func[])(Object*) = {
 	/* ObjId_Chopper      */ Obj_Chopper,
 	/* ObjId_2C           */ Obj_Null,
 	/* ObjId_2D           */ Obj_Null,
-	/* ObjId_2E           */ Obj_Null,
+	/* ObjId_MonitorItem  */ Obj_MonitorItem,
 	/* ObjId_2F           */ Obj_Null,
 	/* ObjId_30           */ Obj_Null,
 	/* ObjId_31           */ Obj_Null,
@@ -264,7 +266,7 @@ void BuildSprites_Draw(uint16_t **sprite, uint8_t *sprite_i, uint16_t x, uint16_
 		if (obj->render.f.y_flip)
 		{
 			//XY flip
-			while(pieces-- > 0)
+			while (pieces-- > 0)
 			{
 				//Don't overflow the sprite buffer
 				if (*sprite_i >= BUFFER_SPRITES)
@@ -295,7 +297,7 @@ void BuildSprites_Draw(uint16_t **sprite, uint8_t *sprite_i, uint16_t x, uint16_
 		else
 		{
 			//X flip
-			while(pieces-- > 0)
+			while (pieces-- > 0)
 			{
 				//Don't overflow the sprite buffer
 				if (*sprite_i >= BUFFER_SPRITES)
@@ -327,7 +329,7 @@ void BuildSprites_Draw(uint16_t **sprite, uint8_t *sprite_i, uint16_t x, uint16_
 	else if (obj->render.f.y_flip)
 	{
 		//Y flip
-		while(pieces-- > 0)
+		while (pieces-- > 0)
 		{
 			//Don't overflow the sprite buffer
 			if (*sprite_i >= BUFFER_SPRITES)
@@ -358,7 +360,7 @@ void BuildSprites_Draw(uint16_t **sprite, uint8_t *sprite_i, uint16_t x, uint16_
 	else
 	{
 		//No flip
-		while(pieces-- > 0)
+		while (pieces-- > 0)
 		{
 			//Don't overflow the sprite buffer
 			if (*sprite_i >= BUFFER_SPRITES)
@@ -464,7 +466,7 @@ void BuildSprites()
 				{
 					//Directly use object mappings pointer
 					mappings = obj->mappings;
-					pieces = 0;
+					pieces = 1;
 				}
 				
 				//Draw object
@@ -611,11 +613,7 @@ void RememberState(Object *obj)
 void MvSonicOnPtfm(Object *obj, int16_t y, int16_t prev_x)
 {
 	//Check if player can be moved
-	if (lock_multi & 0x80)
-		return;
-	if (player->routine >= 6)
-		return;
-	if (debug_use)
+	if (lock_multi & 0x80 || player->routine >= 6 || debug_use)
 		return;
 	
 	player->pos.l.y.f.u = y - player->y_rad;
@@ -637,8 +635,6 @@ void PlatformObject(Object *obj, uint16_t x_rad)
 
 void Platform3(Object *obj, int16_t top)
 {
-	Scratch_Sonic *scratch = (Scratch_Sonic*)&player->scratch;
-	
 	//Check if player is touching the top of platform
 	int16_t py = player->pos.l.y.f.u;
 	int16_t by = py + player->y_rad + 4;
@@ -657,10 +653,16 @@ void Platform3(Object *obj, int16_t top)
 	
 	//Modify platform state
 	obj->routine += 2;
+	Platform_SetStand(obj);
+}
+
+void Platform_SetStand(Object *obj)
+{
+	Scratch_Sonic *scratch = (Scratch_Sonic*)&player->scratch;
 	
+	//Release from last standing object
 	if (player->status.p.f.object_stand)
 	{
-		//Release from last standing object
 		Object *prv = objects + scratch->standing_obj;
 		prv->status.o.f.player_stand = false;
 		prv->routine_sec = 0;
@@ -680,9 +682,9 @@ void Platform3(Object *obj, int16_t top)
 	obj->status.o.f.player_stand = true;
 }
 
-bool ExitPlatform(Object *obj, uint16_t x_rad, uint16_t x_dia2, int16_t *x_off_p)
+bool ExitPlatform(Object *obj, uint16_t x_rad, uint16_t x_rad2, int16_t *x_off_p)
 {
-	uint16_t x_dia = x_dia2 << 1;
+	uint16_t x_dia = x_rad2 << 1;
 	
 	//Check if we've jumped off
 	if (!player->status.p.f.in_air)
@@ -726,7 +728,7 @@ static void Solid_ResetFloor(Object *obj, Object *pla)
 	obj->status.o.f.player_stand = true;
 }
 
-static int Solid_ChkEnter(Object *obj, uint16_t x_rad, uint16_t y_rad, int16_t *x_off, int16_t *y_off)
+static signed int Solid_ChkEnter(Object *obj, uint16_t x_rad, uint16_t y_rad, int16_t *x_off, int16_t *y_off)
 {
 	//Check if player is in horizontal range
 	*x_off = player->pos.l.x.f.u - obj->pos.l.x.f.u + x_rad;
@@ -867,7 +869,7 @@ static int Solid_ChkEnter(Object *obj, uint16_t x_rad, uint16_t y_rad, int16_t *
 	return 0;
 }
 
-int SolidObject(Object *obj, uint16_t x_rad, uint16_t y_rad1, uint16_t y_rad2, int16_t prev_x, int16_t *x_off, int16_t *y_off)
+signed int SolidObject(Object *obj, uint16_t x_rad, uint16_t y_rad1, uint16_t y_rad2, int16_t prev_x, int16_t *x_off, int16_t *y_off)
 {
 	if (obj->routine_sec)
 	{
@@ -894,7 +896,7 @@ int SolidObject(Object *obj, uint16_t x_rad, uint16_t y_rad1, uint16_t y_rad2, i
 	}
 	
 	int16_t x_off_t = 0, y_off_t = 0;
-	int res = Solid_ChkEnter(obj, x_rad, y_rad1, &x_off_t, &y_off_t);
+	signed int res = Solid_ChkEnter(obj, x_rad, y_rad1, &x_off_t, &y_off_t);
 	if (x_off != NULL)
 		*x_off = x_off_t;
 	if (y_off != NULL)

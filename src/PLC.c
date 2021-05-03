@@ -64,6 +64,19 @@ static const uint8_t art_points[] = {
 	,0,
 };
 
+static const uint8_t art_monitor[] = {
+	#include "Resource/Art/Monitor.h"
+	,0,
+};
+static const uint8_t art_shield[] = {
+	#include "Resource/Art/Shield.h"
+	,0,
+};
+static const uint8_t art_invincibility[] = {
+	#include "Resource/Art/Invincibility.h"
+	,0,
+};
+
 static const uint8_t art_explosion[] = {
 	#include "Resource/Art/Explosion.h"
 	,0,
@@ -156,12 +169,11 @@ static const PLCList PLC_Main = {
 };
 
 static const PLCList PLC_Main2 = {
-	0,
+	3,
 	(const PLC[]){
-		{NULL, 0}, //ISO C forbids empty initializer braces
-		//plcm	Nem_Monitors, $D000	; monitors
-		//plcm	Nem_Shield, $A820	; shield
-		//plcm	Nem_Stars, $AB80	; invincibility	stars
+		{art_monitor,       0xD000},
+		{art_shield,        0xA820},
+		{art_invincibility, 0xAB80},
 	}
 };
 

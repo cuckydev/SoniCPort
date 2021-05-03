@@ -23,7 +23,7 @@ static ALIGNED2 const uint8_t pal_ghzcycle[] = {
 };
 
 //Palette cycle routines
-int PCycle_Sega()
+signed int PCycle_Sega()
 {
 	uint16_t *to;
 	const uint8_t *from;

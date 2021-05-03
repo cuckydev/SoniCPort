@@ -44,7 +44,7 @@ uint8_t* KosDec(const uint8_t *_source, void *_destination)
 		else
 		{
 			uint32_t length = 0;
-			int offset;
+			int32_t offset;
 			
 			if (!GetDescriptorBit())
 			{

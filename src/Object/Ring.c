@@ -78,6 +78,12 @@ static void Obj_Ring_SetupRing(Object *obj, uint8_t index, int16_t x, int16_t y,
 	scratch->index = index;
 }
 
+static void ExtraLife()
+{
+	lives++;
+	life_count++;
+}
+
 void CollectRing()
 {
 	//Increment ring count
@@ -85,7 +91,17 @@ void CollectRing()
 	ring_count |= 1;
 	
 	//Check if we should get an extra life
-	//TODO
+	//TODO: sound
+	if (rings >= 100 && !(life_num & 1))
+	{
+		life_num |= 1;
+		ExtraLife();
+	}
+	else if (rings >= 200 && !(life_num & 2))
+	{
+		life_num |= 2;
+		ExtraLife();
+	}
 }
 
 void Obj_Ring(Object *obj)

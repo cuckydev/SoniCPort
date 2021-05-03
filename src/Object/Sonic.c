@@ -734,7 +734,7 @@ static const uint8_t obj_sizes[][2] = {
 	{0x48,  0x8},
 };
 
-static int React_ChkHurt(Object *obj, Object *hit)
+static signed int React_ChkHurt(Object *obj, Object *hit)
 {
 	Scratch_Sonic *scratch = (Scratch_Sonic*)&obj->scratch;
 	
@@ -748,7 +748,7 @@ static int React_ChkHurt(Object *obj, Object *hit)
 	return HurtSonic(obj, hit);
 }
 
-static int React_Enemy(Object *obj, Object *hit)
+static signed int React_Enemy(Object *obj, Object *hit)
 {
 	//Check if we can hurt the enemy
 	if (!(invincibility || obj->anim == SonAnimId_Roll))
@@ -807,12 +807,31 @@ static int React_Enemy(Object *obj, Object *hit)
 	return 0; //d0 not set
 }
 
-static int React_Monitor(Object *obj, Object *hit)
+static signed int React_Monitor(Object *obj, Object *hit)
 {
+	if (obj->ysp < 0)
+	{
+		//Check if we're below the monitor
+		uint16_t chky = obj->pos.l.y.f.u - 0x10;
+		if (chky < (uint16_t)hit->pos.l.y.f.u)
+		{
+			//Bump monitor
+			obj->ysp = -obj->ysp;
+			hit->ysp = -0x180;
+			if (!hit->routine_sec)
+				hit->routine_sec += 4;
+		}
+	}
+	else if (obj->anim == SonAnimId_Roll)
+	{
+		//Break monitor
+		obj->ysp = -obj->ysp;
+		hit->routine += 2;
+	}
 	return 0; //d0 not set
 }
 
-static int ReactToItem(Object *obj)
+static signed int ReactToItem(Object *obj)
 {
 	Scratch_Sonic *scratch = (Scratch_Sonic*)&obj->scratch;
 	
@@ -871,7 +890,7 @@ static int ReactToItem(Object *obj)
 }
 
 //Sonic functions
-int HurtSonic(Object *obj, Object *src)
+signed int HurtSonic(Object *obj, Object *src)
 {
 	Scratch_Sonic *scratch = (Scratch_Sonic*)&obj->scratch;
 	
@@ -923,7 +942,7 @@ int HurtSonic(Object *obj, Object *src)
 	return -1;
 }
 
-int KillSonic(Object *obj, Object *src)
+signed int KillSonic(Object *obj, Object *src)
 {
 	(void)src;
 	Scratch_Sonic *scratch = (Scratch_Sonic*)&obj->scratch;

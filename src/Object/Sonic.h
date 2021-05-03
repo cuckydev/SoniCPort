@@ -82,5 +82,5 @@ typedef enum
 
 //Sonic functions
 void Sonic_ResetOnFloor(Object *obj);
-int HurtSonic(Object *obj, Object *src);
-int KillSonic(Object *obj, Object *src);
+signed int HurtSonic(Object *obj, Object *src);
+signed int KillSonic(Object *obj, Object *src);
