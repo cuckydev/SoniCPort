@@ -4,10 +4,10 @@
 
 //Motobug assets
 static const uint8_t map_motobug[] = {
-	#include <Resource/Mappings/Motobug.h>
+	#include "Resource/Mappings/Motobug.h"
 };
 static const uint8_t anim_motobug[] = {
-	#include <Resource/Animation/Motobug.h>
+	#include "Resource/Animation/Motobug.h"
 };
 
 //Motobug object

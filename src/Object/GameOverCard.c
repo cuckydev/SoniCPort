@@ -6,7 +6,7 @@
 
 //Game Over card assets
 static const uint8_t map_game_over[] = {
-	#include <Resource/Mappings/GameOver.h>
+	#include "Resource/Mappings/GameOver.h"
 };
 
 //Game Over card constants

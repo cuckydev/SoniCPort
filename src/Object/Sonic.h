@@ -3,7 +3,7 @@
 #include "Object.h"
 
 #include <stdint.h>
-#include <Types.h>
+#include "Types.h"
 
 //Sonic constants
 #define SONIC_WIDTH       9

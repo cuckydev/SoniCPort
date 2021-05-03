@@ -18,7 +18,7 @@
 
 //Icon
 static uint8_t icon_data[] = {
-	#include <Resource/Icon.h>
+	#include "Resource/Icon.h"
 };
 
 //Window and renderer

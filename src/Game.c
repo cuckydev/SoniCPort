@@ -7,6 +7,7 @@
 #include "LevelScroll.h"
 #include "Object/Sonic.h"
 #include "PLC.h"
+#include "HUD.h"
 
 #include "GM_Sega.h"
 #include "GM_Title.h"
@@ -31,6 +32,11 @@ uint8_t jpad1_hold1, jpad1_press1; //Joypad 1 state
 uint8_t jpad1_hold2, jpad1_press2; //Sonic controls
 
 uint32_t vbla_count;
+
+//Global assets
+const uint8_t art_text[] = {
+	#include "Resource/Art/Text.h"
+};
 
 //General game functions
 void ReadJoypads()
@@ -182,6 +188,7 @@ void VBlank()
 				
 				//Update level animations and HUD
 				AnimateLevelGfx();
+				HUD_Update();
 				
 				//Process PLCs
 				ProcessDPLC2();
@@ -237,6 +244,7 @@ void VBlank()
 			
 			//Update level animations and HUD
 			AnimateLevelGfx();
+			HUD_Update();
 			
 			//Process PLCs
 			ProcessDPLC();

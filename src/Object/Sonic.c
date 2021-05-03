@@ -14,7 +14,7 @@
 
 //Sonic mappings
 static const uint8_t map_sonic[] = {
-	#include <Resource/Mappings/Sonic.h>
+	#include "Resource/Mappings/Sonic.h"
 };
 
 //Sonic globals
@@ -90,7 +90,7 @@ static void Sonic_RecordPosition(Object *obj)
 
 //Sonic animation
 static const uint8_t anim_sonic[] = {
-	#include <Resource/Animation/Sonic.h>
+	#include "Resource/Animation/Sonic.h"
 };
 #define GET_SONIC_ANISCR(x) (anim_sonic + ((anim_sonic[((x) << 1)] << 8) | (anim_sonic[((x) << 1) + 1] << 0)))
 
@@ -268,11 +268,11 @@ static void Sonic_Animate(Object *obj)
 
 //Sonic DPLCs
 static const uint8_t art_sonic[] = {
-	#include <Resource/Art/Sonic.h>
+	#include "Resource/Art/Sonic.h"
 };
 
 static const uint8_t dplc_sonic[] = {
-	#include <Resource/Mappings/SonicDPLC.h>
+	#include "Resource/Mappings/SonicDPLC.h"
 };
 
 static void Sonic_LoadGfx(Object *obj)
@@ -1291,7 +1291,7 @@ static void Sonic_LevelBound(Object *obj)
 		else
 		{
 			//Kill Sonic
-			KillSonic(obj, obj); //The second argument is undefined in the original
+			KillSonic(obj, obj);
 		}
 	}
 }
@@ -1631,6 +1631,7 @@ static void GameOver(Object *obj)
 	obj->ysp = -0x38; //???
 	obj->routine += 2;
 	time_count = false;
+	life_count++;
 	
 	//Check if we've game over'ed
 	if (--lives == 0)

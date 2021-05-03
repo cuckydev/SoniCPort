@@ -4,15 +4,15 @@
 
 //Collision maps
 static const uint8_t angle_map[] = {
-	#include <Resource/Collision/AngleMap.h>
+	#include "Resource/Collision/AngleMap.h"
 };
 
 static const uint8_t height_map[] = {
-	#include <Resource/Collision/HeightMap.h>
+	#include "Resource/Collision/HeightMap.h"
 };
 
 static const uint8_t width_map[] = {
-	#include <Resource/Collision/WidthMap.h>
+	#include "Resource/Collision/WidthMap.h"
 };
 
 //Collision angle buffer

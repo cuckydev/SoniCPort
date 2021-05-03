@@ -2,11 +2,11 @@
 
 #include "LevelScroll.h"
 
-#include <Macros.h>
+#include "Macros.h"
 
 //GHZ rock assets
 static const uint8_t map_ghz_rock[] = {
-	#include <Resource/Mappings/GHZRock.h>
+	#include "Resource/Mappings/GHZRock.h"
 };
 
 //GHZ rock object

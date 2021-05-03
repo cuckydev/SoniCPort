@@ -1,6 +1,6 @@
 #include "Level.h"
 
-#include <Constants.h>
+#include "Constants.h"
 #include "Game.h"
 #include "LevelScroll.h"
 #include "LevelDraw.h"
@@ -8,111 +8,111 @@
 #include "PLC.h"
 #include "Palette.h"
 
-#include <Backend/VDP.h>
+#include "Backend/VDP.h"
 
 #include <string.h>
 
 //Level layouts
 static const uint8_t layout_ghz1[] = {
-	#include <Resource/Layout/GHZ1.h>
+	#include "Resource/Layout/GHZ1.h"
 };
 static const uint8_t layout_ghz2[] = {
-	#include <Resource/Layout/GHZ2.h>
+	#include "Resource/Layout/GHZ2.h"
 };
 static const uint8_t layout_ghz3[] = {
-	#include <Resource/Layout/GHZ3.h>
+	#include "Resource/Layout/GHZ3.h"
 };
 static const uint8_t layout_ghzbg[] = {
-	#include <Resource/Layout/GHZBG.h>
+	#include "Resource/Layout/GHZBG.h"
 };
 static const uint8_t layout_lz1[] = {
-	#include <Resource/Layout/LZ1.h>
+	#include "Resource/Layout/LZ1.h"
 };
 static const uint8_t layout_lz2[] = {
-	#include <Resource/Layout/LZ2.h>
+	#include "Resource/Layout/LZ2.h"
 };
 static const uint8_t layout_lz3[] = {
-	#include <Resource/Layout/LZ3.h>
+	#include "Resource/Layout/LZ3.h"
 };
 static const uint8_t layout_lzbg[] = {
-	#include <Resource/Layout/LZBG.h>
+	#include "Resource/Layout/LZBG.h"
 };
 static const uint8_t layout_mz1[] = {
-	#include <Resource/Layout/MZ1.h>
+	#include "Resource/Layout/MZ1.h"
 };
 static const uint8_t layout_mz1bg[] = {
-	#include <Resource/Layout/MZ1BG.h>
+	#include "Resource/Layout/MZ1BG.h"
 };
 static const uint8_t layout_mz2[] = {
-	#include <Resource/Layout/MZ2.h>
+	#include "Resource/Layout/MZ2.h"
 };
 static const uint8_t layout_mz2bg[] = {
-	#include <Resource/Layout/MZ2BG.h>
+	#include "Resource/Layout/MZ2BG.h"
 };
 static const uint8_t layout_mz3[] = {
-	#include <Resource/Layout/MZ3.h>
+	#include "Resource/Layout/MZ3.h"
 };
 static const uint8_t layout_mz3bg[] = {
-	#include <Resource/Layout/MZ3BG.h>
+	#include "Resource/Layout/MZ3BG.h"
 };
 static const uint8_t layout_slz1[] = {
-	#include <Resource/Layout/SLZ1.h>
+	#include "Resource/Layout/SLZ1.h"
 };
 static const uint8_t layout_slz2[] = {
-	#include <Resource/Layout/SLZ2.h>
+	#include "Resource/Layout/SLZ2.h"
 };
 static const uint8_t layout_slz3[] = {
-	#include <Resource/Layout/SLZ3.h>
+	#include "Resource/Layout/SLZ3.h"
 };
 static const uint8_t layout_slzbg[] = {
-	#include <Resource/Layout/SLZBG.h>
+	#include "Resource/Layout/SLZBG.h"
 };
 static const uint8_t layout_syz1[] = {
-	#include <Resource/Layout/SYZ1.h>
+	#include "Resource/Layout/SYZ1.h"
 };
 static const uint8_t layout_syz2[] = {
-	#include <Resource/Layout/SYZ2.h>
+	#include "Resource/Layout/SYZ2.h"
 };
 static const uint8_t layout_syz3[] = {
-	#include <Resource/Layout/SYZ3.h>
+	#include "Resource/Layout/SYZ3.h"
 };
 static const uint8_t layout_syzbg[] = {
 	#include RES_REV(Layout/SYZBG)
 };
 static const uint8_t layout_sbz1[] = {
-	#include <Resource/Layout/SBZ1.h>
+	#include "Resource/Layout/SBZ1.h"
 };
 static const uint8_t layout_sbz1bg[] = {
-	#include <Resource/Layout/SBZ1BG.h>
+	#include "Resource/Layout/SBZ1BG.h"
 };
 static const uint8_t layout_sbz2[] = {
-	#include <Resource/Layout/SBZ2.h>
+	#include "Resource/Layout/SBZ2.h"
 };
 static const uint8_t layout_sbz2bg[] = {
-	#include <Resource/Layout/SBZ2BG.h>
+	#include "Resource/Layout/SBZ2BG.h"
 };
 static const uint8_t layout_sbz3[] = {
-	#include <Resource/Layout/SBZ3.h>
+	#include "Resource/Layout/SBZ3.h"
 };
 static const uint8_t layout_ending[] = {
-	#include <Resource/Layout/Ending.h>
+	#include "Resource/Layout/Ending.h"
 };
 
 //256x256 mappings
 static const uint8_t map256_ghz[] = {
-	#include <Resource/Map256/GHZ.h>
+	#include "Resource/Map256/GHZ.h"
 };
 static const uint8_t map256_lz[] = {
-	#include <Resource/Map256/LZ.h>
+	#include "Resource/Map256/LZ.h"
 };
 static const uint8_t map256_mz[] = {
 	#include RES_REV(Map256/MZ)
 };
 static const uint8_t map256_slz[] = {
-	#include <Resource/Map256/SLZ.h>
+	#include "Resource/Map256/SLZ.h"
 };
 static const uint8_t map256_syz[] = {
-	#include <Resource/Map256/SYZ.h>
+	#include "Resource/Map256/SYZ.h"
 };
 static const uint8_t map256_sbz[] = {
 	#include RES_REV(Map256/SBZ)
@@ -120,50 +120,50 @@ static const uint8_t map256_sbz[] = {
 
 //16x16 mappings
 static const uint8_t map16_ghz[] = {
-	#include <Resource/Map16/GHZ.h>
+	#include "Resource/Map16/GHZ.h"
 };
 static const uint8_t map16_lz[] = {
-	#include <Resource/Map16/LZ.h>
+	#include "Resource/Map16/LZ.h"
 };
 static const uint8_t map16_mz[] = {
-	#include <Resource/Map16/MZ.h>
+	#include "Resource/Map16/MZ.h"
 };
 static const uint8_t map16_slz[] = {
-	#include <Resource/Map16/SLZ.h>
+	#include "Resource/Map16/SLZ.h"
 };
 static const uint8_t map16_syz[] = {
-	#include <Resource/Map16/SYZ.h>
+	#include "Resource/Map16/SYZ.h"
 };
 static const uint8_t map16_sbz[] = {
-	#include <Resource/Map16/SBZ.h>
+	#include "Resource/Map16/SBZ.h"
 };
 
 //Collision indices
 static const uint8_t coli_ghz[] = {
-	#include <Resource/CollisionIndex/GHZ.h>
+	#include "Resource/CollisionIndex/GHZ.h"
 };
 static const uint8_t coli_lz[] = {
-	#include <Resource/CollisionIndex/LZ.h>
+	#include "Resource/CollisionIndex/LZ.h"
 };
 static const uint8_t coli_mz[] = {
-	#include <Resource/CollisionIndex/MZ.h>
+	#include "Resource/CollisionIndex/MZ.h"
 };
 static const uint8_t coli_slz[] = {
-	#include <Resource/CollisionIndex/SLZ.h>
+	#include "Resource/CollisionIndex/SLZ.h"
 };
 static const uint8_t coli_syz[] = {
-	#include <Resource/CollisionIndex/SYZ.h>
+	#include "Resource/CollisionIndex/SYZ.h"
 };
 static const uint8_t coli_sbz[] = {
-	#include <Resource/CollisionIndex/SBZ.h>
+	#include "Resource/CollisionIndex/SBZ.h"
 };
 
 //Object positions
 static const uint8_t obj_ghz1[] = {
-	#include <Resource/ObjectLayout/GHZ1.h>
+	#include "Resource/ObjectLayout/GHZ1.h"
 };
 static const uint8_t obj_ghz2[] = {
-	#include <Resource/ObjectLayout/GHZ2.h>
+	#include "Resource/ObjectLayout/GHZ2.h"
 };
 static const uint8_t obj_ghz3[] = {
 	#include RES_REV(ObjectLayout/GHZ3)
@@ -172,52 +172,52 @@ static const uint8_t obj_lz1[] = {
 	#include RES_REV(ObjectLayout/LZ1)
 };
 static const uint8_t obj_lz1pf1[] = {
-	#include <Resource/ObjectLayout/LZ1PF1.h>
+	#include "Resource/ObjectLayout/LZ1PF1.h"
 };
 static const uint8_t obj_lz1pf2[] = {
-	#include <Resource/ObjectLayout/LZ1PF2.h>
+	#include "Resource/ObjectLayout/LZ1PF2.h"
 };
 static const uint8_t obj_lz2[] = {
-	#include <Resource/ObjectLayout/LZ2.h>
+	#include "Resource/ObjectLayout/LZ2.h"
 };
 static const uint8_t obj_lz2pf1[] = {
-	#include <Resource/ObjectLayout/LZ2PF1.h>
+	#include "Resource/ObjectLayout/LZ2PF1.h"
 };
 static const uint8_t obj_lz2pf2[] = {
-	#include <Resource/ObjectLayout/LZ2PF2.h>
+	#include "Resource/ObjectLayout/LZ2PF2.h"
 };
 static const uint8_t obj_lz3[] = {
 	#include RES_REV(ObjectLayout/LZ3)
 };
 static const uint8_t obj_lz3pf1[] = {
-	#include <Resource/ObjectLayout/LZ3PF1.h>
+	#include "Resource/ObjectLayout/LZ3PF1.h"
 };
 static const uint8_t obj_lz3pf2[] = {
-	#include <Resource/ObjectLayout/LZ3PF2.h>
+	#include "Resource/ObjectLayout/LZ3PF2.h"
 };
 static const uint8_t obj_mz1[] = {
 	#include RES_REV(ObjectLayout/MZ1)
 };
 static const uint8_t obj_mz2[] = {
-	#include <Resource/ObjectLayout/MZ2.h>
+	#include "Resource/ObjectLayout/MZ2.h"
 };
 static const uint8_t obj_mz3[] = {
-	#include <Resource/ObjectLayout/MZ3.h>
+	#include "Resource/ObjectLayout/MZ3.h"
 };
 static const uint8_t obj_slz1[] = {
-	#include <Resource/ObjectLayout/SLZ1.h>
+	#include "Resource/ObjectLayout/SLZ1.h"
 };
 static const uint8_t obj_slz2[] = {
-	#include <Resource/ObjectLayout/SLZ2.h>
+	#include "Resource/ObjectLayout/SLZ2.h"
 };
 static const uint8_t obj_slz3[] = {
-	#include <Resource/ObjectLayout/SLZ3.h>
+	#include "Resource/ObjectLayout/SLZ3.h"
 };
 static const uint8_t obj_syz1[] = {
-	#include <Resource/ObjectLayout/SYZ1.h>
+	#include "Resource/ObjectLayout/SYZ1.h"
 };
 static const uint8_t obj_syz2[] = {
-	#include <Resource/ObjectLayout/SYZ2.h>
+	#include "Resource/ObjectLayout/SYZ2.h"
 };
 static const uint8_t obj_syz3[] = {
 	#include RES_REV(ObjectLayout/SYZ3)
@@ -226,34 +226,34 @@ static const uint8_t obj_sbz1[] = {
 	#include RES_REV(ObjectLayout/SBZ1)
 };
 static const uint8_t obj_sbz1pf1[] = {
-	#include <Resource/ObjectLayout/SBZ1PF1.h>
+	#include "Resource/ObjectLayout/SBZ1PF1.h"
 };
 static const uint8_t obj_sbz1pf2[] = {
-	#include <Resource/ObjectLayout/SBZ1PF2.h>
+	#include "Resource/ObjectLayout/SBZ1PF2.h"
 };
 static const uint8_t obj_sbz1pf3[] = {
-	#include <Resource/ObjectLayout/SBZ1PF3.h>
+	#include "Resource/ObjectLayout/SBZ1PF3.h"
 };
 static const uint8_t obj_sbz1pf4[] = {
-	#include <Resource/ObjectLayout/SBZ1PF4.h>
+	#include "Resource/ObjectLayout/SBZ1PF4.h"
 };
 static const uint8_t obj_sbz1pf5[] = {
-	#include <Resource/ObjectLayout/SBZ1PF5.h>
+	#include "Resource/ObjectLayout/SBZ1PF5.h"
 };
 static const uint8_t obj_sbz1pf6[] = {
-	#include <Resource/ObjectLayout/SBZ1PF6.h>
+	#include "Resource/ObjectLayout/SBZ1PF6.h"
 };
 static const uint8_t obj_sbz2[] = {
-	#include <Resource/ObjectLayout/SBZ2.h>
+	#include "Resource/ObjectLayout/SBZ2.h"
 };
 static const uint8_t obj_sbz3[] = {
-	#include <Resource/ObjectLayout/SBZ3.h>
+	#include "Resource/ObjectLayout/SBZ3.h"
 };
 static const uint8_t obj_fz[] = {
-	#include <Resource/ObjectLayout/FZ.h>
+	#include "Resource/ObjectLayout/FZ.h"
 };
 static const uint8_t obj_ending[] = {
-	#include <Resource/ObjectLayout/Ending.h>
+	#include "Resource/ObjectLayout/Ending.h"
 };
 
 //Level definitions
@@ -511,7 +511,7 @@ uint16_t frame_count;
 
 //Player state
 uint32_t score;
-uint32_t time;
+LevelTime time;
 uint16_t rings;
 uint8_t lives;
 uint8_t continues;
@@ -591,6 +591,9 @@ uint16_t sprite_anim_3buf;
 //Game functions
 void AddPoints(uint16_t points)
 {
+	//Update HUD
+	score_count = 1;
+	
 	#ifdef SCP_REV00
 		//TODO
 	#else

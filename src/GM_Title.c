@@ -11,7 +11,7 @@
 #include "PLC.h"
 #include "Nemesis.h"
 
-#include <Backend/VDP.h>
+#include "Backend/VDP.h"
 
 #include <string.h>
 
@@ -28,34 +28,34 @@ static const uint16_t title_demos[] = {
 
 //Japanese credits
 static const uint8_t art_japanese_credits[] = {
-	#include <Resource/Art/JapaneseCredits.h>
+	#include "Resource/Art/JapaneseCredits.h"
 	,0,
 };
 static ALIGNED2 const uint8_t map_japanese_credits[] = {
-	#include <Resource/Tilemap/JapaneseCredits.h>
+	#include "Resource/Tilemap/JapaneseCredits.h"
 };
 
 //Credits font
 static const uint8_t art_credits_font[] = {
-	#include <Resource/Art/CreditsFont.h>
+	#include "Resource/Art/CreditsFont.h"
 	,0,
 };
 
 //Title
 static const uint8_t art_title_fg[] = {
-	#include <Resource/Art/TitleFG.h>
+	#include "Resource/Art/TitleFG.h"
 	,0,
 };
 static const uint8_t art_title_sonic[] = {
-	#include <Resource/Art/TitleSonic.h>
+	#include "Resource/Art/TitleSonic.h"
 	,0,
 };
 static const uint8_t art_title_tm[] = {
-	#include <Resource/Art/TitleTM.h>
+	#include "Resource/Art/TitleTM.h"
 	,0,
 };
 static ALIGNED2 const uint8_t map_title_fg[] = {
-	#include <Resource/Tilemap/TitleFG.h>
+	#include "Resource/Tilemap/TitleFG.h"
 };
 
 //Level stuff
@@ -64,7 +64,7 @@ static void PlayLevel()
 	gamemode = GameMode_Level;
 	lives = 3;
 	rings = 0;
-	time = 0;
+	time.pad = time.min = time.sec = time.frame = 0;
 	score = 0;
 	last_special = 0;
 	emeralds = 0;
@@ -276,7 +276,7 @@ void GM_Title()
 			//Set game state
 			lives = 3;
 			rings = 0;
-			time = 0;
+			time.pad = time.min = time.sec = time.frame = 0;
 			score = 0;
 			#ifndef SCP_REV00
 				score_life = 5000;

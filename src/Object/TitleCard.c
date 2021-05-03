@@ -1,6 +1,6 @@
 #include "Object.h"
 
-#include <Constants.h>
+#include "Constants.h"
 #include "Level.h"
 #include "PLC.h"
 
@@ -35,7 +35,7 @@ static const struct TitleCard_Config
 
 //Title card mappings
 static const uint8_t map_titlecard[] = {
-	#include <Resource/Mappings/TitleCard.h>
+	#include "Resource/Mappings/TitleCard.h"
 };
 
 //Title card object

@@ -10,16 +10,16 @@ uint16_t pcyc_buffer[0x18];
 
 //Palette cycles
 static ALIGNED2 const uint8_t pal_sega1[] = {
-	#include <Resource/Palette/Sega1.h>
+	#include "Resource/Palette/Sega1.h"
 };
 static ALIGNED2 const uint8_t pal_sega2[] = {
-	#include <Resource/Palette/Sega2.h>
+	#include "Resource/Palette/Sega2.h"
 };
 static ALIGNED2 const uint8_t pal_titlecycle[] = {
-	#include <Resource/Palette/TitleCycle.h>
+	#include "Resource/Palette/TitleCycle.h"
 };
 static ALIGNED2 const uint8_t pal_ghzcycle[] = {
-	#include <Resource/Palette/GHZCycle.h>
+	#include "Resource/Palette/GHZCycle.h"
 };
 
 //Palette cycle routines

@@ -1,5 +1,4 @@
-#include <Backend/MegaDrive.h>
-#include <Backend/VDP.h>
+#include "Backend/MegaDrive.h"
 
 #include "Game.h"
 

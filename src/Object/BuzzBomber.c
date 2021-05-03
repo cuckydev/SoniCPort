@@ -4,22 +4,22 @@
 
 //Buzz Bomber assets
 static const uint8_t map_buzz_bomber[] = {
-	#include <Resource/Mappings/BuzzBomber.h>
+	#include "Resource/Mappings/BuzzBomber.h"
 };
 static const uint8_t map_buzz_missile[] = {
-	#include <Resource/Mappings/BuzzMissile.h>
+	#include "Resource/Mappings/BuzzMissile.h"
 };
 /*
 static const uint8_t map_buzz_explode[] = {
-	#include <Resource/Mappings/BuzzExplode.h>
+	#include "Resource/Mappings/BuzzExplode.h"
 };
 */
 
 static const uint8_t anim_buzz_bomber[] = {
-	#include <Resource/Animation/BuzzBomber.h>
+	#include "Resource/Animation/BuzzBomber.h"
 };
 static const uint8_t anim_buzz_missile[] = {
-	#include <Resource/Animation/BuzzMissile.h>
+	#include "Resource/Animation/BuzzMissile.h"
 };
 
 //Buzz Bomber's explosion

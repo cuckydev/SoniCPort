@@ -4,7 +4,7 @@
 
 #include "Nemesis.h"
 
-#include <Backend/VDP.h>
+#include "Backend/VDP.h"
 
 #include <string.h>
 
@@ -14,126 +14,126 @@
 
 //Level art
 const uint8_t art_ghz1[] = {
-	#include <Resource/Art/GHZ1.h>
+	#include "Resource/Art/GHZ1.h"
 	,0,
 };
 const uint8_t art_ghz2[] = {
-	#include <Resource/Art/GHZ2.h>
+	#include "Resource/Art/GHZ2.h"
 	,0,
 };
 const uint8_t art_lz[] = {
-	#include <Resource/Art/LZ.h>
+	#include "Resource/Art/LZ.h"
 	,0,
 };
 const uint8_t art_mz[] = {
-	#include <Resource/Art/MZ.h>
+	#include "Resource/Art/MZ.h"
 	,0,
 };
 const uint8_t art_slz[] = {
-	#include <Resource/Art/SLZ.h>
+	#include "Resource/Art/SLZ.h"
 	,0,
 };
 const uint8_t art_syz[] = {
-	#include <Resource/Art/SYZ.h>
+	#include "Resource/Art/SYZ.h"
 	,0,
 };
 const uint8_t art_sbz[] = {
-	#include <Resource/Art/SBZ.h>
+	#include "Resource/Art/SBZ.h"
 	,0,
 };
 
 //Object art
 static const uint8_t art_lamppost[] = {
-	#include <Resource/Art/Lamppost.h>
+	#include "Resource/Art/Lamppost.h"
 	,0,
 };
 static const uint8_t art_hud[] = {
-	#include <Resource/Art/HUD.h>
+	#include "Resource/Art/HUD.h"
 	,0,
 };
 static const uint8_t art_hud_life[] = {
-	#include <Resource/Art/HUDLife.h>
+	#include "Resource/Art/HUDLife.h"
 	,0,
 };
 static const uint8_t art_ring[] = {
-	#include <Resource/Art/Ring.h>
+	#include "Resource/Art/Ring.h"
 	,0,
 };
 static const uint8_t art_points[] = {
-	#include <Resource/Art/Points.h>
+	#include "Resource/Art/Points.h"
 	,0,
 };
 
 static const uint8_t art_explosion[] = {
-	#include <Resource/Art/Explosion.h>
+	#include "Resource/Art/Explosion.h"
 	,0,
 };
 static const uint8_t art_game_over[] = {
-	#include <Resource/Art/GameOver.h>
+	#include "Resource/Art/GameOver.h"
 	,0,
 };
 static const uint8_t art_ghz_stalk[] = {
-	#include <Resource/Art/GHZStalk.h>
+	#include "Resource/Art/GHZStalk.h"
 	,0,
 };
 static const uint8_t art_ghz_rock[] = {
-	#include <Resource/Art/GHZRock.h>
+	#include "Resource/Art/GHZRock.h"
 	,0,
 };
 static const uint8_t art_crabmeat[] = {
-	#include <Resource/Art/Crabmeat.h>
+	#include "Resource/Art/Crabmeat.h"
 	,0,
 };
 static const uint8_t art_buzz_bomber[] = {
-	#include <Resource/Art/BuzzBomber.h>
+	#include "Resource/Art/BuzzBomber.h"
 	,0,
 };
 static const uint8_t art_chopper[] = {
-	#include <Resource/Art/Chopper.h>
+	#include "Resource/Art/Chopper.h"
 	,0,
 };
 static const uint8_t art_newtron[] = {
-	#include <Resource/Art/Newtron.h>
+	#include "Resource/Art/Newtron.h"
 	,0,
 };
 static const uint8_t art_motobug[] = {
-	#include <Resource/Art/Motobug.h>
+	#include "Resource/Art/Motobug.h"
 	,0,
 };
 static const uint8_t art_spikes[] = {
-	#include <Resource/Art/Spikes.h>
+	#include "Resource/Art/Spikes.h"
 	,0,
 };
 static const uint8_t art_springh[] = {
-	#include <Resource/Art/SpringH.h>
+	#include "Resource/Art/SpringH.h"
 	,0,
 };
 static const uint8_t art_springv[] = {
-	#include <Resource/Art/SpringV.h>
+	#include "Resource/Art/SpringV.h"
 	,0,
 };
 static const uint8_t art_ghz_swing[] = {
-	#include <Resource/Art/GHZSwing.h>
+	#include "Resource/Art/GHZSwing.h"
 	,0,
 };
 static const uint8_t art_ghz_bridge[] = {
-	#include <Resource/Art/GHZBridge.h>
+	#include "Resource/Art/GHZBridge.h"
 	,0,
 };
 static const uint8_t art_ghz_log[] = {
-	#include <Resource/Art/GHZLog.h>
+	#include "Resource/Art/GHZLog.h"
 	,0,
 };
 static const uint8_t art_ghz_ball[] = {
-	#include <Resource/Art/GHZBall.h>
+	#include "Resource/Art/GHZBall.h"
 	,0,
 };
 static const uint8_t art_ghz_wall1[] = {
-	#include <Resource/Art/GHZWall1.h>
+	#include "Resource/Art/GHZWall1.h"
 	,0,
 };
 static const uint8_t art_ghz_wall2[] = {
-	#include <Resource/Art/GHZWall2.h>
+	#include "Resource/Art/GHZWall2.h"
 	,0,
 };
 

@@ -6,7 +6,7 @@
 
 #include "Object/Sonic.h"
 
-#include <Macros.h>
+#include "Macros.h"
 
 #include <string.h>
 
@@ -36,6 +36,7 @@ void Obj_TitleSonic(Object *obj);
 void Obj_PSB(Object *obj);
 void Obj_GHZBridge(Object *obj);
 void Obj_Crabmeat(Object *obj);
+void Obj_HUD(Object *obj);
 void Obj_BuzzBomber(Object *obj);
 void Obj_BuzzMissile(Object *obj);
 void Obj_BuzzExplode(Object *obj);
@@ -86,7 +87,7 @@ static void (*object_func[])(Object*) = {
 	/* ObjId_1E           */ Obj_Null,
 	/* ObjId_Crabmeat     */ Obj_Crabmeat,
 	/* ObjId_20           */ Obj_Null,
-	/* ObjId_21           */ Obj_Null,
+	/* ObjId_HUD          */ Obj_HUD,
 	/* ObjId_BuzzBomber   */ Obj_BuzzBomber,
 	/* ObjId_BuzzMissile  */ Obj_BuzzMissile,
 	/* ObjId_BuzzExplode  */ Obj_BuzzExplode,
@@ -474,6 +475,7 @@ void BuildSprites()
 	}
 	
 	//Terminate end of sprite list
+	sprite_count = sprite_i;
 	if (sprite_i >= BUFFER_SPRITES)
 	{
 		sprite[-2] &= 0xFF00; //Clear link byte

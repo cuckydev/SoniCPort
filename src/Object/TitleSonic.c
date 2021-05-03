@@ -2,11 +2,11 @@
 
 //Title Sonic assets
 static const uint8_t anim_titlesonic[] = {
-	#include <Resource/Animation/TitleSonic.h>
+	#include "Resource/Animation/TitleSonic.h"
 };
 
 static const uint8_t map_titlesonic[] = {
-	#include <Resource/Mappings/TitleSonic.h>
+	#include "Resource/Mappings/TitleSonic.h"
 };
 
 //Title Sonic object

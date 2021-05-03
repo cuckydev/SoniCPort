@@ -3,7 +3,7 @@
 #include "Video.h"
 #include "PLC.h"
 
-#include <Backend/VDP.h>
+#include "Backend/VDP.h"
 
 #include <stdlib.h>
 
@@ -19,64 +19,64 @@ PaletteFade palette_fade;
 
 //Palettes
 static ALIGNED2 const uint8_t pal_sega_bg[] = {
-	#include <Resource/Palette/SegaBG.h>
+	#include "Resource/Palette/SegaBG.h"
 };
 static ALIGNED2 const uint8_t pal_title[] = {
-	#include <Resource/Palette/Title.h>
+	#include "Resource/Palette/Title.h"
 };
 static ALIGNED2 const uint8_t pal_level_sel[] = {
-	#include <Resource/Palette/LevelSel.h>
+	#include "Resource/Palette/LevelSel.h"
 };
 static ALIGNED2 const uint8_t pal_sonic[] = {
-	#include <Resource/Palette/Sonic.h>
+	#include "Resource/Palette/Sonic.h"
 };
 static ALIGNED2 const uint8_t pal_ghz[] = {
-	#include <Resource/Palette/GHZ.h>
+	#include "Resource/Palette/GHZ.h"
 };
 static ALIGNED2 const uint8_t pal_lz[] = {
-	#include <Resource/Palette/LZ.h>
+	#include "Resource/Palette/LZ.h"
 };
 static ALIGNED2 const uint8_t pal_mz[] = {
-	#include <Resource/Palette/MZ.h>
+	#include "Resource/Palette/MZ.h"
 };
 static ALIGNED2 const uint8_t pal_slz[] = {
-	#include <Resource/Palette/SLZ.h>
+	#include "Resource/Palette/SLZ.h"
 };
 static ALIGNED2 const uint8_t pal_syz[] = {
-	#include <Resource/Palette/SYZ.h>
+	#include "Resource/Palette/SYZ.h"
 };
 static ALIGNED2 const uint8_t pal_sbz1[] = {
-	#include <Resource/Palette/SBZ1.h>
+	#include "Resource/Palette/SBZ1.h"
 };
 static ALIGNED2 const uint8_t pal_special[] = {
-	#include <Resource/Palette/Special.h>
+	#include "Resource/Palette/Special.h"
 };
 static ALIGNED2 const uint8_t pal_lz_water[] = {
-	#include <Resource/Palette/LZWater.h>
+	#include "Resource/Palette/LZWater.h"
 };
 static ALIGNED2 const uint8_t pal_sbz3[] = {
-	#include <Resource/Palette/SBZ3.h>
+	#include "Resource/Palette/SBZ3.h"
 };
 static ALIGNED2 const uint8_t pal_sbz3_water[] = {
-	#include <Resource/Palette/SBZ3Water.h>
+	#include "Resource/Palette/SBZ3Water.h"
 };
 static ALIGNED2 const uint8_t pal_sbz2[] = {
-	#include <Resource/Palette/SBZ2.h>
+	#include "Resource/Palette/SBZ2.h"
 };
 static ALIGNED2 const uint8_t pal_sonic_lz[] = {
-	#include <Resource/Palette/SonicLZ.h>
+	#include "Resource/Palette/SonicLZ.h"
 };
 static ALIGNED2 const uint8_t pal_sonic_sbz[] = {
-	#include <Resource/Palette/SonicSBZ.h>
+	#include "Resource/Palette/SonicSBZ.h"
 };
 static ALIGNED2 const uint8_t pal_ss_results[] = {
-	#include <Resource/Palette/SSResults.h>
+	#include "Resource/Palette/SSResults.h"
 };
 static ALIGNED2 const uint8_t pal_continue[] = {
-	#include <Resource/Palette/Continue.h>
+	#include "Resource/Palette/Continue.h"
 };
 static ALIGNED2 const uint8_t pal_ending[] = {
-	#include <Resource/Palette/Ending.h>
+	#include "Resource/Palette/Ending.h"
 };
 
 static struct PalettePointer

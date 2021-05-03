@@ -1,10 +1,10 @@
 #include "LevelDraw.h"
 
-#include <Constants.h>
+#include "Constants.h"
 #include "Level.h"
 #include "LevelScroll.h"
 
-#include <Backend/VDP.h>
+#include "Backend/VDP.h"
 
 //Scroll dimensions (hack so that dimensions that aren't a multiple of 16 work)
 #define SCROLL_WIDTH  ((SCREEN_WIDTH  + 15) & ~15)
@@ -332,13 +332,13 @@ void LoadTilesAsYouMove_BGOnly()
 
 //Level art animation
 static const uint8_t art_ghz_waterfall[] = {
-	#include <Resource/Art/GHZWaterfall.h>
+	#include "Resource/Art/GHZWaterfall.h"
 };
 static const uint8_t art_ghz_flower_large[] = {
-	#include <Resource/Art/GHZFlowerLarge.h>
+	#include "Resource/Art/GHZFlowerLarge.h"
 };
 static const uint8_t art_ghz_flower_small[] = {
-	#include <Resource/Art/GHZFlowerSmall.h>
+	#include "Resource/Art/GHZFlowerSmall.h"
 };
 
 static void AniArt_GiantRing()

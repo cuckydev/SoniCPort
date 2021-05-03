@@ -4,11 +4,11 @@
 #include "LevelScroll.h"
 #include "Sonic.h"
 
-#include <Macros.h>
+#include "Macros.h"
 
 //GHZ edge assets
 static const uint8_t map_ghz_edge[] = {
-	#include <Resource/Mappings/GHZEdge.h>
+	#include "Resource/Mappings/GHZEdge.h"
 };
 
 //GHZ edge object

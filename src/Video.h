@@ -1,12 +1,14 @@
 #pragma once
 
-#include <Backend/VDP.h>
+#include "Backend/VDP.h"
 
 //Video constants
 #define BUFFER_SPRITES 0x50
 
 //Video globals
 extern uint8_t vbla_routine;
+
+extern uint8_t sprite_count;
 
 extern uint8_t hbla_pal;
 extern int16_t hbla_pos;

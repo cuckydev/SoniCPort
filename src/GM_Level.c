@@ -14,13 +14,13 @@
 #include "Nemesis.h"
 #include "PLC.h"
 #include "Demo.h"
+#include "HUD.h"
 
 #include <string.h>
-#include <stdio.h>
 
 //Title card art
 static const uint8_t art_titlecard[] = {
-	#include <Resource/Art/TitleCard.h>
+	#include "Resource/Art/TitleCard.h"
 	,0,
 };
 
@@ -228,6 +228,9 @@ void GM_Level()
 			BuildSprites();
 			RunPLC();
 		} while (objects[4].pos.s.x != objects[4].scratch.u16[4] || plc_buffer[0].art != NULL);
+		
+		//Initialize HUD
+		HUD_Base();
 	}
 	
 	//Load level
@@ -242,6 +245,8 @@ void GM_Level()
 	
 	//Create player and HUD objects
 	player->type = ObjId_Sonic;
+	if (demo >= 0)
+		objects[1].type = ObjId_HUD;
 	
 	//Handle debug mode cheat
 	if (debug_cheat && (jpad1_hold1 & JPAD_A))
@@ -260,7 +265,7 @@ void GM_Level()
 	if (!last_lamp)
 	{
 		rings = 0;
-		time = 0;
+		time.pad = time.min = time.sec = time.frame = 0;
 		life_num = 0;
 	}
 	

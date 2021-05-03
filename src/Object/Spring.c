@@ -6,10 +6,10 @@
 
 //Spring assets
 static const uint8_t map_spring[] = {
-	#include <Resource/Mappings/Spring.h>
+	#include "Resource/Mappings/Spring.h"
 };
 static const uint8_t anim_spring[] = {
-	#include <Resource/Animation/Spring.h>
+	#include "Resource/Animation/Spring.h"
 };
 
 //Spring object

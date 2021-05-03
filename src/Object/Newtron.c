@@ -5,10 +5,10 @@
 
 //Newtron assets
 static const uint8_t map_newtron[] = {
-	#include <Resource/Mappings/Newtron.h>
+	#include "Resource/Mappings/Newtron.h"
 };
 static const uint8_t anim_newtron[] = {
-	#include <Resource/Animation/Newtron.h>
+	#include "Resource/Animation/Newtron.h"
 };
 
 //Newtron object

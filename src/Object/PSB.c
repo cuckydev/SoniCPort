@@ -2,11 +2,11 @@
 
 //'PRESS START BUTTON' Assets
 static const uint8_t anim_psb[] = {
-	#include <Resource/Animation/PSB.h>
+	#include "Resource/Animation/PSB.h"
 };
 
 static const uint8_t map_psb[] = {
-	#include <Resource/Mappings/PSB.h>
+	#include "Resource/Mappings/PSB.h"
 };
 
 //'PRESS START BUTTON' object

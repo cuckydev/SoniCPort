@@ -5,11 +5,11 @@
 
 #include "MathUtil.h"
 
-#include <Macros.h>
+#include "Macros.h"
 
 //GHZ bridge assets
 static const uint8_t map_ghz_bridge[] = {
-	#include <Resource/Mappings/GHZBridge.h>
+	#include "Resource/Mappings/GHZBridge.h"
 };
 
 static const uint8_t ghz_bridge_bend1[0x110] =

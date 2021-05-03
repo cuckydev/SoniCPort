@@ -20,29 +20,29 @@
 
 //SSRG assets
 static const uint8_t art_link[] = {
-	#include <Resource/SSRG/ArtLink.h>
+	#include "Resource/SSRG/ArtLink.h"
 	,0,
 };
 static const uint8_t art_main[] = {
-	#include <Resource/SSRG/ArtMain.h>
+	#include "Resource/SSRG/ArtMain.h"
 	,0,
 };
 static const uint8_t art_sonic[] = {
-	#include <Resource/SSRG/ArtSonic.h>
+	#include "Resource/SSRG/ArtSonic.h"
 	,0,
 };
 static const uint8_t art_square[] = {
-	#include <Resource/SSRG/ArtSquare.h>
+	#include "Resource/SSRG/ArtSquare.h"
 	,0,
 };
 static const uint8_t map_link[] = {
-	#include <Resource/SSRG/MapLink.h>
+	#include "Resource/SSRG/MapLink.h"
 };
 static const uint8_t map_main[] = {
-	#include <Resource/SSRG/MapMain.h>
+	#include "Resource/SSRG/MapMain.h"
 };
 static const uint8_t map_square[] = {
-	#include <Resource/SSRG/MapSquare.h>
+	#include "Resource/SSRG/MapSquare.h"
 };
 
 static const uint16_t pal_ssrg[] = {

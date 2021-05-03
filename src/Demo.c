@@ -11,41 +11,41 @@ uint8_t btn_pushtime2;
 
 //Demos
 static const uint8_t demo_intro_ghz[] = {
-	#include <Resource/Demo/IntroGHZ.h>
+	#include "Resource/Demo/IntroGHZ.h"
 };
 static const uint8_t demo_intro_mz[] = {
-	#include <Resource/Demo/IntroMZ.h>
+	#include "Resource/Demo/IntroMZ.h"
 };
 static const uint8_t demo_intro_syz[] = {
-	#include <Resource/Demo/IntroSYZ.h>
+	#include "Resource/Demo/IntroSYZ.h"
 };
 static const uint8_t demo_intro_ss[] = {
-	#include <Resource/Demo/IntroSS.h>
+	#include "Resource/Demo/IntroSS.h"
 };
 
 static const uint8_t demo_ending_ghz1[] = {
-	#include <Resource/Demo/EndingGHZ1.h>
+	#include "Resource/Demo/EndingGHZ1.h"
 };
 static const uint8_t demo_ending_mz[] = {
-	#include <Resource/Demo/EndingMZ.h>
+	#include "Resource/Demo/EndingMZ.h"
 };
 static const uint8_t demo_ending_syz[] = {
-	#include <Resource/Demo/EndingSYZ.h>
+	#include "Resource/Demo/EndingSYZ.h"
 };
 static const uint8_t demo_ending_lz[] = {
-	#include <Resource/Demo/EndingLZ.h>
+	#include "Resource/Demo/EndingLZ.h"
 };
 static const uint8_t demo_ending_slz[] = {
-	#include <Resource/Demo/EndingSLZ.h>
+	#include "Resource/Demo/EndingSLZ.h"
 };
 static const uint8_t demo_ending_sbz1[] = {
-	#include <Resource/Demo/EndingSBZ1.h>
+	#include "Resource/Demo/EndingSBZ1.h"
 };
 static const uint8_t demo_ending_sbz2[] = {
-	#include <Resource/Demo/EndingSBZ2.h>
+	#include "Resource/Demo/EndingSBZ2.h"
 };
 static const uint8_t demo_ending_ghz2[] = {
-	#include <Resource/Demo/EndingGHZ2.h>
+	#include "Resource/Demo/EndingGHZ2.h"
 };
 
 const uint8_t *intro_demo_ptr[] = {

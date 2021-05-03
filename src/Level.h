@@ -56,6 +56,11 @@ typedef struct
 	size_t map16_size; //TEMP
 } LevelHeader;
 
+typedef struct
+{
+	uint8_t pad, min, sec, frame;
+} LevelTime;
+
 //Level headers
 extern const LevelHeader level_header[ZoneId_Num];
 
@@ -80,7 +85,7 @@ extern uint8_t time_over;
 extern uint16_t frame_count;
 
 extern uint32_t score;
-extern uint32_t time;
+extern LevelTime time;
 extern uint16_t rings;
 extern uint8_t lives;
 extern uint8_t continues;

@@ -5,10 +5,10 @@
 
 //Crabmeat assets
 static const uint8_t map_crabmeat[] = {
-	#include <Resource/Mappings/Crabmeat.h>
+	#include "Resource/Mappings/Crabmeat.h"
 };
 static const uint8_t anim_crabmeat[] = {
-	#include <Resource/Animation/Crabmeat.h>
+	#include "Resource/Animation/Crabmeat.h"
 };
 
 //Crabmeat object

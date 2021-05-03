@@ -1,6 +1,6 @@
 #include "Video.h"
 
-#include <Constants.h>
+#include "Constants.h"
 #include "Palette.h"
 #include "LevelScroll.h"
 
@@ -8,6 +8,8 @@
 
 //Video state
 uint8_t vbla_routine;
+
+uint8_t sprite_count;
 
 uint8_t hbla_pal;
 int16_t hbla_pos;

@@ -2,10 +2,10 @@
 
 //Chopper assets
 static const uint8_t map_chopper[] = {
-	#include <Resource/Mappings/Chopper.h>
+	#include "Resource/Mappings/Chopper.h"
 };
 static const uint8_t anim_chopper[] = {
-	#include <Resource/Animation/Chopper.h>
+	#include "Resource/Animation/Chopper.h"
 };
 
 //Chopper object

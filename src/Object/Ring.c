@@ -6,7 +6,7 @@
 
 //Ring assets
 const uint8_t anim_ring[] = {
-	#include <Resource/Animation/Ring.h>
+	#include "Resource/Animation/Ring.h"
 };
 const uint8_t map_ring[] = {
 	#include RES_REV(Mappings/Ring)

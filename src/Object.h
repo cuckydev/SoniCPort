@@ -3,8 +3,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <Types.h>
-#include <Backend/VDP.h>
+#include "Types.h"
+#include "Backend/VDP.h"
 
 //Object constants
 #define RESERVED_OBJECTS 0x20
@@ -47,7 +47,7 @@ typedef enum
 	ObjId_1E,           //1E
 	ObjId_Crabmeat,     //1F
 	ObjId_20,           //20
-	ObjId_21,           //21
+	ObjId_HUD,          //21
 	ObjId_BuzzBomber,   //22
 	ObjId_BuzzMissile,  //23
 	ObjId_BuzzExplode,  //24

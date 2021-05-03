@@ -5,7 +5,7 @@
 
 //Credits assets
 static const uint8_t map_credits[] = {
-	#include <Resource/Mappings/Credits.h>
+	#include "Resource/Mappings/Credits.h"
 };
 
 //Credits object

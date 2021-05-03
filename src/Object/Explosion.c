@@ -2,7 +2,7 @@
 
 //Explosion assets
 static const uint8_t map_explosion[] = {
-	#include <Resource/Mappings/Explosion.h>
+	#include "Resource/Mappings/Explosion.h"
 };
 
 //Explosion object
