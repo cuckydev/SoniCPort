@@ -277,20 +277,20 @@ void Obj_MonitorItem(Object *obj)
 						break;
 					case 4: //Shield
 						shield = true;
-						//objects[6].type = ObjId_Shield; //TODO
+						objects[6].type = ObjId_ShieldInvincibility; //TODO
 						//music	sfx_Shield,1,0,0	; play shield sound TODO
 						break;
 					case 5: //Invincibility
 						invincibility = true;
 						scratch->invincibility_time = 1200;
-						//objects[8].type = ObjId_Invincibility; //TODO
-						//objects[8].anim = 1;
-						//objects[9].type = ObjId_Invincibility;
-						//objects[9].anim = 2;
-						//objects[10].type = ObjId_Invincibility;
-						//objects[10].anim = 3;
-						//objects[11].type = ObjId_Invincibility;
-						//objects[11].anim = 4;
+						objects[8].type = ObjId_ShieldInvincibility; //TODO
+						objects[8].anim = 1;
+						objects[9].type = ObjId_ShieldInvincibility;
+						objects[9].anim = 2;
+						objects[10].type = ObjId_ShieldInvincibility;
+						objects[10].anim = 3;
+						objects[11].type = ObjId_ShieldInvincibility;
+						objects[11].anim = 4;
 						if (!lock_screen)
 							{;}//music	bgm_Invincible,1,0,0 ; play invincibility music TODO
 						break;
