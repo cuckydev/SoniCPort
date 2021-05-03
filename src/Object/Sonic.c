@@ -813,7 +813,7 @@ static signed int React_Monitor(Object *obj, Object *hit)
 	{
 		//Check if we're below the monitor
 		uint16_t chky = obj->pos.l.y.f.u - 0x10;
-		if (chky < (uint16_t)hit->pos.l.y.f.u)
+		if ((uint16_t)hit->pos.l.y.f.u < chky)
 		{
 			//Bump monitor
 			obj->ysp = -obj->ysp;
