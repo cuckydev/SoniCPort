@@ -773,18 +773,55 @@ void DynamicLevelEvents()
 						limit_btm1 = 0x300 - SCREEN_TALLADD;
 					break;
 				case 1: //Act 2
-					limit_btm1 = 0x300;
+					limit_btm1 = 0x300 - SCREEN_TALLADD;
 					if ((uint16_t)scrpos_x.f.u < (0xED0 - SCREEN_WIDEADD2))
 						break;
-					limit_btm1 = 0x200;
+					limit_btm1 = 0x200 - SCREEN_TALLADD;
 					if ((uint16_t)scrpos_x.f.u < (0x1600 - SCREEN_WIDEADD2))
 						break;
-					limit_btm1 = 0x400;
+					limit_btm1 = 0x400 - SCREEN_TALLADD;
 					if ((uint16_t)scrpos_x.f.u < (0x1D60 - SCREEN_WIDEADD2))
 						break;
-					limit_btm1 = 0x300;
+					limit_btm1 = 0x300 - SCREEN_TALLADD;
 					break;
 				case 2: //Act 3
+					switch (dle_routine)
+					{
+						case 0:
+							limit_btm1 = 0x300 - SCREEN_TALLADD;
+							if ((uint16_t)scrpos_x.f.u < (0x380 - SCREEN_WIDEADD2))
+								break;
+							limit_btm1 = 0x310 - SCREEN_TALLADD;
+							if ((uint16_t)scrpos_x.f.u < (0x960 - SCREEN_WIDEADD2))
+								break;
+							if (scrpos_y.f.u >= 0x280 + SCREEN_TALLADD)
+							{
+								limit_btm1 = 0x400 - SCREEN_TALLADD;
+								if ((uint16_t)scrpos_x.f.u < (0x1380 - SCREEN_WIDEADD2))
+								{
+									limit_btm1 = 0x4C0 - SCREEN_TALLADD;
+									limit_btm2 = 0x4C0 - SCREEN_TALLADD;
+								}
+								else if ((uint16_t)scrpos_x.f.u >= (0x1900 - SCREEN_WIDEADD2))
+								{
+									limit_btm1 = 0x300 - SCREEN_TALLADD;
+									dle_routine += 2;
+								}
+							}
+							else
+							{
+								limit_btm1 = 0x300 - SCREEN_TALLADD;
+								dle_routine += 2;
+							}
+							break;
+						case 2:
+							if ((uint16_t)scrpos_x.f.u < (0x960 - SCREEN_WIDEADD2))
+								dle_routine -= 2;
+							if ((uint16_t)scrpos_x.f.u < (0x2960 - SCREEN_WIDEADD2))
+								break;
+							//TODO spawn boss
+							break;
+					}
 					break;
 			}
 			break;

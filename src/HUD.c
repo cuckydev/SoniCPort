@@ -137,11 +137,16 @@ void HUD_Lives()
 		//Write digit
 		if (digit)
 			digit_write = true;
-		if (digit_write)
+		if (digit_write || decs == 0)
 		{
 			const uint8_t *art = art_life_num + (digit <<= 5);
 			VDP_SeekVRAM(offset);
 			VDP_WriteVRAM(art, 32);
+		}
+		else
+		{
+			VDP_SeekVRAM(offset);
+			VDP_FillVRAM(0, 32);
 		}
 		
 		//Increment offset and decimal
