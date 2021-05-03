@@ -46,6 +46,7 @@ void Obj_Explosion(Object *obj);
 void Obj_Chopper(Object *obj);
 void Obj_MonitorItem(Object *obj);
 void Obj_TitleCard(Object *obj);
+void Obj_Spikes(Object *obj);
 void Obj_RingLoss(Object *obj);
 void Obj_ShieldInvincibility(Object *obj);
 void Obj_GameOverCard(Object *obj);
@@ -111,7 +112,7 @@ static void (*object_func[])(Object*) = {
 	/* ObjId_33                  */ Obj_Null,
 	/* ObjId_TitleCard           */ Obj_TitleCard,
 	/* ObjId_35                  */ Obj_Null,
-	/* ObjId_36                  */ Obj_Null,
+	/* ObjId_Spikes              */ Obj_Spikes,
 	/* ObjId_RingLoss            */ Obj_RingLoss,
 	/* ObjId_ShieldInvincibility */ Obj_ShieldInvincibility,
 	/* ObjId_GameOverCard        */ Obj_GameOverCard,

@@ -58,6 +58,23 @@ static ALIGNED2 const uint8_t map_title_fg[] = {
 	#include "Resource/Tilemap/TitleFG.h"
 };
 
+//Level select
+/*
+static void LevelSelect()
+{
+	do
+	{
+		//Run frame
+		vbla_routine = 0x04;
+		WaitForVBla();
+		
+		//Run level select selection and PLCs
+		
+		RunPLC();
+	} while (plc_buffer[0].art != NULL || !(jpad1_press1 & (JPAD_A | JPAD_B | JPAD_C | JPAD_START)));
+}
+*/
+
 //Level stuff
 static void PlayLevel()
 {
@@ -79,6 +96,19 @@ static void PlayLevel()
 static void Tit_ChkLevSel()
 {
 	PlayLevel();
+	
+	/*
+	//Load level select palette
+	PalLoad2(PalId_LevelSel);
+	
+	//Clear scroll buffer
+	memset(hscroll_buffer, 0, sizeof(hscroll_buffer));
+	VDP_SeekVRAM(VRAM_HSCROLL);
+	VDP_FillVRAM(0, sizeof(hscroll_buffer));
+	
+	//Enter level select loop
+	LevelSelect();
+	*/
 }
 
 //Title gamemode

@@ -18,7 +18,7 @@ void Obj_HUD(Object *obj)
 			
 			//Set screen position
 			obj->pos.s.x = 0x90;
-			obj->pos.s.y = 0x108;
+			obj->pos.s.y = 0x108 + SCREEN_TALLADD2;
 			
 			//Initialize object drawing information
 			obj->mappings = map_hud;

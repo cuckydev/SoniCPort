@@ -68,7 +68,7 @@ typedef enum
 	ObjId_33,                  //33
 	ObjId_TitleCard,           //34
 	ObjId_35,                  //35
-	ObjId_36,                  //36
+	ObjId_Spikes,              //36
 	ObjId_RingLoss,            //37
 	ObjId_ShieldInvincibility, //38
 	ObjId_GameOverCard,        //39

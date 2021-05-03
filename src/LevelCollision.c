@@ -24,14 +24,15 @@ void FloorLog_Unk()
 	//Some debug function
 }
 
+static const uint8_t chunk0_dummy[2] = {0, 0};
 const uint8_t *FindNearestTile(Object *obj, int16_t x, int16_t y)
 {
 	//Get chunk
-	int16_t cx = (x >> 8) & 0x3F;
-	int16_t cy = (y >> 8) & 0x7;
+	uint16_t cx = ((uint16_t)x >> 8) & 0x3F;
+	uint16_t cy = ((uint16_t)y >> 8) & 0x7;
 	uint8_t chunk = level_layout[cy][0][cx];
 	if (chunk == 0)
-		return level_map256;
+		return chunk0_dummy;
 	
 	if (!(chunk & 0x80))
 	{
