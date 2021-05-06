@@ -69,6 +69,7 @@ add_executable(SoniCPort WIN32
 	
 	"src/Object/Sonic.c"
 	"src/Object/Sonic.h"
+	"src/Object/SpecialSonic.c"
 	"src/Object/Signpost.c"
 	"src/Object/TitleSonic.c"
 	"src/Object/PSB.c"
@@ -138,6 +139,7 @@ set(RESOURCES
 	"Art/GHZBall"
 	"Art/GHZWall1"
 	"Art/GHZWall2"
+	"Art/Bumper"
 	"Art/GHZ1"
 	"Art/GHZ2"
 	"Art/LZ"

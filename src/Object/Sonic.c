@@ -13,7 +13,7 @@
 #define DEMO_WARP
 
 //Sonic mappings
-static const uint8_t map_sonic[] = {
+const uint8_t map_sonic[] = {
 	#include "Resource/Mappings/Sonic.h"
 };
 
@@ -89,7 +89,7 @@ static void Sonic_RecordPosition(Object *obj)
 }
 
 //Sonic animation
-static const uint8_t anim_sonic[] = {
+const uint8_t anim_sonic[] = {
 	#include "Resource/Animation/Sonic.h"
 };
 #define GET_SONIC_ANISCR(x) (anim_sonic + ((anim_sonic[((x) << 1)] << 8) | (anim_sonic[((x) << 1) + 1] << 0)))
@@ -130,7 +130,7 @@ static void Sonic_AnimateReadFrame(Object *obj, const uint8_t *anim_script)
 	}
 }
 
-static void Sonic_Animate(Object *obj)
+void Sonic_Animate(Object *obj)
 {
 	//Get animation script to use
 	const uint8_t *anim_script = anim_sonic;
@@ -275,7 +275,7 @@ static const uint8_t dplc_sonic[] = {
 	#include "Resource/Mappings/SonicDPLC.h"
 };
 
-static void Sonic_LoadGfx(Object *obj)
+void Sonic_LoadGfx(Object *obj)
 {
 	//Check if we're loading a new frame
 	uint8_t frame = obj->frame;
@@ -1207,7 +1207,7 @@ static void Sonic_Move(Object *obj)
 				if ((obj->inertia -= sonspeed_acc) < 0)
 					obj->inertia = 0;
 			}
-			else
+			else if (obj->inertia < 0)
 			{
 				if ((obj->inertia += sonspeed_acc) >= 0)
 					obj->inertia = 0;

@@ -14,6 +14,10 @@
 
 #define SONIC_DPLC_SIZE 0x2E0
 
+//Sonic assets
+extern const uint8_t map_sonic[];
+extern const uint8_t anim_sonic[];
+
 //Sonic scratch structure
 typedef struct
 {
@@ -81,6 +85,8 @@ typedef enum
 } SonAnimId;
 
 //Sonic functions
+void Sonic_Animate(Object *obj);
+void Sonic_LoadGfx(Object *obj);
 void Sonic_ResetOnFloor(Object *obj);
 signed int HurtSonic(Object *obj, Object *src);
 signed int KillSonic(Object *obj, Object *src);

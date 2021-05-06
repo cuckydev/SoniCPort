@@ -220,7 +220,20 @@ void VBlank()
 			VDP_SeekVRAM(VRAM_HSCROLL);
 			VDP_WriteVRAM((const uint8_t*)hscroll_buffer, sizeof(hscroll_buffer));
 			
+			//Run palette cycle
 			PCycle_SS();
+			
+			//Update Sonic's art
+			if (sonframe_chg)
+			{
+				VDP_SeekVRAM(0xF000);
+				VDP_WriteVRAM(sgfx_buffer, SONIC_DPLC_SIZE);
+				sonframe_chg = false;
+			}
+			
+			//Decrement demo timer
+			if (demo_length)
+				demo_length--;
 			break;
 		case 0x0C:
 			//Read joypad state

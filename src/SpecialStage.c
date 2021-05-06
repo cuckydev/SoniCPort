@@ -193,12 +193,6 @@ int16_t ss_drawtable[16 * 16 * 2];
 
 uint8_t ss_collected[0x100];
 
-//Special Stage layout
-#define SS_SRCDIM 64
-#define SS_DIM 128
-#define SS_PAD (SS_DIM - SS_SRCDIM)
-#define SS_PAD2 (SS_PAD >> 1)
-
 uint8_t ss_layout[SS_DIM * SS_DIM]; //SS_DIM x SS_DIM (128x128)
 uint8_t ss_layout_tmp[SS_SRCDIM * SS_SRCDIM]; //SS_SRCDIM x SS_SRCDIM (64x64)
 

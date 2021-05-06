@@ -69,7 +69,7 @@ static void (*object_func[])(Object*) = {
 	/* ObjId_06                  */ Obj_Null,
 	/* ObjId_07                  */ Obj_Null,
 	/* ObjId_08                  */ Obj_Null,
-	/* ObjId_SpecialSonic        */ Obj_Null,//SpecialSonic,
+	/* ObjId_SpecialSonic        */ Obj_SpecialSonic,
 	/* ObjId_0A                  */ Obj_Null,
 	/* ObjId_0B                  */ Obj_Null,
 	/* ObjId_0C                  */ Obj_Null,

@@ -150,6 +150,11 @@ static const uint8_t art_ghz_wall2[] = {
 	,0,
 };
 
+static const uint8_t art_bumper[] = {
+	#include "Resource/Art/Bumper.h"
+	,0,
+};
+
 static const uint8_t art_signpost[] = {
 	#include "Resource/Art/Signpost.h"
 	,0,
@@ -482,12 +487,12 @@ static const PLCList PLC_Signpost = {
 };
 
 static const PLCList PLC_SpecialStage = {
-	16,
+	17,
 	(const PLC[]){
 		{art_ss_clouds,  0x0000},
 		{art_ss_back,    0x0A20},
 		{art_ss_wall,    0x2840},
-		//Nem_Bumper, $4760	; bumper
+		{art_bumper,     0x4760},
 		{art_ss_goal,    0x4A20},
 		{art_ss_speed,   0x4C60},
 		{art_ss_rotate,  0x5E00},

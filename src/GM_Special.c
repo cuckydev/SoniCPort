@@ -186,20 +186,8 @@ void GM_Special()
 		jpad1_press2 = jpad1_press1;
 		
 		//Run and draw stage
-		if (jpad1_hold1 & JPAD_LEFT)
-			scrpos_x.f.u -= 4;
-		if (jpad1_hold1 & JPAD_UP)
-			scrpos_y.f.u -= 4;
-		if (jpad1_hold1 & JPAD_RIGHT)
-			scrpos_x.f.u += 4;
-		if (jpad1_hold1 & JPAD_DOWN)
-			scrpos_y.f.u += 4;
-		if (jpad1_hold1 & JPAD_A)
-			ss_angle.f.u--;
-		if (jpad1_hold1 & JPAD_B)
-			ss_angle.f.u++;
-		
 		ExecuteObjects();
+		
 		uint8_t sprite_i;
 		BuildSprites(&sprite_i);
 		SS_ShowLayout(sprite_i);
