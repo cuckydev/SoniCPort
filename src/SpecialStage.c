@@ -9,7 +9,6 @@
 #include "Macros.h"
 
 #include <string.h>
-#include <stdio.h>
 
 //Special stage layouts
 static const uint8_t ss_layout_1[] = {
@@ -335,7 +334,7 @@ void SS_ShowLayout(uint8_t sprite_i)
 		{
 			//Draw block
 			uint8_t block = *layout++;
-			if (block && block <= SS_MAPPINGS)
+			if (block != 0 && block <= SS_MAPPINGS)
 			{
 				//Get block position
 				uint16_t x = pos[0] + (0x80 + (SCREEN_WIDTH >> 1));
@@ -360,7 +359,7 @@ void SS_ShowLayout(uint8_t sprite_i)
 	sprite_count = sprite_i;
 	if (sprite_i >= BUFFER_SPRITES)
 	{
-		sprite[-2] &= 0xFF00; //Clear link byte
+		sprite[-3] &= 0xFF00; //Clear link byte
 	}
 	else
 	{

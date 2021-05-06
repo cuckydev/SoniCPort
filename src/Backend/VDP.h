@@ -40,12 +40,12 @@
 //word y 000000YYYYYYYYYY
 #define SPRITE_Y_AND   0x3FF
 #define SPRITE_Y_SHIFT 0
-//word sizelink 0000WWHH00LLLLLL
+//word sizelink 0000WWHH0LLLLLLL
 #define SPRITE_SL_W_AND   0x0C00
 #define SPRITE_SL_W_SHIFT 10
 #define SPRITE_SL_H_AND   0x0300
 #define SPRITE_SL_H_SHIFT 8
-#define SPRITE_SL_L_AND   0x003F
+#define SPRITE_SL_L_AND   0x007F
 #define SPRITE_SL_L_SHIFT 0
 //word tile
 //word x

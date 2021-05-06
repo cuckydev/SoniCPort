@@ -468,17 +468,18 @@ void BuildSprites(uint8_t *sprite_io)
 					//Index mapping by frame
 					const uint8_t *mapping_ind = (const uint8_t*)obj->mappings + (obj->frame << 1);
 					mappings = obj->mappings + ((mapping_ind[0] << 8) | (mapping_ind[1] << 0));
-					pieces = *mappings++ - 1;
+					pieces = *mappings++;
 				}
 				else
 				{
 					//Directly use object mappings pointer
 					mappings = obj->mappings;
-					pieces = 0;
+					pieces = 1;
 				}
 				
 				//Draw object
-				BuildSprites_Draw(&sprite, &sprite_i, x, y, obj, mappings, pieces);
+				if (pieces)
+					BuildSprites_Draw(&sprite, &sprite_i, x, y, obj, mappings, pieces - 1);
 				obj->render.f.on_screen = true;
 			}
 		}
@@ -488,7 +489,7 @@ void BuildSprites(uint8_t *sprite_io)
 	sprite_count = sprite_i;
 	if (sprite_i >= BUFFER_SPRITES)
 	{
-		sprite[-2] &= 0xFF00; //Clear link byte
+		sprite[-3] &= 0xFF00; //Clear link byte
 	}
 	else
 	{

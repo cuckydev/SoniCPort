@@ -483,7 +483,7 @@ void VDP_Render()
 	for (uint8_t i = 0;;)
 	{
 		//Get sprite values
-		const uint16_t *sprite = (const uint16_t*)(vdp_vram + vdp_sprite_location + (i << 3));
+		const uint16_t *sprite = (const uint16_t*)(vdp_vram + vdp_sprite_location + ((uint16_t)i << 3));
 		uint16_t sprite_y = sprite[0];
 		uint16_t sprite_sl = sprite[1];
 		uint8_t sprite_width = (sprite_sl & SPRITE_SL_W_AND) >> SPRITE_SL_W_SHIFT;
