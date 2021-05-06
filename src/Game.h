@@ -21,6 +21,8 @@ typedef enum
 } GameMode;
 
 //Game state
+extern uint8_t buffer0000[0xA400];
+
 extern uint8_t gamemode;
 
 extern int16_t demo;

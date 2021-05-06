@@ -111,7 +111,7 @@ extern uint8_t water;
 extern uint8_t wtr_routine;
 extern uint8_t wtr_state;
 
-extern uint8_t level_map256[0xA400];
+extern uint8_t *const level_map256;
 extern uint8_t level_map16[0x1800];
 extern uint8_t level_layout[8][2][0x40];
 extern uint8_t level_schunks[2][2];
@@ -171,4 +171,5 @@ void LevelDataLoad();
 void ColIndexLoad();
 void DynamicLevelEvents();
 void SynchroAnimate();
+void SignpostArtLoad();
 void ObjPosLoad();

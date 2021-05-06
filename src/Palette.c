@@ -153,7 +153,7 @@ void PalLoad4_Water(PaletteId id)
 }
 
 //Fade in from black
-void FadeIn_AddColour(uint16_t *col, uint16_t ref)
+static void FadeIn_AddColour(uint16_t *col, uint16_t ref)
 {
 	uint16_t v = *col;
 	if (v == ref)
@@ -211,7 +211,7 @@ void PaletteFadeIn_At(uint8_t ind, uint8_t len)
 }
 
 //Fade out to black
-void FadeOut_DecColour(uint16_t *col)
+static void FadeOut_DecColour(uint16_t *col)
 {
 	uint16_t v = *col;
 	if (v == 0)
@@ -257,6 +257,110 @@ void PaletteFadeOut_At(uint8_t ind, uint8_t len)
 		vbla_routine = 0x12;
 		WaitForVBla();
 		FadeOut_ToBlack();
+		RunPLC();
+	}
+}
+
+//White in from white
+static void WhiteIn_DecColour(uint16_t *col, uint16_t ref)
+{
+	uint16_t v = *col;
+	if (v == ref)
+		return;
+	if ((v - 0x200) >= ref)
+		v -= 0x200;
+	else if ((v - 0x020) >= ref)
+		v -= 0x020;
+	else if ((v - 0x002) >= ref)
+		v -= 0x002;
+	*col = v;
+}
+
+void WhiteIn_FromWhite()
+{
+	uint16_t *col, *ref;
+	
+	//White dry palette
+	col = (&dry_palette[0][0]) + palette_fade.ind;
+	ref = (&dry_palette_dup[0][0]) + palette_fade.ind;
+	for (int i = 0; i < palette_fade.len; i++)
+		WhiteIn_DecColour(col++, *ref++);
+	
+	//White wet palette
+	col = (&wet_palette[0][0]) + palette_fade.ind;
+	ref = (&wet_palette_dup[0][0]) + palette_fade.ind;
+	for (int i = 0; i < palette_fade.len; i++)
+		WhiteIn_DecColour(col++, *ref++);
+}
+
+void PaletteWhiteIn()
+{
+	PaletteWhiteIn_At(0x00, 0x40);
+}
+
+void PaletteWhiteIn_At(uint8_t ind, uint8_t len)
+{
+	//Initialize fade
+	palette_fade.ind = ind;
+	palette_fade.len = len;
+	
+	//White for 22 frames
+	for (int i = 0; i < 22; i++)
+	{
+		vbla_routine = 0x12;
+		WaitForVBla();
+		WhiteIn_FromWhite();
+		RunPLC();
+	}
+}
+
+//White out to white
+static void WhiteOut_IncColour(uint16_t *col)
+{
+	uint16_t v = *col;
+	if (v == 0xEEE)
+		return;
+	if ((v & 0x00E) != 0x00E)
+		v += 0x002;
+	else if ((v & 0x0E0) != 0x0E0)
+		v += 0x020;
+	else if ((v & 0xE00) != 0xE00)
+		v += 0x200;
+	*col = v;
+}
+
+void WhiteOut_ToWhite()
+{
+	uint16_t *col;
+	
+	//White dry palette
+	col = (&dry_palette[0][0]) + palette_fade.ind;
+	for (int i = 0; i < palette_fade.len; i++)
+		WhiteOut_IncColour(col++);
+	
+	//White wet palette
+	col = (&wet_palette[0][0]) + palette_fade.ind;
+	for (int i = 0; i < palette_fade.len; i++)
+		WhiteOut_IncColour(col++);
+}
+
+void PaletteWhiteOut()
+{
+	PaletteWhiteOut_At(0x00, 0x40);
+}
+
+void PaletteWhiteOut_At(uint8_t ind, uint8_t len)
+{
+	//Initialize fade
+	palette_fade.ind = ind;
+	palette_fade.len = len;
+	
+	//White for 22 frames
+	for (int i = 0; i < 22; i++)
+	{
+		vbla_routine = 0x12;
+		WaitForVBla();
+		WhiteOut_ToWhite();
 		RunPLC();
 	}
 }

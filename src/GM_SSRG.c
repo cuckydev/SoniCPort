@@ -13,10 +13,8 @@
 #include <string.h>
 
 //SSRG memory
-#define ssrg_memory level_map256 //RAM 0xFFFF0000
-
-#define ssrg_scroll_fg (*(int16_t*)(ssrg_memory + 0x7800))
-#define ssrg_scroll_bg (*(int16_t*)(ssrg_memory + 0x7808))
+#define ssrg_scroll_fg (*(int16_t*)(buffer0000 + 0x7800))
+#define ssrg_scroll_bg (*(int16_t*)(buffer0000 + 0x7808))
 
 //SSRG assets
 static const uint8_t art_link[] = {
@@ -116,7 +114,7 @@ static void SRG_DrawFG()
 		
 		//Get scroll offsets
 		size_t offset = MAP_PLANE(VRAM_FG, 2, 14) + PLANE_WIDEADD + PLANE_TALLADD + scroll_off;
-		const uint8_t *mapp = ssrg_memory + scroll_off;
+		const uint8_t *mapp = buffer0000 + scroll_off;
 		
 		//Write plane data
 		for (int i = 0; i < 3; i++)
@@ -145,7 +143,7 @@ static void SRG_DrawFG()
 			add = 0x0000; //White
 		else
 			add = 0x2000; //Grey
-		CopyTilemap_Add(ssrg_memory, 0xC704 + PLANE_WIDEADD, 35, 3, add);
+		CopyTilemap_Add(buffer0000, 0xC704 + PLANE_WIDEADD, 35, 3, add);
 	}
 }
 
@@ -318,10 +316,10 @@ static void Obj_Square(Object *obj)
 		uint16_t width, height;
 		uint32_t pad;
 	} map_ram_data[] = {
-		{&ssrg_memory[0x4000], MAP_PLANE(VRAM_BG, 2, 2), 0x000B, 0x000B, 0},
-		{&ssrg_memory[0x4120], MAP_PLANE(VRAM_BG, 0, 0), 0x000F, 0x000F, 0},
-		{&ssrg_memory[0x4320], MAP_PLANE(VRAM_BG, 0, 0), 0x0010, 0x0010, 0},
-		{&ssrg_memory[0x4562], MAP_PLANE(VRAM_BG, 0, 0), 0x000F, 0x000F, 0},
+		{&buffer0000[0x4000], MAP_PLANE(VRAM_BG, 2, 2), 0x000B, 0x000B, 0},
+		{&buffer0000[0x4120], MAP_PLANE(VRAM_BG, 0, 0), 0x000F, 0x000F, 0},
+		{&buffer0000[0x4320], MAP_PLANE(VRAM_BG, 0, 0), 0x0010, 0x0010, 0},
+		{&buffer0000[0x4562], MAP_PLANE(VRAM_BG, 0, 0), 0x000F, 0x000F, 0},
 	};
 	
 	switch (obj->routine)
@@ -576,11 +574,11 @@ void GM_SSRG()
 	NemDec(art_link);
 	
 	//Decompress mappings
-	KosDec(map_link, ssrg_memory);
-	CopyTilemap(ssrg_memory, MAP_PLANE(VRAM_FG, 4, 24) + PLANE_WIDEADD + (PLANE_TALLADD * 2), 32, 1);
+	KosDec(map_link, buffer0000);
+	CopyTilemap(buffer0000, MAP_PLANE(VRAM_FG, 4, 24) + PLANE_WIDEADD + (PLANE_TALLADD * 2), 32, 1);
 	
-	KosDec(map_main, &ssrg_memory[0x0000]);
-	KosDec(map_square, &ssrg_memory[0x4000]);
+	KosDec(map_main, &buffer0000[0x0000]);
+	KosDec(map_square, &buffer0000[0x4000]);
 	
 	//Copy palette
 	memcpy(&dry_palette_dup[0][0], pal_ssrg, sizeof(pal_ssrg));
@@ -591,7 +589,7 @@ void GM_SSRG()
 	objects[2].type = 3; //R
 	objects[3].type = 4; //G
 	PaletteFadeIn();
-	memset(&ssrg_memory[0x7800], 0, 4*3);
+	memset(&buffer0000[0x7800], 0, 4*3);
 	
 	//Run loop
 	do
@@ -613,7 +611,7 @@ void GM_SSRG()
 		//Draw screen
 		SRG_ScrollFG();
 		SRG_DrawFG();
-		BuildSprites();
+		BuildSprites(NULL);
 	} while (!(jpad1_press1 & JPAD_START) && ssrg_scroll_fg < 0x200);
 	
 	//Go to title gamemode

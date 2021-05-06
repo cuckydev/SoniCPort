@@ -150,6 +150,96 @@ static const uint8_t art_ghz_wall2[] = {
 	,0,
 };
 
+static const uint8_t art_signpost[] = {
+	#include "Resource/Art/Signpost.h"
+	,0,
+};
+static const uint8_t art_hidden_bonus[] = {
+	#include "Resource/Art/HiddenBonus.h"
+	,0,
+};
+static const uint8_t art_big_flash[] = {
+	#include "Resource/Art/BigFlash.h"
+	,0,
+};
+
+static const uint8_t art_ss_clouds[] = {
+	#include "Resource/Art/SSClouds.h"
+	,0,
+};
+static const uint8_t art_ss_back[] = {
+	#include "Resource/Art/SSBack.h"
+	,0,
+};
+static const uint8_t art_ss_wall[] = {
+	#include "Resource/Art/SSWall.h"
+	,0,
+};
+static const uint8_t art_ss_goal[] = {
+	#include "Resource/Art/SSGoal.h"
+	,0,
+};
+static const uint8_t art_ss_speed[] = {
+	#include "Resource/Art/SSSpeed.h"
+	,0,
+};
+static const uint8_t art_ss_rotate[] = {
+	#include "Resource/Art/SSRotate.h"
+	,0,
+};
+static const uint8_t art_ss_life[] = {
+	#include "Resource/Art/SSLife.h"
+	,0,
+};
+static const uint8_t art_ss_twinkle[] = {
+	#include "Resource/Art/SSTwinkle.h"
+	,0,
+};
+static const uint8_t art_ss_checker[] = {
+	#include "Resource/Art/SSChecker.h"
+	,0,
+};
+static const uint8_t art_ss_ghost[] = {
+	#include "Resource/Art/SSGhost.h"
+	,0,
+};
+static const uint8_t art_ss_warp[] = {
+	#include "Resource/Art/SSWarp.h"
+	,0,
+};
+static const uint8_t art_ss_glass[] = {
+	#include "Resource/Art/SSGlass.h"
+	,0,
+};
+static const uint8_t art_ss_emerald[] = {
+	#include "Resource/Art/SSEmerald.h"
+	,0,
+};
+static const uint8_t art_ss_zone1[] = {
+	#include "Resource/Art/SSZone1.h"
+	,0,
+};
+static const uint8_t art_ss_zone2[] = {
+	#include "Resource/Art/SSZone2.h"
+	,0,
+};
+static const uint8_t art_ss_zone3[] = {
+	#include "Resource/Art/SSZone3.h"
+	,0,
+};
+static const uint8_t art_ss_zone4[] = {
+	#include "Resource/Art/SSZone4.h"
+	,0,
+};
+static const uint8_t art_ss_zone5[] = {
+	#include "Resource/Art/SSZone5.h"
+	,0,
+};
+static const uint8_t art_ss_zone6[] = {
+	#include "Resource/Art/SSZone6.h"
+	,0,
+};
+
 //PLC lists
 typedef struct
 {
@@ -382,6 +472,43 @@ static const PLCList PLC_SBZ2 = {
 	}
 };
 
+static const PLCList PLC_Signpost = {
+	3,
+	(const PLC[]){
+		{art_signpost,     0xD000},
+		{art_hidden_bonus, 0x96C0},
+		{art_big_flash,    0x8C40},
+	}
+};
+
+static const PLCList PLC_SpecialStage = {
+	16,
+	(const PLC[]){
+		{art_ss_clouds,  0x0000},
+		{art_ss_back,    0x0A20},
+		{art_ss_wall,    0x2840},
+		//Nem_Bumper, $4760	; bumper
+		{art_ss_goal,    0x4A20},
+		{art_ss_speed,   0x4C60},
+		{art_ss_rotate,  0x5E00},
+		{art_ss_life,    0x6E00},
+		{art_ss_twinkle, 0x7E00},
+		{art_ss_checker, 0x8E00},
+		{art_ss_ghost,   0x9E00},
+		{art_ss_warp,    0xAE00},
+		{art_ss_glass,   0xBE00},
+		{art_ss_emerald, 0xEE00},
+		{art_ss_zone1,   0xF2E0},
+		{art_ss_zone2,   0xF400},
+		{art_ss_zone3,   0xF520},
+		//These last 3 are unused
+		{art_ss_zone4,   0xF2E0},
+		{art_ss_zone5,   0xF400},
+		{art_ss_zone6,   0xF520},
+	}
+};
+
+//PLC list
 static const PLCList *plcs[PlcId_Num] = {
 	/* PlcId_Main        */ &PLC_Main,
 	/* PlcId_Main2       */ &PLC_Main2,
@@ -401,9 +528,9 @@ static const PLCList *plcs[PlcId_Num] = {
 	/* PlcId_SBZ2        */ &PLC_SBZ2,
 	/* PlcId_TitleCard   */ NULL,
 	/* PlcId_Boss        */ NULL,
-	/* PlcId_Signpost    */ NULL,
+	/* PlcId_Signpost    */ &PLC_Signpost,
 	/* PlcId_Warp        */ NULL,
-	/* PlcId_SpecialStage*/ NULL,
+	/* PlcId_SpecialStage*/ &PLC_SpecialStage,
 	/* PlcId_GHZAnimals  */ NULL,
 	/* PlcId_LZAnimals   */ NULL,
 	/* PlcId_MZAnimals   */ NULL,

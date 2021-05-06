@@ -32,6 +32,8 @@ struct SpriteQueue
 //...Trust me
 
 void Obj_Sonic(Object *obj);
+void Obj_SpecialSonic(Object *obj);
+void Obj_Signpost(Object *obj);
 void Obj_TitleSonic(Object *obj);
 void Obj_PSB(Object *obj);
 void Obj_GHZBridge(Object *obj);
@@ -67,11 +69,11 @@ static void (*object_func[])(Object*) = {
 	/* ObjId_06                  */ Obj_Null,
 	/* ObjId_07                  */ Obj_Null,
 	/* ObjId_08                  */ Obj_Null,
-	/* ObjId_09                  */ Obj_Null,
+	/* ObjId_SpecialSonic        */ Obj_Null,//SpecialSonic,
 	/* ObjId_0A                  */ Obj_Null,
 	/* ObjId_0B                  */ Obj_Null,
 	/* ObjId_0C                  */ Obj_Null,
-	/* ObjId_0D                  */ Obj_Null,
+	/* ObjId_Signpost            */ Obj_Signpost,
 	/* ObjId_TitleSonic          */ Obj_TitleSonic,
 	/* ObjId_PSB                 */ Obj_PSB,
 	/* ObjId_10                  */ Obj_Null,
@@ -116,7 +118,7 @@ static void (*object_func[])(Object*) = {
 	/* ObjId_RingLoss            */ Obj_RingLoss,
 	/* ObjId_ShieldInvincibility */ Obj_ShieldInvincibility,
 	/* ObjId_GameOverCard        */ Obj_GameOverCard,
-	/* ObjId_3A                  */ Obj_Null,
+	/* ObjId_GotThroughCard      */ Obj_Null,//GotThroughCard,
 	/* ObjId_GHZRock             */ Obj_GHZRock,
 	/* ObjId_3C                  */ Obj_Null,
 	/* ObjId_3D                  */ Obj_Null,
@@ -129,7 +131,7 @@ static void (*object_func[])(Object*) = {
 	/* ObjId_GHZEdge             */ Obj_GHZEdge,
 	/* ObjId_45                  */ Obj_Null,
 	/* ObjId_46                  */ Obj_Null,
-	/* ObjId_47                  */ Obj_Null,
+	/* ObjId_Bumper              */ Obj_Null,//Bumper,
 	/* ObjId_48                  */ Obj_Null,
 	/* ObjId_49                  */ Obj_Null,
 	/* ObjId_4A                  */ Obj_Null,
@@ -261,6 +263,37 @@ void ExecuteObjects()
 }
 
 //Object drawing
+void BuildSpr_Normal(uint16_t **sprite, uint8_t *sprite_i, uint16_t x, uint16_t y, uint16_t tile, const uint8_t *mappings, uint8_t pieces)
+{
+	do
+	{
+		//Don't overflow the sprite buffer
+		if (*sprite_i >= BUFFER_SPRITES)
+			break;
+		
+		//Read mappings
+		int8_t map_y = *mappings++;
+		uint8_t map_size = *mappings++;
+		uint16_t map_tile = (mappings[0] << 8) | (mappings[1] << 0);
+		mappings += 2;
+		int8_t map_x = *mappings++;
+		
+		//Write sprite
+		*(*sprite)++ = y + map_y; //y
+		*(*sprite)++ = (map_size << 8) | ++(*sprite_i); //size and link
+		*(*sprite)++ = map_tile + tile; //tile
+		uint16_t px = x + map_x;
+		#if (SCREEN_WIDTH <= 320)
+			if ((px &= 0x1FF) == 0)
+				px++; //Prevent sprite from being x=0 (acts as a mask)
+		#else
+			if (px == 0)
+				px++;
+		#endif
+		*(*sprite)++ = px; //x
+	} while (pieces-- > 0);
+}
+
 void BuildSprites_Draw(uint16_t **sprite, uint8_t *sprite_i, uint16_t x, uint16_t y, Object *obj, const uint8_t *mappings, uint8_t pieces)
 {
 	if (obj->render.f.x_flip)
@@ -268,7 +301,7 @@ void BuildSprites_Draw(uint16_t **sprite, uint8_t *sprite_i, uint16_t x, uint16_
 		if (obj->render.f.y_flip)
 		{
 			//XY flip
-			while (pieces-- > 0)
+			do
 			{
 				//Don't overflow the sprite buffer
 				if (*sprite_i >= BUFFER_SPRITES)
@@ -294,12 +327,12 @@ void BuildSprites_Draw(uint16_t **sprite, uint8_t *sprite_i, uint16_t x, uint16_
 						px++;
 				#endif
 				*(*sprite)++ = px; //x
-			}
+			} while (pieces-- > 0);
 		}
 		else
 		{
 			//X flip
-			while (pieces-- > 0)
+			do
 			{
 				//Don't overflow the sprite buffer
 				if (*sprite_i >= BUFFER_SPRITES)
@@ -325,13 +358,13 @@ void BuildSprites_Draw(uint16_t **sprite, uint8_t *sprite_i, uint16_t x, uint16_
 						px++;
 				#endif
 				*(*sprite)++ = px; //x
-			}
+			} while (pieces-- > 0);
 		}
 	}
 	else if (obj->render.f.y_flip)
 	{
 		//Y flip
-		while (pieces-- > 0)
+		do
 		{
 			//Don't overflow the sprite buffer
 			if (*sprite_i >= BUFFER_SPRITES)
@@ -357,42 +390,15 @@ void BuildSprites_Draw(uint16_t **sprite, uint8_t *sprite_i, uint16_t x, uint16_
 					px++;
 			#endif
 			*(*sprite)++ = px; //x
-		}
+		} while (pieces-- > 0);
 	}
 	else
 	{
-		//No flip
-		while (pieces-- > 0)
-		{
-			//Don't overflow the sprite buffer
-			if (*sprite_i >= BUFFER_SPRITES)
-				break;
-			
-			//Read mappings
-			int8_t map_y = *mappings++;
-			uint8_t map_size = *mappings++;
-			uint16_t map_tile = (mappings[0] << 8) | (mappings[1] << 0);
-			mappings += 2;
-			int8_t map_x = *mappings++;
-			
-			//Write sprite
-			*(*sprite)++ = y + map_y; //y
-			*(*sprite)++ = (map_size << 8) | ++(*sprite_i); //size and link
-			*(*sprite)++ = map_tile + obj->tile; //tile
-			uint16_t px = x + map_x;
-			#if (SCREEN_WIDTH <= 320)
-				if ((px &= 0x1FF) == 0)
-					px++; //Prevent sprite from being x=0 (acts as a mask)
-			#else
-				if (px == 0)
-					px++;
-			#endif
-			*(*sprite)++ = px; //x
-		}
+		BuildSpr_Normal(sprite, sprite_i, x, y, obj->tile, mappings, pieces);
 	}
 }
 
-void BuildSprites()
+void BuildSprites(uint8_t *sprite_io)
 {
 	//Draw each sprite priority queue
 	uint16_t *sprite = &sprite_buffer[0][0];
@@ -462,13 +468,13 @@ void BuildSprites()
 					//Index mapping by frame
 					const uint8_t *mapping_ind = (const uint8_t*)obj->mappings + (obj->frame << 1);
 					mappings = obj->mappings + ((mapping_ind[0] << 8) | (mapping_ind[1] << 0));
-					pieces = *mappings++;
+					pieces = *mappings++ - 1;
 				}
 				else
 				{
 					//Directly use object mappings pointer
 					mappings = obj->mappings;
-					pieces = 1;
+					pieces = 0;
 				}
 				
 				//Draw object
@@ -489,6 +495,8 @@ void BuildSprites()
 		*sprite++ = 0;
 		*sprite++ = 0;
 	}
+	if (sprite_io != NULL)
+		*sprite_io = sprite_i;
 }
 
 //Object functions

@@ -10,7 +10,7 @@
 static const uint8_t anim_ring[] = {
 	#include "Resource/Animation/Ring.h"
 };
-static const uint8_t map_ring[] = {
+const uint8_t map_ring[] = {
 	#include RES_REV(Mappings/Ring)
 };
 

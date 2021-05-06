@@ -2,6 +2,7 @@
 
 #include "Video.h"
 #include "Palette.h"
+#include "PaletteCycle.h"
 #include "Level.h"
 #include "LevelDraw.h"
 #include "LevelScroll.h"
@@ -12,11 +13,14 @@
 #include "GM_Sega.h"
 #include "GM_Title.h"
 #include "GM_Level.h"
+#include "GM_Special.h"
 #ifdef SCP_SPLASH
 	#include "GM_SSRG.h"
 #endif
 
 //Game
+ALIGNED4 uint8_t buffer0000[0xA400];
+
 uint8_t gamemode; //MSB acts as a title card flag
 
 int16_t demo;
@@ -77,6 +81,9 @@ void EntryPoint()
 			case GameMode_Level:
 			case GameMode_Demo:
 				GM_Level();
+				break;
+			case GameMode_Special:
+				GM_Special();
 				break;
 		#ifdef SCP_SPLASH
 			case GameMode_SSRG:
@@ -197,6 +204,23 @@ void VBlank()
 				if (demo_length)
 					demo_length--;
 			}
+			break;
+		case 0x0A:
+			//Read joypad state
+			ReadJoypads();
+			
+			//Copy palette
+			VDP_SeekCRAM(0);
+			VDP_WriteCRAM(&dry_palette[0][0], 0x40);
+			
+			//Copy buffers
+			VDP_SetHIntPosition(hbla_pos);
+			VDP_SeekVRAM(VRAM_SPRITES);
+			VDP_WriteVRAM((const uint8_t*)sprite_buffer, sizeof(sprite_buffer));
+			VDP_SeekVRAM(VRAM_HSCROLL);
+			VDP_WriteVRAM((const uint8_t*)hscroll_buffer, sizeof(hscroll_buffer));
+			
+			PCycle_SS();
 			break;
 		case 0x0C:
 			//Read joypad state

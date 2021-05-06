@@ -78,7 +78,7 @@ static void LevelSelect()
 //Level stuff
 static void PlayLevel()
 {
-	gamemode = GameMode_Level;
+	gamemode = (jpad1_hold1 & JPAD_A) ? GameMode_Special : GameMode_Level;
 	lives = 3;
 	rings = 0;
 	time.pad = time.min = time.sec = time.frame = 0;
@@ -150,7 +150,7 @@ void GM_Title()
 	objects[2].type = ObjId_Credits;
 	
 	ExecuteObjects();
-	BuildSprites();
+	BuildSprites(NULL);
 	
 	//Fade in
 	PaletteFadeIn();
@@ -216,7 +216,7 @@ void GM_Title()
 	
 	ExecuteObjects();
 	DeformLayers();
-	BuildSprites();
+	BuildSprites(NULL);
 	
 	NewPLC(PlcId_Main);
 	
@@ -233,7 +233,7 @@ void GM_Title()
 		//Run game and load PLCs
 		ExecuteObjects();
 		DeformLayers();
-		BuildSprites();
+		BuildSprites(NULL);
 		RunPLC();
 		
 		//Run palette cycle

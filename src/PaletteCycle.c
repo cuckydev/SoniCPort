@@ -138,6 +138,11 @@ void PCycle_Title()
 	PCycle_Water(pal_titlecycle);
 }
 
+void PCycle_SS()
+{
+	
+}
+
 //Palette cycle function
 void PaletteCycle()
 {

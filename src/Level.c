@@ -539,7 +539,7 @@ uint8_t wtr_routine;
 uint8_t wtr_state;
 
 //Loaded level data
-ALIGNED2 uint8_t level_map256[0xA400];
+uint8_t *const level_map256 = &buffer0000[0x0000];
 ALIGNED2 uint8_t level_map16[0x1800];
 uint8_t level_layout[8][2][0x40];
 uint8_t level_schunks[2][2];
@@ -802,7 +802,7 @@ void DynamicLevelEvents()
 									limit_btm1 = 0x4C0 - SCREEN_TALLADD;
 									limit_btm2 = 0x4C0 - SCREEN_TALLADD;
 								}
-								else if ((uint16_t)scrpos_x.f.u >= (0x1900 - SCREEN_WIDEADD2))
+								else if ((uint16_t)scrpos_x.f.u >= (0x1700 - SCREEN_WIDEADD2))
 								{
 									limit_btm1 = 0x300 - SCREEN_TALLADD;
 									dle_routine += 2;
@@ -881,6 +881,22 @@ void SynchroAnimate()
 		sprite_anim_3buf += (uint8_t)sprite_anim[3].time;
 		sprite_anim[3].frame = (sprite_anim_3buf >> 9) & 3;
 		sprite_anim[3].time--;
+	}
+}
+
+//Signpost loading
+void SignpostArtLoad()
+{
+	//Check if signpost should load
+	if (debug_use || (level_id & 0xFF) == 2)
+		return;
+	
+	//Check if we've reached the end of the level
+	int16_t end_x = limit_right2 - 0x100 - SCREEN_WIDEADD2;
+	if (scrpos_x.f.u >= end_x && time_count && limit_left2 != end_x)
+	{
+		limit_left2 = end_x;
+		NewPLC(PlcId_Signpost);
 	}
 }
 

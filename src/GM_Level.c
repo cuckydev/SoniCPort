@@ -124,7 +124,7 @@ void GM_Level()
 	opl_ptr8 = NULL;
 	opl_ptrC = NULL;
 	
-	ss_angle = 0;
+	ss_angle.v = 0;
 	ss_rotate = 0;
 	btn_pushtime1 = 0;
 	btn_pushtime2 = 0;
@@ -225,7 +225,7 @@ void GM_Level()
 			vbla_routine = 0x0C;
 			WaitForVBla();
 			ExecuteObjects();
-			BuildSprites();
+			BuildSprites(NULL);
 			RunPLC();
 		} while (objects[4].pos.s.x != objects[4].scratch.u16[4] || plc_buffer[0].art != NULL);
 		
@@ -250,7 +250,7 @@ void GM_Level()
 	
 	//Handle debug mode cheat
 	if (debug_cheat && (jpad1_hold1 & JPAD_A))
-		debug_mode = 1;
+		debug_mode = true;
 	jpad1_hold2 = 0;
 	jpad1_press2 = 0;
 	jpad1_hold1 = 0;
@@ -259,7 +259,7 @@ void GM_Level()
 	//Load level objects
 	ObjPosLoad();
 	ExecuteObjects();
-	BuildSprites();
+	BuildSprites(NULL);
 	
 	//Initialize game state
 	if (!last_lamp)
@@ -347,13 +347,14 @@ void GM_Level()
 		//Setup video and load PLCs
 		if (debug_use || player->routine < 6)
 			DeformLayers();
-		BuildSprites();
+		BuildSprites(NULL);
 		ObjPosLoad();
 		PaletteCycle();
 		RunPLC();
 		
 		//Other level stuff
 		SynchroAnimate();
+		SignpostArtLoad();
 		
 		//Check if level loop should end
 		if (gamemode != GameMode_Demo)
@@ -394,7 +395,7 @@ void GM_Level()
 					
 					//Run game
 					ExecuteObjects();
-					BuildSprites();
+					BuildSprites(NULL);
 					ObjPosLoad();
 					
 					//Fade

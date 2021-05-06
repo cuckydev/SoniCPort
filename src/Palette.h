@@ -55,3 +55,10 @@ void PaletteFadeIn_At(uint8_t ind, uint8_t len);
 void FadeOut_ToBlack();
 void PaletteFadeOut();
 void PaletteFadeOut_At(uint8_t ind, uint8_t len);
+
+void WhiteIn_FromWhite();
+void PaletteWhiteIn();
+void PaletteWhiteIn_At(uint8_t ind, uint8_t len);
+void WhiteOut_ToWhite();
+void PaletteWhiteOut();
+void PaletteWhiteOut_At(uint8_t ind, uint8_t len);
