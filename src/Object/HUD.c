@@ -48,17 +48,19 @@ void Obj_HUD(Object *obj)
 					DisplaySprite(obj);
 				}
 			#else
-				//Determine frame and draw
-				uint8_t frame = 0;
-				if (!(frame_count & 8))
 				{
-					if (!rings)
-						frame += 1; //Flash RINGS
-					if (time.min == 9)
-						frame += 2; //Flash TIME
+					//Determine frame and draw
+					uint8_t frame = 0;
+					if (!(frame_count & 8))
+					{
+						if (!rings)
+							frame += 1; //Flash RINGS
+						if (time.min == 9)
+							frame += 2; //Flash TIME
+					}
+					obj->frame = frame;
+					DisplaySprite(obj);
 				}
-				obj->frame = frame;
-				DisplaySprite(obj);
 			#endif
 			break;
 	}
