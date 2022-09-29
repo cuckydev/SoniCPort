@@ -4,7 +4,7 @@ Sonic the Hedgehog (1991, Sega Genesis / MegaDrive) C Port
 
 ## Dependencies
 
-* SDL2 (if `COMPILE_SDL2` is set to ON)
+* SDL2 (if `BACKEND` is set to `SDL2`)
 * pkg-config (for builds that require static-linkage)
 
 ## Building
@@ -29,7 +29,6 @@ Name | Function
 `-DJAPANESE=ON` | Compile a Japanese ROM
 `-DFIX_BUGS=ON` | Fix bugs that are blatant screw-ups that may harm performance (not gameplay bugs)
 `-DLTO=ON` | Enable link-time optimisation
-`-DPKG_CONFIG_STATIC_LIBS=ON` | On platforms with pkg-config, static-link the dependencies (good for Windows builds, so you don't need to bundle DLL files)
 `-DMSVC_LINK_STATIC_RUNTIME=ON` | Link the static MSVC runtime library, to reduce the number of required DLL files (Visual Studio only)
 
 You can pass your own compiler flags with `-DCMAKE_C_FLAGS` and `-DCMAKE_CXX_FLAGS`.
