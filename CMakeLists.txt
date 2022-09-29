@@ -11,7 +11,6 @@ option(SPLASH "Enable the SSRG splash screen (for my own demo releases)" OFF)
 
 option(SANITIZE "Enable sanitization" OFF)
 option(LTO "Enable link-time optimization" OFF)
-option(PKG_CONFIG_STATIC_LIBS "On platforms with pkg-config, static-link the dependencies (good for Windows builds, so you don't need to bundle DLL files)" OFF)
 option(MSVC_LINK_STATIC_RUNTIME "Link the static MSVC runtime library (Visual Studio only)" OFF)
 
 #########
@@ -425,13 +424,8 @@ endif()
 # Strip release builds
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s")
 
-# Statically link other libraries
-if(PKG_CONFIG_STATIC_LIBS)
-	target_link_options(SoniCPort PRIVATE "-static")
-endif()
-
 # Force warnings
-if(MSVC)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 	target_compile_options(SoniCPort PRIVATE /W4)
 else()
 	target_compile_options(SoniCPort PRIVATE -Wall -Wextra -pedantic)
@@ -465,7 +459,7 @@ endif()
 
 # This is messy as hell, and has been replaced by CMAKE_MSVC_RUNTIME_LIBRARY,
 # but that's a very recent CMake addition, so we're still doing it this way for now
-if(MSVC AND MSVC_LINK_STATIC_RUNTIME)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND MSVC_LINK_STATIC_RUNTIME)
 	# Statically-link the CRT (vcpkg static libs do this)
 	foreach(flag_var CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
 		if(${flag_var} MATCHES "/MD")
@@ -475,7 +469,7 @@ if(MSVC AND MSVC_LINK_STATIC_RUNTIME)
 endif()
 
 # Do some other MSVC fixes
-if(MSVC)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 	# Disable warnings that normally fire up on MSVC when using "unsafe" functions instead of using MSVC's "safe" _s functions
 	target_compile_definitions(SoniCPort PRIVATE _CRT_SECURE_NO_WARNINGS)
 	
@@ -526,43 +520,13 @@ if(BACKEND MATCHES "SDL2")
 		"src/Backend/SDL2/Input.c"
 	)
 	
-	# Find SDL2
-	find_package(SDL2)
-	if(PKG_CONFIG_FOUND)
-		pkg_check_modules(sdl2 QUIET IMPORTED_TARGET sdl2)
+	# Compile and link SDL2
+	set(SDL_SHARED_ENABLED_BY_DEFAULT OFF)
+	if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+			set(LIBC ON CACHE INTERNAL "" FORCE)	# Needed to prevent possible 'symbol already defined' errors
 	endif()
-	
-	# Link SDL2
-	if(TARGET PkgConfig::sdl2)
-		if(PKG_CONFIG_STATIC_LIBS)
-			# Pkg-Config static
-			message(STATUS "Using system SDL2 (pkg-config, static)")
-			list(REMOVE_ITEM sdl2_STATIC_CFLAGS "-Dmain=SDL_main")
-			list(REMOVE_ITEM sdl2_STATIC_LDFLAGS "-lSDL2main")
-			target_compile_options(SoniCPort PRIVATE ${sdl2_STATIC_CFLAGS})
-			target_link_libraries(SoniCPort PRIVATE ${sdl2_STATIC_LDFLAGS})
-		else()
-			# Pkg-Config dynamic
-			message(STATUS "Using system SDL2 (pkg-config, dynamic)")
-			list(REMOVE_ITEM sdl2_CFLAGS "-Dmain=SDL_main")
-			list(REMOVE_ITEM sdl2_LDFLAGS "-lSDL2main")
-			target_compile_options(SoniCPort PRIVATE ${sdl2_CFLAGS})
-			target_link_libraries(SoniCPort PRIVATE ${sdl2_LDFLAGS})
-		endif()
-	elseif(TARGET SDL2::SDL2)
-		# CMake-generated config (Arch, vcpkg, Raspbian)
-		message(STATUS "Using system SDL2 (CMake, dynamic)")
-		target_link_libraries(SoniCPort PRIVATE SDL2::SDL2)
-	elseif(TARGET SDL2::SDL2-static)
-		# CMake-generated config (Arch, vcpkg, Raspbian)
-		message(STATUS "Using system SDL2 (CMake, static)")
-		target_link_libraries(SoniCPort PRIVATE SDL2::SDL2-static)
-	elseif(SDL2_FOUND)
-		# Autotools-generated config (MSYS2)
-		message(STATUS "Using system SDL2 (Autotools)")
-		target_include_directories(SoniCPort PRIVATE ${SDL2_INCLUDE_DIRS})
-		target_link_libraries(SoniCPort PRIVATE ${SDL2_LIBRARIES})
-	endif()
+	add_subdirectory("lib/SDL" EXCLUDE_FROM_ALL)
+	target_link_libraries(SoniCPort PRIVATE SDL2-static)
 endif()
 
 #######################
