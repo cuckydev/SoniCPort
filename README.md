@@ -1,6 +1,10 @@
+# NOTICE
+
+This project is being supersceded by [Sonic1C](https://github.com/cuckydev/Sonic1C).
+
 # SoniCPort
 
-Sonic the Hedgehog (1991, Sega Genesis / MegaDrive) C Port
+Sonic the Hedgehog (1991, Sega Genesis / MegaDrive) C Port.
 
 ## Dependencies
 
