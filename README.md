@@ -1,6 +1,6 @@
 # NOTICE
 
-This project is being supersceded by [Sonic1C](https://github.com/cuckydev/Sonic1C).
+This project is being superseded by [Sonic1C](https://github.com/cuckydev/Sonic1C).
 
 # SoniCPort
 
